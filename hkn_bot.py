@@ -1,27 +1,44 @@
+#########################################################################################################
+### HKN Telegram Bot. This is the code for the official bot of the Mu Nu Chapter of IEEE Eta Kappa Nu ###
+#########################################################################################################
+
 import os
 import telegram
 from telegram.ext import Updater
+import filters
 
-print(os.environ['HKN_BOT_TOKEN'])
+# Uncomment for debug
+#print(os.environ['HKN_BOT_TOKEN'])
+
+# Retrieving bot token
 updater = Updater(token = os.environ['HKN_BOT_TOKEN'])
 
 dispatcher = updater.dispatcher
 
+# Handling commands
+from telegram.ext import CommandHandler
+
+# Start command handler
 def start(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="I'm a bot, please talk to me!")
+    bot.send_message(chat_id=update.message.chat_id, text="Benvenuto nel bot ufficiale di Eta Kappa Nu Polito!")
     
-   
+
+start_handler = CommandHandler('start', start)
+dispatcher.add_handler(start_handler)    
+
+# Handling messages
+from telegram.ext import MessageHandler
+
+# Study groups informations  
 tutor = {'elettrotecnica' : 'tutoring di elettrotecnica il 30/11/2018', 'algoritmi' : 'tutoring di algoritmi e programmazione il 26/11/2018'}
 
+# Study groups handler
 def tutoring(bot, update):
    for stringa in tutor.keys():
       bot.send_message(chat_id=update.message.chat_id, text=tutor[stringa])
-
-from telegram.ext import CommandHandler
-start_handler = CommandHandler('start', start)
-dispatcher.add_handler(start_handler)
-
-tutoring_handler = CommandHandler('tutoring', tutoring)
+   
+filter_tutoring = filters.FilterTutoring()
+tutoring_handler = MessageHandler(filter_tutoring, tutoring)
 dispatcher.add_handler(tutoring_handler)
 
 updater.start_polling()
