@@ -41,5 +41,15 @@ filter_tutoring = filters.FilterTutoring()
 tutoring_handler = MessageHandler(filter_tutoring, tutoring)
 dispatcher.add_handler(tutoring_handler)
 
+#about handler
+def about(bot, update):
+   in_file = open("about.txt", "r")
+   bot.send_message(chat_id=update.message.chat_id, text=in_file.read())
+
+filter_about = filters.FilterAbout()
+about_handler = MessageHandler(filter_about, about)
+dispatcher.add_handler(about_handler)
+
+
 updater.start_polling()
 
