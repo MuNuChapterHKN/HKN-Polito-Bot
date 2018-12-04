@@ -37,8 +37,8 @@ tutor = {'elettrotecnica' : 'tutoring di elettrotecnica il 30/11/2018', 'algorit
 
 #-- Study groups handler
 def tutoring(bot, update):
-   for stringa in tutor.keys():
-      bot.send_message(chat_id=update.message.chat_id, text=tutor[stringa])
+    for stringa in tutor.keys():
+        bot.send_message(chat_id=update.message.chat_id, text=tutor[stringa])
    
 filter_tutoring = filters.FilterTutoring()
 tutoring_handler = MessageHandler(filter_tutoring, tutoring)
@@ -46,8 +46,8 @@ dispatcher.add_handler(tutoring_handler)
 
 #-- About handler
 def about(bot, update):
-   in_file = open("about.txt", "r")
-   bot.send_message(chat_id=update.message.chat_id, text=in_file.read())
+    in_file = open("about.txt", "r")
+    bot.send_message(chat_id=update.message.chat_id, text=in_file.read())
 
 filter_about = filters.FilterAbout()
 about_handler = MessageHandler(filter_about, about)
@@ -56,14 +56,14 @@ dispatcher.add_handler(about_handler)
 
 #-- News handler
 class News:
-  title = 'A title'
-  content = 'Text'
-  date = datetime.date(1943,3,13)  #year, month, day
-  #print(date.strftime("%A"))
-  def __init__(self, title, content, date):
-     self.title = title
-     self.content = content
-     self.date = date
+    title = 'A title'
+    content = 'Text'
+    date = datetime.date(1943,3,13)  #year, month, day
+    #print(date.strftime("%A"))
+    def __init__(self, title, content, date):
+        self.title = title
+        self.content = content
+        self.date = date
 
 # demo datas
 news1 = News(title='News 1', content='Lorem ipsum dolor sit', date=datetime.date(2018,3,13))
@@ -71,19 +71,19 @@ news2 = News(title='News 2', content='Consectetur adipiscing elit', date=datetim
 newsList = [news1, news2]
 
 def fetch_news(bot, update):
-   for theNews in newsList:
-      bot.send_message(chat_id=update.message.chat_id, text=theNews.content)
+    for theNews in newsList:
+        bot.send_message(chat_id=update.message.chat_id, text=theNews.content)
 
 
 #-- Event handler
 class Event:
-  title = 'A title'
-  description = 'Text'
-  date = datetime.date(1943,3, 13)  #year, month, day
-  def __init__(self, title, description, date):
-     self.title = title
-     self.description = description
-     self.date = date
+    title = 'A title'
+    description = 'Text'
+    date = datetime.date(1943,3, 13)  #year, month, day
+    def __init__(self, title, description, date):
+        self.title = title
+        self.description = description
+        self.date = date
 
 # demo datas
 event1 = Event(title='Event 1', description='Evento di marzo (passato)', date=datetime.date(2018,3,13))
@@ -91,11 +91,10 @@ event2 = Event(title='Event 2', description='Evento di dicembre', date=datetime.
 eventList = [event1, event2]
 
 def fetch_events(bot, update):
-   for theEvent in eventList:
-      todayDate = datetime.datetime.now()
-      if theEvent.date >= todayDate: #do not print past events
-         bot.send_message(chat_id=update.message.chat_id, text=theEvent.description)
-
+    for theEvent in eventList:
+        todayDate = datetime.datetime.now()
+        if theEvent.date >= todayDate: #do not print past events
+            bot.send_message(chat_id=update.message.chat_id, text=theEvent.description)
 
 
 
