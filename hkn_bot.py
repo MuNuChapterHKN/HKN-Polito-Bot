@@ -35,7 +35,7 @@ from telegram.ext import MessageHandler
 # Study groups informations  
 tutor = {'elettrotecnica' : 'tutoring di elettrotecnica il 30/11/2018', 'algoritmi' : 'tutoring di algoritmi e programmazione il 26/11/2018'}
 
-#-- Study groups handler
+# Study groups handler
 def tutoring(bot, update):
     for stringa in tutor.keys():
         bot.send_message(chat_id=update.message.chat_id, text=tutor[stringa])
@@ -44,17 +44,18 @@ filter_tutoring = filters.FilterTutoring()
 tutoring_handler = MessageHandler(filter_tutoring, tutoring)
 dispatcher.add_handler(tutoring_handler)
 
-#-- About handler
+# About handler
 def about(bot, update):
-    in_file = open("about.txt", "r")
+    in_file = open("about.txt", "r", encoding="utf-8")
     bot.send_message(chat_id=update.message.chat_id, text=in_file.read())
+    in_file.close()
 
 filter_about = filters.FilterAbout()
 about_handler = MessageHandler(filter_about, about)
 dispatcher.add_handler(about_handler)
 
 
-#-- News handler
+# News handler
 class News:
     title = 'A title'
     content = 'Text'
@@ -75,7 +76,7 @@ def fetch_news(bot, update):
         bot.send_message(chat_id=update.message.chat_id, text=theNews.content)
 
 
-#-- Event handler
+# Event handler
 class Event:
     title = 'A title'
     description = 'Text'
