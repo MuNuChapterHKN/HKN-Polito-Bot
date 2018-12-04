@@ -93,9 +93,14 @@ eventList = [event1, event2]
 def fetch_events(bot, update):
     for theEvent in eventList:
         todayDate = datetime.datetime.now()
-        if theEvent.date >= todayDate: #do not print past events
-            bot.send_message(chat_id=update.message.chat_id, text=theEvent.description)
+        bot.send_message(chat_id=update.message.chat_id, text=theEvent.description)
 
+filter_events = filters.FilterEvents()
+events_handler = MessageHandler(filter_events, fetch_events)
+dispatcher.add_handler(events_handler)
 
+filter_news = filters.FilterNews()
+news_handler = MessageHandler(filter_news, fetch_news)
+dispatcher.add_handler(news_handler)
 
 updater.start_polling()
