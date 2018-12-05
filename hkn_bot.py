@@ -4,11 +4,13 @@
 
 import os
 import telegram
-from telegram.ext import Updater
 import filters
 import time
 import datetime
-
+from telegram.ext import Updater
+# Handling commands
+from telegram.ext import CommandHandler
+from telegram.ext import MessageHandler
 
 # Uncomment for debug
 #print(os.environ['HKN_BOT_TOKEN'])
@@ -18,22 +20,20 @@ updater = Updater(token = os.environ['HKN_BOT_TOKEN'])
 
 dispatcher = updater.dispatcher
 
-# Handling commands
-from telegram.ext import CommandHandler
-
 # Start command handler
 def start(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Benvenuto nel bot ufficiale di Eta Kappa Nu Polito!")
+    custom_keyboard = [['Events', 'News'], ['Study Groups', 'About HKN']]
+    reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
+    bot.send_message(chat_id=update.message.chat_id, text="Scegli una di queste opzioni:", reply_markup=reply_markup)
     
 
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)    
 
-# Handling messages
-from telegram.ext import MessageHandler
-
 # Study groups informations  
 tutor = {'elettrotecnica' : 'tutoring di elettrotecnica il 30/11/2018', 'algoritmi' : 'tutoring di algoritmi e programmazione il 26/11/2018'}
+
 
 #-- Study groups handler
 def tutoring(bot, update):
@@ -52,7 +52,6 @@ def about(bot, update):
 filter_about = filters.FilterAbout()
 about_handler = MessageHandler(filter_about, about)
 dispatcher.add_handler(about_handler)
-
 
 #-- News handler
 class News:

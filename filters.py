@@ -15,5 +15,5 @@ class FilterNews(BaseFilter):
       return 'news' == message.text.lower()
 
 class FilterEvents(BaseFilter):
-   def filter(self, message):
+   def filter(self, message):      
       return 'events' == message.text.lower()
