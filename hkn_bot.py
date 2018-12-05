@@ -44,10 +44,11 @@ filter_tutoring = filters.FilterTutoring()
 tutoring_handler = MessageHandler(filter_tutoring, tutoring)
 dispatcher.add_handler(tutoring_handler)
 
-#-- About handler
+# About handler
 def about(bot, update):
-    in_file = open("about.txt", "r")
+    in_file = open("about.txt", "r", encoding="utf-8")
     bot.send_message(chat_id=update.message.chat_id, text=in_file.read())
+    in_file.close()
 
 filter_about = filters.FilterAbout()
 about_handler = MessageHandler(filter_about, about)
@@ -74,7 +75,7 @@ def fetch_news(bot, update):
         bot.send_message(chat_id=update.message.chat_id, text=theNews.content)
 
 
-#-- Event handler
+# Event handler
 class Event:
     title = 'A title'
     description = 'Text'
