@@ -1,4 +1,4 @@
-# start of the code
+# This file is used to get schedule of tutoring
 import re
 import html2text
 import urllib
