@@ -11,6 +11,10 @@ from telegram.ext import Updater
 # Handling commands
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler
+#tutoring part imports
+import re
+import html2text
+from urllib.request import urlopen
 
 # Uncomment for debug
 #print(os.environ['HKN_BOT_TOKEN'])
