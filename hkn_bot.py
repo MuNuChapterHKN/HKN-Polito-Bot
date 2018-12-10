@@ -102,21 +102,26 @@ def fetch_news(bot, update):
 class Event:
     title = 'A title'
     description = 'Text'
-    date = datetime.date(1943,3, 13)  #year, month, day
+    date = datetime.datetime(1943,3, 13) #year, month, day
+    imageLink = str() #optional
     def __init__(self, title, description, date):
         self.title = title
         self.description = description
         self.date = date
 
 # demo datas
-event1 = Event(title='Event 1', description='Evento di marzo (passato)', date=datetime.date(2018,3,13))
-event2 = Event(title='Event 2', description='Evento di dicembre', date=datetime.date(2018,12,25))
+event1 = Event(title='Event 1', description='Evento di marzo (passato)', date=datetime.datetime(2018,3,13))
+event2 = Event(title='Event 2', description='Evento di dicembre', date=datetime.datetime(2018,12,25))
+event2.imageLink = 'https://hknpolito.org/wp-content/uploads/2018/05/33227993_2066439693603577_8978955090240995328_o.jpg'
 eventList = [event1, event2]
 
 def fetch_events(bot, update):
     for theEvent in eventList:
         todayDate = datetime.datetime.now()
-        bot.send_message(chat_id=update.message.chat_id, text=theEvent.description)
+        if theEvent.date > todayDate: #do not print past events
+            bot.send_message(chat_id=update.message.chat_id, text=theEvent.description)
+            if theEvent.imageLink: #if there is an image link
+                bot.send_photo(chat_id=update.message.chat_id, photo=theEvent.imageLink)
 
 filter_events = filters.FilterEvents()
 events_handler = MessageHandler(filter_events, fetch_events)
