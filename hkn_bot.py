@@ -5,8 +5,6 @@
 import os
 import telegram
 import filters
-import time
-import datetime
 from telegram.ext import Updater
 # Handling commands
 from telegram.ext import CommandHandler
@@ -15,6 +13,12 @@ from telegram.ext import MessageHandler
 import re
 import html2text
 from urllib.request import urlopen
+#events - news import
+import time
+import datetime
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
+
 
 # Uncomment for debug
 #print(os.environ['HKN_BOT_TOKEN'])
@@ -104,6 +108,8 @@ class Event:
     description = 'Text'
     date = datetime.datetime(1943,3, 13) #year, month, day
     imageLink = str() #optional
+    facebookLink = str() #optional
+    eventbriteLink = str() #optional
     def __init__(self, title, description, date):
         self.title = title
         self.description = description
@@ -113,15 +119,32 @@ class Event:
 event1 = Event(title='Event 1', description='Evento di marzo (passato)', date=datetime.datetime(2018,3,13))
 event2 = Event(title='Event 2', description='Evento di dicembre', date=datetime.datetime(2018,12,25))
 event2.imageLink = 'https://hknpolito.org/wp-content/uploads/2018/05/33227993_2066439693603577_8978955090240995328_o.jpg'
+event2.facebookLink = 'https://www.google.it/webhp?hl=it'
+event2.eventbriteLink = 'https://www.google.it/webhp?hl=it'
 eventList = [event1, event2]
+
 
 def fetch_events(bot, update):
     for theEvent in eventList:
         todayDate = datetime.datetime.now()
         if theEvent.date > todayDate: #do not print past events
-            bot.send_message(chat_id=update.message.chat_id, text=theEvent.description)
-            if theEvent.imageLink: #if there is an image link
-                bot.send_photo(chat_id=update.message.chat_id, photo=theEvent.imageLink)
+            if not theEvent.imageLink: #if there isn't an image link
+                bot.send_message(chat_id=update.message.chat_id, text=theEvent.description)
+            else:
+                #Build link buttons
+                keyboard = []
+                if  theEvent.facebookLink and theEvent.eventbriteLink:
+                    keyboard = [[InlineKeyboardButton("Facebook Page", callback_data='1',url='https://www.google.it/webhp?hl=it'),
+                        InlineKeyboardButton("Eventbrite", callback_data='2',url='https://www.google.it/webhp?hl=it')]]
+                elif theEvent.facebookLink:
+                    keyboard = [[InlineKeyboardButton("Facebook Page", callback_data='1',url='https://www.google.it/webhp?hl=it')]]
+                elif theEvent.eventbriteLink:
+                    keyboard = [InlineKeyboardButton("Eventbrite", callback_data='2',url='https://www.google.it/webhp?hl=it')]
+                else: continue #skip the sending of the links
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                bot.send_photo(chat_id=update.message.chat_id, caption=theEvent.description, photo=theEvent.imageLink, reply_markup=reply_markup)
+
+
 
 filter_events = filters.FilterEvents()
 events_handler = MessageHandler(filter_events, fetch_events)
