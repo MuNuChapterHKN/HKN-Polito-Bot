@@ -1,4 +1,4 @@
-# This file is used to get schedule of tutoring
+# This file is used to get schedule of latest events
 import re
 import html2text
 import urllib
