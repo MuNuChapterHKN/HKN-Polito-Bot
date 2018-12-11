@@ -115,7 +115,7 @@ class Event:
         self.description = description
         self.date = date
 
-# demo datas
+# demo data
 event1 = Event(title='Event 1', description='Evento di marzo (passato)', date=datetime.datetime(2018,3,13))
 event2 = Event(title='Event 2', description='Evento di dicembre', date=datetime.datetime(2018,12,25))
 event2.imageLink = 'https://hknpolito.org/wp-content/uploads/2018/05/33227993_2066439693603577_8978955090240995328_o.jpg'
