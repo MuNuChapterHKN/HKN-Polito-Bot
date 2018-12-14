@@ -18,7 +18,8 @@ import time
 import datetime
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
-
+from wordpress_xmlrpc import Client
+from wordpress_xmlrpc.methods import posts
 
 # Uncomment for debug
 #print(os.environ['HKN_BOT_TOKEN'])
@@ -82,6 +83,7 @@ about_handler = MessageHandler(filter_about, about)
 dispatcher.add_handler(about_handler)
 
 #-- News handler
+# Unused in latest commit: Evaluate deletion
 class News:
     title = 'A title'
     content = 'Text'
@@ -97,9 +99,16 @@ news1 = News(title='News 1', content='Lorem ipsum dolor sit', date=datetime.date
 news2 = News(title='News 2', content='Consectetur adipiscing elit', date=datetime.date(2018,12,25))
 newsList = [news1, news2]
 
+
 def fetch_news(bot, update):
-    for theNews in newsList:
-        bot.send_message(chat_id=update.message.chat_id, text=theNews.content)
+    client = Client(url = 'https://hknpolito.org/xmlrpc', username = "HKNP0lit0", password = os.environ['HKN_WEB_PASSWORD'])
+    postfilters = {"number": 3, "order": "ASC"}
+    postsdict = client.call(posts.GetPosts(postfilters))
+    #for theNews in newsList:
+    #    bot.send_message(chat_id=update.message.chat_id, text=theNews.content)
+    for post in postsdict:
+        content = post.title + "\n" + post.link
+        bot.send_message(chat_id=update.message.chat_id, text=content)
 
 
 # Event handler

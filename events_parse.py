@@ -16,4 +16,4 @@ for el in m:
     sub_els.pop()
     print("----------------")
     for sub_el in sub_els:
-print(sub_el)
+        print(sub_el)
