@@ -21,6 +21,25 @@ from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 from wordpress_xmlrpc import Client
 from wordpress_xmlrpc.methods import posts
 
+from functools import wraps
+from telegram import ChatAction
+
+def send_action(action):
+    ## Sends `action` while processing func command
+
+    def decorator(func):
+        @wraps(func)
+        def command_func(*args, **kwargs):
+            bot, update = args
+            bot.send_chat_action(chat_id=update.effective_message.chat_id, action=action)
+            return func(bot, update, **kwargs)
+        return command_func
+    
+    return decorator
+
+# The message "is typing" appears while the bot is processing messages
+send_typing_action = send_action(ChatAction.TYPING)
+
 # Uncomment for debug
 #print(os.environ['HKN_BOT_TOKEN'])
 
@@ -46,6 +65,7 @@ dispatcher.add_handler(start_handler)
 
 
 #-- Study groups handler
+@send_typing_action
 def tutoring(bot, update):
     #old version:
     #for stringa in tutor.keys():
@@ -73,6 +93,7 @@ tutoring_handler = MessageHandler(filter_tutoring, tutoring)
 dispatcher.add_handler(tutoring_handler)
 
 # About handler
+@send_typing_action
 def about(bot, update):
     in_file = open("about.txt", "r", encoding="utf-8")
     bot.send_message(chat_id=update.message.chat_id, text=in_file.read())
@@ -99,7 +120,7 @@ news1 = News(title='News 1', content='Lorem ipsum dolor sit', date=datetime.date
 news2 = News(title='News 2', content='Consectetur adipiscing elit', date=datetime.date(2018,12,25))
 newsList = [news1, news2]
 
-
+@send_typing_action
 def fetch_news(bot, update):
     client = Client(url = 'https://hknpolito.org/xmlrpc', username = "HKNP0lit0", password = os.environ['HKN_WEB_PASSWORD'])
     postfilters = {"number": 3, "order": "ASC"}
@@ -132,7 +153,7 @@ event2.facebookLink = 'https://www.google.it/webhp?hl=it'
 event2.eventbriteLink = 'https://www.google.it/webhp?hl=it'
 eventList = [event1, event2]
 
-
+@send_typing_action
 def fetch_events(bot, update):
     for theEvent in eventList:
         todayDate = datetime.datetime.now()
