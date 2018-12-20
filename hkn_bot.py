@@ -103,13 +103,15 @@ filter_about = filters.FilterAbout()
 about_handler = MessageHandler(filter_about, about)
 dispatcher.add_handler(about_handler)
 
+"""
 # Questions handler
 @send_typing_action
 def questions(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Fai una domanda al MuNu Chapter di Eta Kappa Nu")    
     def telegram.ForceReply(force_reply=True, selective=False, **kwargs)
     in_file = open("questions.txt", "a+", encoding="utf-8")
-
+"""
+    
 #-- News handler
 # Unused in latest commit: Evaluate deletion
 class News:
