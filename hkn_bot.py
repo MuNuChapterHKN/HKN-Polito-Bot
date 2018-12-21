@@ -51,7 +51,7 @@ dispatcher = updater.dispatcher
 # Start command handler
 def start(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Benvenuto nel bot ufficiale di Eta Kappa Nu Polito!")
-    custom_keyboard = [['Events', 'News'], ['Study Groups', 'About HKN']]
+    custom_keyboard = [['Events', 'News'], ['Study Groups', 'Questions'],["About HKN"]]
     reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
     bot.send_message(chat_id=update.message.chat_id, text="Scegli una di queste opzioni:", reply_markup=reply_markup)
     
