@@ -117,7 +117,7 @@ dispatcher.add_handler(questions_handler)
 # Answers must containts with "?"
 def answers(bot,update):
     out_file = open("questions.txt","a+")
-    out_file.write(update.message.text+"\n")
+    out_file.write(str(update.message.chat_id)+" - "+update.message.text+"\n")
     out_file.close()
     bot.send_message(chat_id=update.message.chat_id, text="La tua domanda è stata registrata, ti risponderemo a breve")
     
