@@ -104,7 +104,7 @@ about_handler = MessageHandler(filter_about, about)
 dispatcher.add_handler(about_handler)
 
 
-# Questions handler
+#-- Questions handler
 @send_typing_action
 def questions(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Fai una domanda al MuNu Chapter di Eta Kappa Nu")
@@ -113,6 +113,8 @@ filter_questions = filters.FilterQuestions()
 questions_handler = MessageHandler(filter_questions, questions)
 dispatcher.add_handler(questions_handler)
 
+#-- Asnwer appender to file
+# Answers must containts with "?"
 def answers(bot,update):
     out_file = open("questions.txt","a+")
     out_file.write(update.message.text+"\n")
