@@ -92,7 +92,7 @@ filter_tutoring = filters.FilterTutoring()
 tutoring_handler = MessageHandler(filter_tutoring, tutoring)
 dispatcher.add_handler(tutoring_handler)
 
-# About handler
+#-- About handler
 @send_typing_action
 def about(bot, update):
     in_file = open("about.txt", "r", encoding="utf-8")
@@ -113,7 +113,7 @@ filter_questions = filters.FilterQuestions()
 questions_handler = MessageHandler(filter_questions, questions)
 dispatcher.add_handler(questions_handler)
 
-#-- Asnwer appender to file
+#-- Answer appender to file
 # Answers must containts with "?"
 def answers(bot,update):
     out_file = open("questions.txt","a+")
@@ -156,7 +156,7 @@ def fetch_news(bot, update):
         bot.send_message(chat_id=update.message.chat_id, text=content)
 
 
-# Event handler
+#-- Event handler
 class Event:
     title = 'A title'
     description = 'Text'
