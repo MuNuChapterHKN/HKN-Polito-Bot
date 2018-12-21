@@ -17,3 +17,11 @@ class FilterNews(BaseFilter):
 class FilterEvents(BaseFilter):
    def filter(self, message):      
       return 'events' == message.text.lower()
+
+class FilterQuestions(BaseFilter):
+   def filter(self, message):      
+      return 'questions' == message.text.lower()
+
+class FilterAnswers(BaseFilter):
+   def filter(self, message):       
+      return "?" in message.text.lower() 
