@@ -59,37 +59,14 @@ def start(bot, update):
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)    
 
-# Study groups informations  
-#not required anymore
-#tutor = {'elettrotecnica' : 'tutoring di elettrotecnica il 30/11/2018', 'algoritmi' : 'tutoring di algoritmi e programmazione il 26/11/2018'}
+
+import tutor
+#save tutoring groups in file
+tutor.tutoringFile()
 
 
-#-- Study groups handler
-@send_typing_action
-def tutoring(bot, update):
-    #old version:
-    #for stringa in tutor.keys():
-    #    bot.send_message(chat_id=update.message.chat_id, text=tutor[stringa])
-    
-    #new version:
-    fp = urlopen("http://hknpolito.org/tutoring/")
-    mybytes = fp.read()
-    mystr = mybytes.decode("utf8")
-    fp.close()
-    mystr = html2text.html2text(mystr)
-    m=mystr.split("* ###")
-    m.pop(0)
-    for el in m:
-        sub_els=el.split('\n',7)
-        sub_els.pop()
-        sub_els=sub_els[2:]
-        tutoring_block=""
-        for sub_el in sub_els:
-            tutoring_block=tutoring_block + "\n" + str.lstrip(sub_el,"#### ")
-        bot.send_message(chat_id=update.message.chat_id, text=tutoring_block)
-   
 filter_tutoring = filters.FilterTutoring()
-tutoring_handler = MessageHandler(filter_tutoring, tutoring)
+tutoring_handler = MessageHandler(filter_tutoring, tutor.tutoring)
 dispatcher.add_handler(tutoring_handler)
 
 #-- About handler
