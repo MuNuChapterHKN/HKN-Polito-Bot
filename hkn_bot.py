@@ -73,8 +73,6 @@ def start(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Scegli una di queste opzioni:", reply_markup=reply_markup)
     
 
-start_handler = CommandHandler('start', start)
-dispatcher.add_handler(start_handler)    
 
 
 import tutor
@@ -82,9 +80,6 @@ import tutor
 tutor.tutoringFile()
 
 
-filter_tutoring = filters.FilterTutoring()
-tutoring_handler = MessageHandler(filter_tutoring, tutor.tutoring)
-dispatcher.add_handler(tutoring_handler)
 
 # About handler
 @send_typing_action
@@ -93,37 +88,24 @@ def about(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text=in_file.read())
     in_file.close()
 
-filter_about = filters.FilterAbout()
-about_handler = MessageHandler(filter_about, about)
-dispatcher.add_handler(about_handler)
-
 
 # Questions handler
 @send_typing_action
 def questions(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Fai una domanda al MuNu Chapter di Eta Kappa Nu")
 
-filter_questions = filters.FilterQuestions()
-questions_handler = MessageHandler(filter_questions, questions)
-dispatcher.add_handler(questions_handler)
 
 # Answer appender to file
 # Answers must contains "?"
 def answers(bot,update):
     out_file = open("questions.txt","a+")
     user_id = str(update.effective_user.id)
-    out_file.write(str(update.message.from_user.username)+"-"+user_id+"-"+update.message.text+"\n")
+    out_file.write((str(update.message.from_user.username)+"-"+user_id+"-"+update.message.text).strip("\n")+"\n")
     out_file.close()
     bot.send_message(chat_id=update.message.chat_id, text="La tua domanda è stata registrata, ti risponderemo a breve")
     for admin in LIST_OF_ADMINS:
         bot.send_message(chat_id=admin, text="Nuova domanda da: "+str(update.message.from_user.username)+"\n-"+update.message.text+"\n")      
     
-
-filter_answers = filters.FilterAnswers()
-answers_handler = MessageHandler(filter_answers, answers)
-dispatcher.add_handler(answers_handler)
-
-
 # News handler
 # Unused in latest commit: Evaluate deletion
 # TODO: REMOVE
@@ -204,16 +186,18 @@ from telegram.ext import ConversationHandler
 
 # Setting up conversation handler to wait for user message
 ANSWER = 1
-def popquestion():
+def popquestion(option = "cancel"):
     question_file = open("questions.txt", "r+")
     questions = question_file.readlines()
-    if questions == None:
+    if questions == []:
         question_file.close()
         return None
     question_file.seek(0)
     for q in questions[1:]:
         question_file.write(q)
     question_file.truncate()
+    if(option == "enqueue"):
+        question_file.write(questions[0])
     question_file.close()
     return questions[0].split("-")
 
@@ -221,7 +205,7 @@ def popquestion():
 def answer(bot, update):
     question = popquestion()
     if question == None:
-        bot.send_message(chat_id=update.message.chat_id, text="Non ci sono più domande a cui rispondere")
+        bot.send_message(chat_id=update.message.chat_id, text="Formato file questions.txt non corretto")
         return ConversationHandler.END
     message = update.message.text 
     bot.send_message(chat_id=question[1], text="Ciao {} ecco la risposta alla tua domanda:\n{}".format(question[0],message))
@@ -231,6 +215,7 @@ def answer(bot, update):
 @restricted
 def skip(bot,update):
     bot.send_message(chat_id=update.message.chat_id, text="Domanda non risposta")
+    popquestion(option="enqueue")
     return ConversationHandler.END
 
 @restricted
@@ -242,10 +227,15 @@ def cancel(bot, update):
 def reply(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Rispondi alla domanda: \n")
     question_file = open("questions.txt","r")
-    bot.send_message(chat_id=update.message.chat_id, text=question_file.readline())
+    question = question_file.readline()
+    if(question == ""):
+        bot.send_message(chat_id=update.message.chat_id, text="Non ci sono più domande a cui rispondere")
+        return ConversationHandler.END
+    bot.send_message(chat_id=update.message.chat_id, text=question)
     question_file.close()
     return ANSWER
 
+# Configurating handlers
 conv_handler = ConversationHandler(
     entry_points=[CommandHandler("reply", reply)],
     states={ANSWER: [MessageHandler(Filters.text, answer),
@@ -257,6 +247,12 @@ conv_handler = ConversationHandler(
 dispatcher.add_handler(conv_handler)
 
 
+start_handler = CommandHandler('start', start)
+dispatcher.add_handler(start_handler)   
+
+filter_tutoring = filters.FilterTutoring()
+tutoring_handler = MessageHandler(filter_tutoring, tutor.tutoring)
+dispatcher.add_handler(tutoring_handler)
 
 filter_events = filters.FilterEvents()
 events_handler = MessageHandler(filter_events, fetch_events)
@@ -265,5 +261,17 @@ dispatcher.add_handler(events_handler)
 filter_news = filters.FilterNews()
 news_handler = MessageHandler(filter_news, fetch_news)
 dispatcher.add_handler(news_handler)
+
+filter_about = filters.FilterAbout()
+about_handler = MessageHandler(filter_about, about)
+dispatcher.add_handler(about_handler)
+
+filter_questions = filters.FilterQuestions()
+questions_handler = MessageHandler(filter_questions, questions)
+dispatcher.add_handler(questions_handler)
+
+filter_answers = filters.FilterAnswers()
+answers_handler = MessageHandler(filter_answers, answers)
+dispatcher.add_handler(answers_handler)
 
 updater.start_polling()
