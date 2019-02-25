@@ -20,7 +20,7 @@ class FilterEvents(BaseFilter):
 
 class FilterQuestions(BaseFilter):
    def filter(self, message):      
-      return 'questions' == message.text.lower()
+      return 'ask us something' == message.text.lower()
 
 class FilterAnswers(BaseFilter):
    def filter(self, message):       

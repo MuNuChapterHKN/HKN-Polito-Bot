@@ -10,6 +10,7 @@ from telegram.ext import Updater
 from telegram.ext import CommandHandler
 from telegram.ext import ConversationHandler
 from telegram.ext import MessageHandler
+from telegram.ext import CallbackQueryHandler
 # Tutoring part imports
 import re
 import html2text
@@ -26,7 +27,7 @@ from functools import wraps
 from telegram import ChatAction
 
 def send_action(action):
-    ## Sends `action` while processing func command
+    # Sends `action` while processing func command
 
     def decorator(func):
         @wraps(func)
@@ -73,7 +74,7 @@ tutor.tutoringFile()
 # Start command handler
 def start(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Benvenuto nel bot ufficiale di Eta Kappa Nu Polito!")
-    custom_keyboard = [['Events', 'News'], ['Study Groups', 'Questions'],["About HKN"]]
+    custom_keyboard = [['Events', 'News'], ['Study Groups', 'Ask us something'],["About HKN"]]
     reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
     bot.send_message(chat_id=update.message.chat_id, text="Scegli una di queste opzioni:", reply_markup=reply_markup)
     
@@ -89,9 +90,17 @@ def about(bot, update):
 TYPING = 1
 @send_typing_action
 def questions(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="Fai una domanda al MuNu Chapter di Eta Kappa Nu")
+    keyboard = [[InlineKeyboardButton("⬅ Back", callback_data="back")]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    bot.send_message(chat_id=update.message.chat_id, text="Fai una domanda al MuNu Chapter di Eta Kappa Nu", reply_markup=reply_markup)
     return TYPING
 
+def inline_button(bot, update):
+    query = update.callback_query
+    if query.data == "back":
+        bot.send_message(chat_id=query.message.chat_id, text="La tua richiesta di domanda è stata annullata")
+        return ConversationHandler.END
+        
 # Question appender to file
 def answers(bot,update):
     out_file = open("questions.txt","a+")
@@ -275,7 +284,8 @@ question_conv_handler = ConversationHandler(
                   MessageHandler(filter_questions, questions)],
     states={TYPING: [MessageHandler(Filters.text, answers)]
            },
-    fallbacks=[CommandHandler("cancel", cancel)]
+    fallbacks=[CommandHandler("cancel", cancel),
+               CallbackQueryHandler(inline_button)]
 )
 dispatcher.add_handler(reply_conv_handler)
 dispatcher.add_handler(question_conv_handler)
