@@ -8,10 +8,8 @@ import re
 import html2text
 from urllib.request import urlopen
 from functools import wraps
-
-
 from telegram.ext import MessageHandler
-
+from datetime import timedelta
 from datetime import datetime
 from threading import Timer
 from telegram import ChatAction
@@ -47,7 +45,7 @@ def tutoringFile():
                         out_file.write(str.lstrip(sub_el, "#### ") + "\n" )
         out_file.close()
         x=datetime.today()
-        y=x.replace(day=x.day+1, hour=0, minute=0, second=0, microsecond=0)
+        y=x+timedelta(days=1)
         delta_t = y-x
         secs = delta_t.seconds +1
         t=Timer(secs, tutoringFile)
