@@ -2,33 +2,39 @@
 ### HKN Telegram Bot. This is the code for the official bot of the Mu Nu Chapter of IEEE Eta Kappa Nu ###
 #########################################################################################################
 
+# Imports
 import os
 import telegram
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import filters
+import json
 from telegram.ext import Updater
-# Handling commands and conversations
 from telegram.ext import CommandHandler
 from telegram.ext import ConversationHandler
 from telegram.ext import MessageHandler
 from telegram.ext import CallbackQueryHandler
-# Tutoring part imports
+from telegram.ext import Filters
 import re
 import html2text
 from urllib.request import urlopen
-# Events - news import
 import time
 import datetime
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, Filters
+# Downloads from website every day study groups dates
+import tutor
 from wordpress_xmlrpc import Client
 from wordpress_xmlrpc.methods import posts
-
 from functools import wraps
 from telegram import ChatAction
+# Lang dictionaries
+from lang import lang_en
+from lang import lang_it
 
+# Dictionary which stores language used by every user
+users = {}
+
+# Bot's typing action
 def send_action(action):
     # Sends `action` while processing func command
-
     def decorator(func):
         @wraps(func)
         def command_func(*args, **kwargs):
@@ -42,8 +48,16 @@ def send_action(action):
 # The message "is typing" appears while the bot is processing messages
 send_typing_action = send_action(ChatAction.TYPING)
 
+# Language selection
+def select_language(user_id):
+    if users.get(user_id) == None or users.get(user_id) == "EN":
+        return lang_en
+    else:
+        return lang_it
+
 from functools import wraps
 
+# Handling of restricted commands
 LIST_OF_ADMINS = []
 with open("admins.txt", "r") as admins_file:
     for line in admins_file:
@@ -62,23 +76,48 @@ def restricted(func):
 # Uncomment for debug
 #print(os.environ['HKN_BOT_TOKEN'])
 
-# Retrieving bot token
+# Retrieving bot token (saved as an env variable)
 updater = Updater(token = os.environ['HKN_BOT_TOKEN'])
-
+# Setting handlers dispatcher
 dispatcher = updater.dispatcher
 
-import tutor
 # Save tutoring groups in file
 tutor.tutoringFile()
 
 # Start command handler
 def start(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="Benvenuto nel bot ufficiale di Eta Kappa Nu Polito!")
-    custom_keyboard = [['Events', 'News'], ['Study Groups', 'Ask us something'],["About HKN"]]
+    lang = select_language(update.effective_user.id)
+    inline_keyboard = [[InlineKeyboardButton(lang["lang:it"], callback_data="lang:it"),
+                        InlineKeyboardButton(lang["lang:en"], callback_data="lang:en")]]
+    inline_reply_markup = InlineKeyboardMarkup(inline_keyboard)
+    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"], reply_markup=inline_reply_markup)
+    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]],[lang["about"]]]
     reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
-    bot.send_message(chat_id=update.message.chat_id, text="Scegli una di queste opzioni:", reply_markup=reply_markup)
-    
+    bot.send_message(chat_id=update.message.chat_id, text=lang["ckchoose"], reply_markup=reply_markup)
+
+# Updates start message if language is changed    
+def update_start_message(bot, update, lang):
+    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"])
+    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]],[lang["about"]]]
+    reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
+    bot.send_message(chat_id=update.message.chat_id, text=lang["ckchoose"], reply_markup=reply_markup)
+
+# Inline buttons handler
+def inline_button(bot, update):
+    query = update.callback_query
+    if query.data == "back":
+        bot.send_message(chat_id=query.message.chat_id, text="La tua richiesta di domanda è stata annullata")
+        return ConversationHandler.END
+    elif query.data == "lang:it":
+        users[update.effective_user.id] = "IT"
+        update_start_message(bot, query, lang_it)
+    elif query.data == "lang:en":
+        users[update.effective_user.id] = "EN"
+        update_start_message(bot, query, lang_en)
+
+
 # About handler
+# TODO create italian version of about text
 @send_typing_action
 def about(bot, update):
     in_file = open("about.txt", "r", encoding="utf-8")
@@ -87,6 +126,7 @@ def about(bot, update):
 
 
 # Questions handler
+# TODO language selection
 TYPING = 1
 @send_typing_action
 def questions(bot, update):
@@ -95,15 +135,10 @@ def questions(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Fai una domanda al MuNu Chapter di Eta Kappa Nu", reply_markup=reply_markup)
     return TYPING
 
-def inline_button(bot, update):
-    query = update.callback_query
-    if query.data == "back":
-        bot.send_message(chat_id=query.message.chat_id, text="La tua richiesta di domanda è stata annullata")
-        return ConversationHandler.END
-        
 # Question appender to file
+# TODO language selection
 def answers(bot,update):
-    out_file = open("questions.txt","a+")
+    out_file = open("questions.txt", "a+", encoding="utf-8")
     user_id = str(update.effective_user.id)
     out_file.write((str(update.message.from_user.username)+"-"+user_id+"-"+update.message.text).strip("\n")+"\n")
     out_file.close()
@@ -113,6 +148,7 @@ def answers(bot,update):
     return ConversationHandler.END    
     
 # News handler
+# TODO language selection
 @send_typing_action
 def fetch_news(bot, update):
     client = Client(url = 'https://hknpolito.org/xmlrpc', username = "HKNP0lit0", password = os.environ['HKN_WEB_PASSWORD'])
@@ -131,52 +167,66 @@ class Event:
     imageLink = str() #optional
     facebookLink = str() #optional
     eventbriteLink = str() #optional
-    def __init__(self, title, description, date):
+    def __init__(self, title, description, date, imageLink=None, facebookLink=None, eventbriteLink=None):
         self.title = title
         self.description = description
         self.date = date
+        self.imageLink = imageLink
+        self.facebookLink = facebookLink
+        self.eventbriteLink = eventbriteLink
 
-# Demo datas for events
-event1 = Event(title='Event 1', description='Evento di marzo (passato)', date=datetime.datetime(2018,3,13))
-event2 = Event(title='Event 2', description='Evento di dicembre', date=datetime.datetime(2019,12,25))
-event2.imageLink = 'https://hknpolito.org/wp-content/uploads/2018/05/33227993_2066439693603577_8978955090240995328_o.jpg'
-event2.facebookLink = 'https://www.google.it/webhp?hl=it'
-event2.eventbriteLink = 'https://www.google.it/webhp?hl=it'
-eventList = [event1, event2]
+# Loads events from json file
+def load_events():
+        eventList = []
+        with open("events.json", "r", encoding="utf-8") as f:
+                data = json.load(f)
+                for x in data:
+                    e = Event(
+                        title = x["Title"],
+                        date = datetime.datetime.strptime(x["Datetime"], "%Y %m %d"),
+                        description = x["Description"],
+                        imageLink = x["Image Link"],
+                        eventbriteLink = x["Eventbrite Link"],
+                        facebookLink = x["Facebook Link"]
+                    )
+                    eventList.append(e)
+        return eventList
 
+# Displays scheduled events
 @send_typing_action
-def fetch_events(bot, update):
+def display_events(bot, update):
     n = 0
+    eventList = load_events()
     for theEvent in eventList:
         todayDate = datetime.datetime.now()
         if theEvent.date > todayDate: #do not print past events
             n = n + 1
             if not theEvent.imageLink: #if there isn't an image link
-                bot.send_message(chat_id=update.message.chat_id, text=theEvent.description)
+                bot.send_message(chat_id=update.message.chat_id, parse_mode="markdown", text="*"+theEvent.title+"*\n\n"+theEvent.description)
             else:
                 #Build link buttons
                 keyboard = []
                 if  theEvent.facebookLink and theEvent.eventbriteLink:
-                    keyboard = [[InlineKeyboardButton("Facebook Page", callback_data='1',url='https://www.google.it/webhp?hl=it'),
-                        InlineKeyboardButton("Eventbrite", callback_data='2',url='https://www.google.it/webhp?hl=it')]]
+                    keyboard = [[InlineKeyboardButton("Facebook Page", callback_data='1',url=theEvent.facebookLink),
+                        InlineKeyboardButton("Eventbrite", callback_data='2',url=theEvent.eventbriteLink)]]
                 elif theEvent.facebookLink:
-                    keyboard = [[InlineKeyboardButton("Facebook Page", callback_data='1',url='https://www.google.it/webhp?hl=it')]]
+                    keyboard = [[InlineKeyboardButton("Facebook Page", callback_data='1',url=theEvent.facebookLink)]]
                 elif theEvent.eventbriteLink:
-                    keyboard = [InlineKeyboardButton("Eventbrite", callback_data='2',url='https://www.google.it/webhp?hl=it')]
+                    keyboard = [InlineKeyboardButton("Eventbrite", callback_data='2',url=theEvent.eventbriteLink)]
                 else: continue #skip the sending of the links
                 reply_markup = InlineKeyboardMarkup(keyboard)
-                bot.send_photo(chat_id=update.message.chat_id, caption=theEvent.description, photo=theEvent.imageLink, reply_markup=reply_markup)
-
+                bot.send_photo(chat_id=update.message.chat_id, parse_mode="markdown", caption="*"+theEvent.title+"*\n\n"+theEvent.description, photo=theEvent.imageLink, reply_markup=reply_markup)
     if n == 0:
         bot.send_message(chat_id=update.message.chat_id, text="There aren't events in program right now. Stay tuned to HKN world!")
-# Restricted commands
+
+# Restricted commands (can be executed only by users in admins.txt)
 
 # Reply to answers handler
 
 # Setting up conversation handler to wait for user message
 ANSWER = 1
-def popquestion(option = "cancel"):
-    question_file = open("questions.txt", "r+")
+def pop_question(option = "cancel"):
+    question_file = open("questions.txt", "r+", encoding="utf-8")
     questions = question_file.readlines()
     if questions == []:
         question_file.close()
@@ -191,8 +241,8 @@ def popquestion(option = "cancel"):
     return questions[0].split("-")
 
 @restricted
-def answerquestion(bot, update):
-    question = popquestion()
+def answer_question(bot, update):
+    question = pop_question()
     if question == None:
         bot.send_message(chat_id=update.message.chat_id, text="Formato file questions.txt non corretto")
         return ConversationHandler.END
@@ -201,16 +251,16 @@ def answerquestion(bot, update):
     return ConversationHandler.END
 
 @restricted
-def deletequestion(bot, update):
-    popquestion()
+def delete_question(bot, update):
+    pop_question()
     bot.send_message(chat_id=update.message.chat_id, text="Domanda cancellata")
     return ConversationHandler.END
 
 @restricted
-def savequestion(bot, update):
-    question_file = open("questions.txt","r")
+def save_question(bot, update):
+    question_file = open("questions.txt", "r", encoding="utf-8")
     question = question_file.readline()
-    saved_file = open("savedquestions.txt", "a")
+    saved_file = open("savedquestions.txt", "a", encoding="utf-8")
     saved_file.write(question)
     question_file.close
     saved_file.close
@@ -220,7 +270,7 @@ def savequestion(bot, update):
 @restricted
 def skip(bot,update):
     bot.send_message(chat_id=update.message.chat_id, text="Domanda non risposta")
-    popquestion(option="enqueue")
+    pop_question(option="enqueue")
     return ConversationHandler.END
 
 @restricted
@@ -231,7 +281,7 @@ def cancel(bot, update):
 @restricted
 def reply(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Rispondi alla domanda: \n")
-    question_file = open("questions.txt","r")
+    question_file = open("questions.txt", "r", encoding="utf-8")
     question = question_file.readline()
     if(question == ""):
         bot.send_message(chat_id=update.message.chat_id, text="Non ci sono più domande a cui rispondere")
@@ -242,7 +292,7 @@ def reply(bot, update):
 
 @restricted
 def showpending(bot, update):
-    question_file = open("questions.txt", "r")
+    question_file = open("questions.txt", "r", encoding="utf-8")
     questions = question_file.readlines()
     n = 0
     for q in questions:
@@ -251,13 +301,10 @@ def showpending(bot, update):
         n = n + 1
     if(n == 0):
         bot.send_message(chat_id=update.message.chat_id, text="Tutte le domande sono state risposte")
- 
-    
-
-    
+     
 @restricted
 def showsaved(bot, update):
-    question_file = open("savedquestions.txt", "r")
+    question_file = open("savedquestions.txt", "r", encoding="utf-8")
     questions = question_file.readlines()
     n = 0
     for q in questions:
@@ -270,10 +317,10 @@ def showsaved(bot, update):
 # Configurating handlers
 reply_conv_handler = ConversationHandler(
     entry_points=[CommandHandler("reply", reply)],
-    states={ANSWER: [MessageHandler(Filters.text, answerquestion),
+    states={ANSWER: [MessageHandler(Filters.text, answer_question),
                      CommandHandler("skip", skip),
-                     CommandHandler("delete", deletequestion),
-                     CommandHandler("save", savequestion)]
+                     CommandHandler("delete", delete_question),
+                     CommandHandler("save", save_question)]
            },
     fallbacks=[CommandHandler("cancel", cancel)]
 )
@@ -287,11 +334,12 @@ question_conv_handler = ConversationHandler(
     fallbacks=[CommandHandler("cancel", cancel),
                CallbackQueryHandler(inline_button)]
 )
+
+# Adding handlers
 dispatcher.add_handler(reply_conv_handler)
 dispatcher.add_handler(question_conv_handler)
 
-
-start_handler = CommandHandler('start', start)
+start_handler = CommandHandler("start", start)
 dispatcher.add_handler(start_handler)
 
 pendingq_handler = CommandHandler("showpending", showpending)
@@ -307,8 +355,8 @@ dispatcher.add_handler(com_tutoring_handler)
 dispatcher.add_handler(tutoring_handler)
 
 filter_events = filters.FilterEvents()
-events_handler = MessageHandler(filter_events, fetch_events)
-com_events_handler = CommandHandler("events", fetch_events)
+events_handler = MessageHandler(filter_events, display_events)
+com_events_handler = CommandHandler("events", display_events)
 dispatcher.add_handler(com_events_handler)
 dispatcher.add_handler(events_handler)
 
@@ -323,6 +371,9 @@ about_handler = MessageHandler(filter_about, about)
 com_about_handler = CommandHandler("about", about)
 dispatcher.add_handler(about_handler)
 dispatcher.add_handler(com_about_handler)
+
+inline_button_handler = CallbackQueryHandler(inline_button)
+dispatcher.add_handler(inline_button_handler)
 
 updater.start_polling()
 updater.idle()
