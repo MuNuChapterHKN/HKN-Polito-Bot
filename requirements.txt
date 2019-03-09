@@ -1,0 +1,6 @@
+html2text
+html5lib
+python-dateutil
+python-telegram-bot
+python-wordpress-xmlrpc
+requests
