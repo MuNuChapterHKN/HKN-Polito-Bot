@@ -1,1 +1,0 @@
-web: python hkn_bot.py
