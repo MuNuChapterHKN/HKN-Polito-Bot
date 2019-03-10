@@ -117,12 +117,10 @@ def inline_button(bot, update):
 
 
 # About handler
-# TODO create italian version of about text
 @send_typing_action
 def about(bot, update):
-    in_file = open("about.txt", "r", encoding="utf-8")
-    bot.send_message(chat_id=update.message.chat_id, text=in_file.read())
-    in_file.close()
+    lang = select_language(update.effective_user.id)
+    bot.send_message(chat_id=update.message.chat_id, text=lang["abouttext"])
 
 
 # Questions handler
