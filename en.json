@@ -1,4 +1,5 @@
-{
+{   
+    "Lang": "EN",
     "lang:it": "Italian 🇮🇹",
     "lang:en": "English 🇬🇧",
     "welcome": "Welcome to the official Eta Kappa Nu Polito bot!\n\nWhich language do you speak?",
