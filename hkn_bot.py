@@ -104,9 +104,10 @@ def update_start_message(bot, update, lang):
 
 # Inline buttons handler
 def inline_button(bot, update):
+    lang = select_language(update.effective_user.id)
     query = update.callback_query
     if query.data == "back":
-        bot.send_message(chat_id=query.message.chat_id, text="La tua richiesta di domanda è stata annullata")
+        bot.send_message(chat_id=query.message.chat_id, text=lang["questionAbort"])
         return ConversationHandler.END
     elif query.data == "lang:it":
         users[update.effective_user.id] = "IT"
@@ -128,21 +129,23 @@ def about(bot, update):
 TYPING = 1
 @send_typing_action
 def questions(bot, update):
+    lang = select_language(update.effective_user.id)
     keyboard = [[InlineKeyboardButton("⬅ Back", callback_data="back")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    bot.send_message(chat_id=update.message.chat_id, text="Fai una domanda al MuNu Chapter di Eta Kappa Nu", reply_markup=reply_markup)
+    bot.send_message(chat_id=update.message.chat_id, text=lang["askAQuestion"], reply_markup=reply_markup)
     return TYPING
 
 # Question appender to file
 # TODO language selection
 def answers(bot,update):
+    lang = select_language(update.effective_user.id)
     out_file = open("questions.txt", "a+", encoding="utf-8")
     user_id = str(update.effective_user.id)
     out_file.write((str(update.message.from_user.username)+"-"+user_id+"-"+update.message.text).strip("\n")+"\n")
     out_file.close()
-    bot.send_message(chat_id=update.message.chat_id, text="La tua domanda è stata registrata, ti risponderemo a breve")
+    bot.send_message(chat_id=update.message.chat_id, text=lang["questionSaved"])
     for admin in LIST_OF_ADMINS:
-        bot.send_message(chat_id=admin, text="Nuova domanda da: "+str(update.message.from_user.username)+"\n-"+update.message.text+"\n")  
+        bot.send_message(chat_id=admin, text=lang["newQuestionFrom"]+str(update.message.from_user.username)+"\n-"+update.message.text+"\n")  
     return ConversationHandler.END    
     
 # News handler
@@ -193,6 +196,7 @@ def load_events():
 # Displays scheduled events
 @send_typing_action
 def display_events(bot, update):
+    lang = select_language(update.effective_user.id)
     n = 0
     eventList = load_events()
     for theEvent in eventList:
@@ -215,7 +219,7 @@ def display_events(bot, update):
                 reply_markup = InlineKeyboardMarkup(keyboard)
                 bot.send_photo(chat_id=update.message.chat_id, parse_mode="markdown", caption="*"+theEvent.title+"*\n\n"+theEvent.description, photo=theEvent.imageLink, reply_markup=reply_markup)
     if n == 0:
-        bot.send_message(chat_id=update.message.chat_id, text="There aren't events in program right now. Stay tuned to HKN world!")
+        bot.send_message(chat_id=update.message.chat_id, text=lang["noEvents"])
 
 # Restricted commands (can be executed only by users in admins.txt)
 
@@ -240,18 +244,20 @@ def pop_question(option = "cancel"):
 
 @restricted
 def answer_question(bot, update):
+    lang = select_language(update.effective_user.id)
     question = pop_question()
     if question == None:
         bot.send_message(chat_id=update.message.chat_id, text="Formato file questions.txt non corretto")
         return ConversationHandler.END
     message = update.message.text 
-    bot.send_message(chat_id=question[1], text="Ciao {} ecco la risposta alla tua domanda:\n{}".format(question[0],message))
+    bot.send_message(chat_id=question[1], text=lang["hello"] + " {} ".format(question[0]) + lang["yourAnswer"] + "\n{}".format(message))
     return ConversationHandler.END
 
 @restricted
 def delete_question(bot, update):
+    lang = select_language(update.effective_user.id)
     pop_question()
-    bot.send_message(chat_id=update.message.chat_id, text="Domanda cancellata")
+    bot.send_message(chat_id=update.message.chat_id, text=)
     return ConversationHandler.END
 
 @restricted

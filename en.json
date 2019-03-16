@@ -9,8 +9,12 @@
     "askus": "Ask us something",
     "about": "About",
     "ckchoose": "Choose one of the following:",
-    "abouttext": "WHO WE ARE:\nWe are the first European chapter of IEEE-Eta Kappa Nu (HKN), at Politecnico di Torino.\n\nWHAT WE DO:\nOur activities range from educational tutoring to the organization of events such as workshops and seminars, with the aim of improving our skills and helping out our colleagues.\n\nHKN:\nThe Greek letters ΗΚΝ are chosen from the first, fourth, and last letter of the the Greek ἤλεκτρον (élektron, “amber”), the etymological root for the English word “electricity”.\n\nWebsite:\nhttps://hknpolito.org/"
-
-
-
+    "abouttext": "WHO WE ARE:\nWe are the first European chapter of IEEE-Eta Kappa Nu (HKN), at Politecnico di Torino.\n\nWHAT WE DO:\nOur activities range from educational tutoring to the organization of events such as workshops and seminars, with the aim of improving our skills and helping out our colleagues.\n\nHKN:\nThe Greek letters ΗΚΝ are chosen from the first, fourth, and last letter of the the Greek ἤλεκτρον (élektron, “amber”), the etymological root for the English word “electricity”.\n\nWebsite:\nhttps://hknpolito.org/",
+    "questionAbort": "Your application request has been canceled",
+    "askAQuestion": "Ask a question to the MuNu Chapter of Eta Kappa Nu",
+    "questionSaved": "Your application has been registered, we will reply shortly",
+    "newQuestionFrom": "New question from: ",
+    "noEvents": "There aren't events in program right now. Stay tuned to HKN world!",
+    "hello": "Hi",
+    "yourAnswer": "here is the answer to your question:"
 }
