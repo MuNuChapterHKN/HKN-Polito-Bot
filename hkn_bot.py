@@ -177,7 +177,7 @@ class Event:
         self.eventbriteLink = eventbriteLink
 
 # Loads events from json file
-def load_events():
+def load_events(update):
         lang = select_language(update.effective_user.id)
         eventList = []
         with open("events.json", "r", encoding="utf-8") as f:
@@ -191,15 +191,16 @@ def load_events():
                         eventbriteLink = x["Eventbrite Link"],
                         facebookLink = x["Facebook Link"]
                     )
-                    if x["Lang"] == lang["Lang"]
+                    if x["Lang"] == lang["Lang"]:
                         eventList.append(e)
         return eventList
 
 # Displays scheduled events
 @send_typing_action
 def display_events(bot, update):
+    lang = select_language(update.effective_user.id)
     n = 0
-    eventList = load_events()
+    eventList = load_events(update)
     for theEvent in eventList:
         todayDate = datetime.datetime.now()
         if theEvent.date > todayDate: #do not print past events
