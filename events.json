@@ -1,20 +1,20 @@
 [
     {
-        "Title": "Turing goes Flutter",
+        "Title": "Like@Home",
         "Lang": "IT",
-        "Description": "Unisciti a noi ad un evento dedicato a Flutter, per provare le ultime novità dell’SDK gratuito e open source di Google. Scoprirai come utilizzarlo per la creazione di app native iOS e Android da un singolo codice sorgente.",
-        "Datetime": "2019 12 04",
-        "Image Link": "https://hknpolito.org/wp-content/uploads/2018/11/46420860_1131453843696636_421282716315549696_o-1024x576.jpg",
-        "Facebook Link": "https://www.facebook.com/events/522962258113618/",
-        "Eventbrite Link": null
+        "Description": "La sfida consiste nell’ideare e sviluppare nuove skills per un Home Assistant atte ad assistere gli studenti fuorisede nella loro vita casalinga.",
+        "Datetime": "2019 03 30",
+        "Image Link": "https://hknpolito.org/wp-content/uploads/2019/03/LikeAtHomeLocandina_2160x1080.png",
+        "Facebook Link": "https://www.facebook.com/events/2193547630908118/",
+        "Eventbrite Link": "https://www.eventbrite.it/e/biglietti-likehome-58588977208?fbclid=IwAR1jOE0Vlzuz_SAztJEmihs43_fSIyqfciyLU0SisjdmjzaUvi-STmxiAPA"
     },
     {
         "Title": "Like@Home",
         "Lang": "EN",
-        "Description": "Unisciti a noi ad un evento dedicato a Flutter, per provare le ultime novità dell’SDK gratuito e open source di Google. Scoprirai come utilizzarlo per la creazione di app native iOS e Android da un singolo codice sorgente.",
-        "Datetime": "2019 12 04",
-        "Image Link": "https://hknpolito.org/wp-content/uploads/2018/11/46420860_1131453843696636_421282716315549696_o-1024x576.jpg",
-        "Facebook Link": "https://www.facebook.com/events/522962258113618/",
-        "Eventbrite Link": null
+        "Description": "Come and experience the Google Voice Kit and the magic of home assistants!",
+        "Datetime": "2019 03 30",
+        "Image Link": "https://hknpolito.org/wp-content/uploads/2019/03/LikeAtHomeLocandina_2160x1080.png",
+        "Facebook Link": "https://www.facebook.com/events/2193547630908118/",
+        "Eventbrite Link": "https://www.eventbrite.it/e/biglietti-likehome-58588977208?fbclid=IwAR1jOE0Vlzuz_SAztJEmihs43_fSIyqfciyLU0SisjdmjzaUvi-STmxiAPA"
     }
 ]
