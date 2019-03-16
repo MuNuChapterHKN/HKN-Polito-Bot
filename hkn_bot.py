@@ -130,7 +130,7 @@ TYPING = 1
 @send_typing_action
 def questions(bot, update):
     lang = select_language(update.effective_user.id)
-    keyboard = [[InlineKeyboardButton("⬅ Back", callback_data="back")]]
+    keyboard = [[InlineKeyboardButton(lang["back"], callback_data="back")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
     bot.send_message(chat_id=update.message.chat_id, text=lang["askAQuestion"], reply_markup=reply_markup)
     return TYPING

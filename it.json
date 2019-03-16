@@ -25,5 +25,6 @@
     "answerQuestion": "Rispondi alla domanda:",
     "noQuestions": "Non ci sono più domande a cui rispondere",
     "questionsAnswered": "Tutte le domande sono state risposte",
-    "noQuestionsSaved": "Nessuna domanda salvata"
+    "noQuestionsSaved": "Nessuna domanda salvata",
+    "back": "⬅ Indietro"
 }

@@ -25,5 +25,6 @@
     "answerQuestion": "Answer to the question:",
     "noQuestions": "There aren't any questions to answer",
     "questionsAnswered": "All questions were answered",
-    "noQuestionsSaved": "No questions saved"
+    "noQuestionsSaved": "No questions saved",
+    "back": "⬅ Back"
 }
