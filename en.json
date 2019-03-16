@@ -16,5 +16,13 @@
     "newQuestionFrom": "New question from: ",
     "noEvents": "There aren't events in program right now. Stay tuned to HKN world!",
     "hello": "Hi",
-    "yourAnswer": "here is the answer to your question:"
+    "yourAnswer": "here is the answer to your question:",
+    "questionDeleted": "Question deleted",
+    "questionSavedCorrectly": "Question saved correctly",
+    "questionNotAnswered": "Question not answered",
+    "conversationDeleted": "Conversation deleted",
+    "answerQuestion": "Answer to the question:",
+    "noQuestions": "There aren't any questions to answer",
+    "questionsAnswered": "All questions were answered",
+    "noQuestionsSaved": "No questions saved"
 }

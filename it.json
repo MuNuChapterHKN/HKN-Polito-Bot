@@ -16,5 +16,13 @@
     "newQuestionFrom": "Nuova domanda da: ",
     "noEvents": "Non ci sono eventi in programma in questo momento. Resta sintonizzato con il mondo HKN!",
     "hello": "Ciao",
-    "yourAnswer": "ecco la risposta alla tua domanda:"
+    "yourAnswer": "ecco la risposta alla tua domanda:",
+    "questionDeleted": "Domanda eliminata",
+    "questionSavedCorrectly": "Domanda salvata correttamente",
+    "questionNotAnswered": "Domanda non risposta",
+    "conversationDeleted": "Conversazione cancellata",
+    "answerQuestion": "Rispondi alla domanda:",
+    "noQuestions": "Non ci sono più domande a cui rispondere",
+    "questionsAnswered": "Tutte le domande sono state risposte",
+    "noQuestionsSaved": "Nessuna domanda salvata"
 }

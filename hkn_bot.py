@@ -257,38 +257,42 @@ def answer_question(bot, update):
 def delete_question(bot, update):
     lang = select_language(update.effective_user.id)
     pop_question()
-    bot.send_message(chat_id=update.message.chat_id, text=)
+    bot.send_message(chat_id=update.message.chat_id, text=lang["questionDeleted"])
     return ConversationHandler.END
 
 @restricted
 def save_question(bot, update):
+    lang = select_language(update.effective_user.id)
     question_file = open("questions.txt", "r", encoding="utf-8")
     question = question_file.readline()
     saved_file = open("savedquestions.txt", "a", encoding="utf-8")
     saved_file.write(question)
     question_file.close
     saved_file.close
-    bot.send_message(chat_id=update.message.chat_id, text="Domanda salvata correttamente")
+    bot.send_message(chat_id=update.message.chat_id, text=lang["questionSavedCorrectly"])
     return ANSWER
 
 @restricted
 def skip(bot,update):
-    bot.send_message(chat_id=update.message.chat_id, text="Domanda non risposta")
+    lang = select_language(update.effective_user.id)
+    bot.send_message(chat_id=update.message.chat_id, text=lang["questionNotAnswered"])
     pop_question(option="enqueue")
     return ConversationHandler.END
 
 @restricted
-def cancel(bot, update):    
-    bot.send_message(chat_id=update.message.chat_id, text="Conversazione cancellata")
+def cancel(bot, update):
+    lang = select_language(update.effective_user.id)  
+    bot.send_message(chat_id=update.message.chat_id, text=lang["conversationDeleted"])
     return ConversationHandler.END
 
 @restricted
 def reply(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="Rispondi alla domanda: \n")
+    lang = select_language(update.effective_user.id)
+    bot.send_message(chat_id=update.message.chat_id, text=lang["answerQuestion"] + " \n")
     question_file = open("questions.txt", "r", encoding="utf-8")
     question = question_file.readline()
     if(question == ""):
-        bot.send_message(chat_id=update.message.chat_id, text="Non ci sono più domande a cui rispondere")
+        bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestions"])
         return ConversationHandler.END
     bot.send_message(chat_id=update.message.chat_id, text=question)
     question_file.close()
@@ -296,6 +300,7 @@ def reply(bot, update):
 
 @restricted
 def showpending(bot, update):
+    lang = select_language(update.effective_user.id)
     question_file = open("questions.txt", "r", encoding="utf-8")
     questions = question_file.readlines()
     n = 0
@@ -304,10 +309,11 @@ def showpending(bot, update):
         bot.send_message(chat_id=update.message.chat_id, text=(question[0] + " " + question[2]))
         n = n + 1
     if(n == 0):
-        bot.send_message(chat_id=update.message.chat_id, text="Tutte le domande sono state risposte")
+        bot.send_message(chat_id=update.message.chat_id, text=lang["questionsAnswered"])
      
 @restricted
 def showsaved(bot, update):
+    lang = select_language(update.effective_user.id)
     question_file = open("savedquestions.txt", "r", encoding="utf-8")
     questions = question_file.readlines()
     n = 0
@@ -316,7 +322,7 @@ def showsaved(bot, update):
         bot.send_message(chat_id=update.message.chat_id, text=(question[0] + " " + question[2]))
         n = n + 1
     if(n == 0):
-        bot.send_message(chat_id=update.message.chat_id, text="Nessuna domanda salvata")
+        bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestionsSaved"])
 
 # Configurating handlers
 reply_conv_handler = ConversationHandler(
