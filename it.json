@@ -26,5 +26,10 @@
     "noQuestions": "Non ci sono più domande a cui rispondere",
     "questionsAnswered": "Tutte le domande sono state risposte",
     "noQuestionsSaved": "Nessuna domanda salvata",
+    "newsletter": "Iscriviti alla Newsletter",
+    "newsletterSubscription": "Grazie! Ora sei iscritto/a alla nostra Newsletter 😁",
+    "alreadySubscribed": "Sei già iscritto/a alla nostra Newsletter 😀",
+    "newsletterConfirm":  "✅ Si, iscrivimi alla Newsletter",
+    "newsletterAreYouSure": "Sei sicuro?",
     "back": "⬅ Indietro"
 }

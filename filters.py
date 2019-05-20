@@ -20,6 +20,10 @@ class FilterEvents(BaseFilter):
    def filter(self, message):      
       return lang_en["events"].lower() == message.text.lower() or lang_it["events"].lower() == message.text.lower()
 
+class FilterNewsletter(BaseFilter):
+   def filter(self, message):      
+      return lang_en["newsletter"].lower() == message.text.lower() or lang_it["newsletter"].lower() == message.text.lower()
+
 class FilterQuestions(BaseFilter):
    def filter(self, message):      
       return lang_en["askus"].lower() == message.text.lower() or lang_it["askus"].lower() == message.text.lower()
