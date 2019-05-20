@@ -26,5 +26,10 @@
     "noQuestions": "There aren't any questions to answer",
     "questionsAnswered": "All questions were answered",
     "noQuestionsSaved": "No questions saved",
+    "newsletter": "Subscribe to our Newsletter",
+    "newsletterSubscription": "Thank you for subscribing to our Newsletter 😁",
+    "alreadySubscribed": "You are already subscribed to our Newsletter 😀",
+    "newsletterConfirm":  "✅ Yes, please subscribe me to the Newsletter",
+    "newsletterAreYouSure": "Are you sure?",
     "back": "⬅ Back"
 }
