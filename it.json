@@ -28,8 +28,10 @@
     "noQuestionsSaved": "Nessuna domanda salvata",
     "newsletter": "Iscriviti alla Newsletter",
     "newsletterSubscription": "Grazie! Ora sei iscritto/a alla nostra Newsletter 😁",
+    "newsletterUnsubscription": "Ci spiace che tu non sia più interessato alla nostra newsletter 🙁",
     "alreadySubscribed": "Sei già iscritto/a alla nostra Newsletter 😀",
     "newsletterConfirm":  "✅ Si, iscrivimi alla Newsletter",
     "newsletterAreYouSure": "Sei sicuro?",
+    "newsletterUnsubscribe": "❌ Annulla l'iscrizione alla Newsletter",
     "back": "⬅ Indietro"
 }
