@@ -77,9 +77,10 @@ def restricted(func):
 #print(os.environ['HKN_BOT_TOKEN'])
 
 # Retrieving bot token (saved as an env variable)
-updater = Updater(token = os.environ['HKN_BOT_TOKEN'])
+updater = Updater(token = os.environ['HKN_BOT_TOKEN']) #mi abilita il bot -> metterlo come variabile d'ambiente
 # Setting handlers dispatcher
 dispatcher = updater.dispatcher
+
 
 # Save tutoring groups in file
 tutor.tutoringFile()
@@ -91,14 +92,14 @@ def start(bot, update):
                         InlineKeyboardButton(lang["lang:en"], callback_data="lang:en")]]
     inline_reply_markup = InlineKeyboardMarkup(inline_keyboard)
     bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"], reply_markup=inline_reply_markup)
-    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]],[lang["about"]]]
+    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]],[lang["about"]], [lang["newsletter"]]]
     reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
     bot.send_message(chat_id=update.message.chat_id, text=lang["ckchoose"], reply_markup=reply_markup)
 
 # Updates start message if language is changed    
 def update_start_message(bot, update, lang):
     bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"])
-    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]],[lang["about"]]]
+    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]],[lang["about"]], [lang["newsletter"]]]
     reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
     bot.send_message(chat_id=update.message.chat_id, text=lang["ckchoose"], reply_markup=reply_markup)
 
@@ -108,6 +109,17 @@ def inline_button(bot, update):
     query = update.callback_query
     if query.data == "back":
         bot.send_message(chat_id=query.message.chat_id, text=lang["questionAbort"])
+        return ConversationHandler.END
+    elif query.data == "confirm":
+        subscriber = {"id": query.message.chat_id} # new subscriber!
+        with open('userIDs.json') as f: # open file to read the list of IDs
+            idList = json.load(f)
+        with open("userIDs.json", mode='w', encoding='utf-8') as data:
+            idList.append(subscriber) # add new subscriber to current list
+            json.dump(idList, data)
+        f.close()
+        data.close()
+        bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterSubscription"])
         return ConversationHandler.END
     elif query.data == "lang:it":
         users[update.effective_user.id] = "IT"
@@ -223,6 +235,24 @@ def display_events(bot, update):
     if n == 0:
         bot.send_message(chat_id=update.message.chat_id, text=lang["noEvents"])
 
+@send_typing_action
+def display_newsletterSubscription(bot, update):
+    lang = select_language(update.effective_user.id)
+    keyboard_confirm = [[InlineKeyboardButton(lang["newsletterConfirm"], callback_data="confirm")], [InlineKeyboardButton(lang["back"], callback_data="back")]]
+    reply_markup_confirm = InlineKeyboardMarkup(keyboard_confirm)
+    subscriber = {"id": update.message.chat_id} # new subscriber!
+    if(os.stat("userIDs.json").st_size == 0): # if file is empty
+        file = open("userIDs.json","w") 
+        file.write("[]") 
+        file.close()
+    with open('userIDs.json') as f: # open file to read the list of IDs
+        idList = json.load(f)
+    if re.search('"id": {}'.format(subscriber['id']), json.dumps(idList), re.M): # this ID is already subscribed
+        bot.send_message(chat_id=update.message.chat_id, text=lang["alreadySubscribed"])
+        f.close()
+    else :
+        bot.send_message(chat_id=update.message.chat_id, text=lang["newsletterAreYouSure"], reply_markup=reply_markup_confirm)
+
 # Restricted commands (can be executed only by users in admins.txt)
 
 # Reply to answers handler
@@ -314,6 +344,23 @@ def showpending(bot, update):
         bot.send_message(chat_id=update.message.chat_id, text=lang["questionsAnswered"])
      
 @restricted
+def sendNewsletter(bot, update):
+    lang = select_language(update.effective_user.id)
+    idListFile = open("userIDs.json", "r", encoding="utf-8")
+    idList = json.load(idListFile)
+    with open("newsletter.json", "r", encoding="utf-8") as f:
+        data = json.load(f) 
+        for x in data:
+            if(lang == lang_en): 
+                for userId in idList: # send newsletter to all the subscribed users
+                    bot.send_message(chat_id=userId['id'], text=x['DescriptionENG'])
+            else:
+                for userId in idList: 
+                    bot.send_message(chat_id=userId['id'], text=x['DescriptionITA'])
+        f.close()
+    idListFile.close()
+
+@restricted 
 def showsaved(bot, update):
     lang = select_language(update.effective_user.id)
     question_file = open("savedquestions.txt", "r", encoding="utf-8")
@@ -360,6 +407,9 @@ dispatcher.add_handler(pendingq_handler)
 savedq_handler = CommandHandler("showsaved", showsaved)
 dispatcher.add_handler(savedq_handler)
 
+newsletter_handler = CommandHandler("sendnewsletter", sendNewsletter)
+dispatcher.add_handler(newsletter_handler)
+
 filter_tutoring = filters.FilterTutoring()
 tutoring_handler = MessageHandler(filter_tutoring, tutor.tutoring)
 com_tutoring_handler = CommandHandler("studygroups", tutor.tutoring)
@@ -371,6 +421,12 @@ events_handler = MessageHandler(filter_events, display_events)
 com_events_handler = CommandHandler("events", display_events)
 dispatcher.add_handler(com_events_handler)
 dispatcher.add_handler(events_handler)
+
+filter_newsletter = filters.FilterNewsletter()
+newsletter_handler = MessageHandler(filter_newsletter, display_newsletterSubscription)
+com_newsletter_handler = CommandHandler("newsletter", display_newsletterSubscription)
+dispatcher.add_handler(com_newsletter_handler)
+dispatcher.add_handler(newsletter_handler)
 
 filter_news = filters.FilterNews()
 news_handler = MessageHandler(filter_news, fetch_news)
