@@ -28,8 +28,10 @@
     "noQuestionsSaved": "No questions saved",
     "newsletter": "Subscribe to our Newsletter",
     "newsletterSubscription": "Thank you for subscribing to our Newsletter 😁",
+    "newsletterUnsubscription": "We are sorry that you're not interested in our Newsletter anymore 🙁",
     "alreadySubscribed": "You are already subscribed to our Newsletter 😀",
     "newsletterConfirm":  "✅ Yes, please subscribe me to the Newsletter",
     "newsletterAreYouSure": "Are you sure?",
+    "newsletterUnsubscribe": "❌ Unsubscribe from the Newsletter",
     "back": "⬅ Back"
 }
