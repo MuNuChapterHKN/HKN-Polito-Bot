@@ -73,11 +73,8 @@ def restricted(func):
         return func(bot, update, *args, **kwargs)
     return wrapped
 
-# Uncomment for debug
-#print(os.environ['HKN_BOT_TOKEN'])
-
 # Retrieving bot token (saved as an env variable)
-updater = Updater(token = os.environ['HKN_BOT_TOKEN']) #mi abilita il bot -> metterlo come variabile d'ambiente
+updater = Updater(token = os.environ['HKN_BOT_TOKEN']) # -> metterlo come variabile d'ambiente
 # Setting handlers dispatcher
 dispatcher = updater.dispatcher
 
@@ -120,6 +117,16 @@ def inline_button(bot, update):
         f.close()
         data.close()
         bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterSubscription"])
+        return ConversationHandler.END
+    elif query.data == "unsubscribe":
+        subscriber = {"id": query.message.chat_id} # subscriber to remove
+        with open('userIDs.json', 'r') as data_file:
+            idList = json.load(data_file)
+        res = [i for i in idList if not (i['id'] == subscriber['id'])]  # return new dict without that subscriber
+        with open('userIDs.json', 'w') as data_file:
+            json.dump(res, data_file)
+        data_file.close()
+        bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterUnsubscription"])
         return ConversationHandler.END
     elif query.data == "lang:it":
         users[update.effective_user.id] = "IT"
@@ -346,6 +353,8 @@ def showpending(bot, update):
 @restricted
 def sendNewsletter(bot, update):
     lang = select_language(update.effective_user.id)
+    keyboard = [[InlineKeyboardButton(lang["newsletterUnsubscribe"], callback_data="unsubscribe")]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
     idListFile = open("userIDs.json", "r", encoding="utf-8")
     idList = json.load(idListFile)
     with open("newsletter.json", "r", encoding="utf-8") as f:
@@ -353,10 +362,10 @@ def sendNewsletter(bot, update):
         for x in data:
             if(lang == lang_en): 
                 for userId in idList: # send newsletter to all the subscribed users
-                    bot.send_message(chat_id=userId['id'], text=x['DescriptionENG'])
+                    bot.send_message(chat_id=userId['id'], text=x['DescriptionENG'], reply_markup=reply_markup)
             else:
                 for userId in idList: 
-                    bot.send_message(chat_id=userId['id'], text=x['DescriptionITA'])
+                    bot.send_message(chat_id=userId['id'], text=x['DescriptionITA'], reply_markup=reply_markup)
         f.close()
     idListFile.close()
 
