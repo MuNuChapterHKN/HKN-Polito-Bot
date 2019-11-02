@@ -201,23 +201,23 @@ class Event:
 
 # Loads events from json file
 def load_events(update):
-        lang = select_language(update.effective_user.id)
-        eventList = []
-        with open("events.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
-            for x in data:
-                e = Event(
-                    title = x["Title"],
-                    date = datetime.datetime.strptime(x["Datetime"], "%Y %m %d"),
-                    description = x["Description"],
-                    imageLink = x["Image Link"],
-                    eventbriteLink = x["Eventbrite Link"],
-                    facebookLink = x["Facebook Link"],
-                    instagramLink = x["Instagram Link"]
-                )
-                if x["Lang"] == lang["Lang"]:
-                    eventList.append(e)
-        return eventList
+    lang = select_language(update.effective_user.id)
+    eventList = []
+    with open("events.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+        for x in data:
+            e = Event(
+                title = x["Title"],
+                date = datetime.datetime.strptime(x["Datetime"], "%Y %m %d"),
+                description = x["Description"],
+                imageLink = x["Image Link"],
+                eventbriteLink = x["Eventbrite Link"],
+                facebookLink = x["Facebook Link"],
+                instagramLink = x["Instagram Link"]
+            )
+            if x["Lang"] == lang["Lang"]:
+                eventList.append(e)
+    return eventList
 
 # Displays scheduled events
 @send_typing_action
@@ -234,16 +234,22 @@ def display_events(bot, update):
             else:
                 #Build link buttons
                 keyboard = []
-                if  theEvent.facebookLink and theEvent.eventbriteLink:
+                if  theEvent.facebookLink != "" and theEvent.eventbriteLink != "":
+                    print("entrato1")
                     keyboard = [[InlineKeyboardButton("Facebook Page", callback_data='1',url=theEvent.facebookLink),
                         InlineKeyboardButton("Eventbrite", callback_data='2',url=theEvent.eventbriteLink)]]
-                elif theEvent.facebookLink:
+                elif theEvent.facebookLink != "":
+                    print("entrato2")
                     keyboard = [[InlineKeyboardButton("Facebook Page", callback_data='1',url=theEvent.facebookLink)]]
-                elif theEvent.eventbriteLink:
+                elif theEvent.eventbriteLink != "":
+                    print("entrato3")
                     keyboard = [InlineKeyboardButton("Eventbrite", callback_data='2',url=theEvent.eventbriteLink)]
-                elif theEvent.instagramLink:
+                elif theEvent.instagramLink != "":
+                    print("entrato4")
                     keyboard = [InlineKeyboardButton("Instagram Page", callback_data='3',url=theEvent.instagramLink)]
-                else: continue #skip the sending of the links
+                else: 
+                    print("entrato5")
+                    continue #skip the sending of the links
                 reply_markup = InlineKeyboardMarkup(keyboard)
                 bot.send_photo(chat_id=update.message.chat_id, parse_mode="markdown", caption="*"+theEvent.title+"*\n\n"+theEvent.description, photo=theEvent.imageLink, reply_markup=reply_markup)
     if n == 0:  
@@ -436,8 +442,8 @@ dispatcher.add_handler(tutoring_handler)
 filter_events = filters.FilterEvents()
 events_handler = MessageHandler(filter_events, display_events)
 com_events_handler = CommandHandler("events", display_events)
-dispatcher.add_handler(com_events_handler)
 dispatcher.add_handler(events_handler)
+dispatcher.add_handler(com_events_handler)
 
 filter_newsletter = filters.FilterNewsletter()
 newsletter_handler = MessageHandler(filter_newsletter, display_newsletterSubscription)
