@@ -1,25 +1,15 @@
-Elettronica Analogica
+Signal Analysis and Processing
 
-Venerdì 7/12
-
-17:45 - 20:00 Aula 15A
-Sistemi Operativi
-
-Lunedì 10/12
+Tuesday 05/11
 
 19:00 - 20:00 Sala C
-Algoritmi e Programmazione Avanzata
+Elettronica Applicata
 
-Mercoledì 12/12
+Wednesday 13/11
 
-19:00 - 20:00 Sala C
-Elettrotecnica
+18:00 - 19:00 Aula 17A
+VHDL
 
-Venerdì 14/12
+Tuesday 5/11
 
-16:00 - 18:00 Sala C
-Elettronica Digitale e VHDL
-
-Venerdì 14/12
-
-17:45 - 20:00 Aula 15A
+18:00 - 19:00 Sala C

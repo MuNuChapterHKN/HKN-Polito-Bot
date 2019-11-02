@@ -112,6 +112,7 @@ def inline_button(bot, update):
         with open('userIDs.json') as f: # open file to read the list of IDs
             idList = json.load(f)
         with open("userIDs.json", mode='w', encoding='utf-8') as data:
+            #TODO: check if it is already present 
             idList.append(subscriber) # add new subscriber to current list
             json.dump(idList, data)
         f.close()
@@ -187,31 +188,35 @@ class Event:
     imageLink = str() #optional
     facebookLink = str() #optional
     eventbriteLink = str() #optional
-    def __init__(self, title, description, date, imageLink=None, facebookLink=None, eventbriteLink=None):
+    instagramLink = str() #optional
+
+    def __init__(self, title, description, date, imageLink=None, facebookLink=None, eventbriteLink=None, instagramLink=None):
         self.title = title
         self.description = description
         self.date = date
         self.imageLink = imageLink
         self.facebookLink = facebookLink
         self.eventbriteLink = eventbriteLink
+        self.instagramLink = instagramLink
 
 # Loads events from json file
 def load_events(update):
         lang = select_language(update.effective_user.id)
         eventList = []
         with open("events.json", "r", encoding="utf-8") as f:
-                data = json.load(f)
-                for x in data:
-                    e = Event(
-                        title = x["Title"],
-                        date = datetime.datetime.strptime(x["Datetime"], "%Y %m %d"),
-                        description = x["Description"],
-                        imageLink = x["Image Link"],
-                        eventbriteLink = x["Eventbrite Link"],
-                        facebookLink = x["Facebook Link"]
-                    )
-                    if x["Lang"] == lang["Lang"]:
-                        eventList.append(e)
+            data = json.load(f)
+            for x in data:
+                e = Event(
+                    title = x["Title"],
+                    date = datetime.datetime.strptime(x["Datetime"], "%Y %m %d"),
+                    description = x["Description"],
+                    imageLink = x["Image Link"],
+                    eventbriteLink = x["Eventbrite Link"],
+                    facebookLink = x["Facebook Link"],
+                    instagramLink = x["Instagram Link"]
+                )
+                if x["Lang"] == lang["Lang"]:
+                    eventList.append(e)
         return eventList
 
 # Displays scheduled events
@@ -236,16 +241,19 @@ def display_events(bot, update):
                     keyboard = [[InlineKeyboardButton("Facebook Page", callback_data='1',url=theEvent.facebookLink)]]
                 elif theEvent.eventbriteLink:
                     keyboard = [InlineKeyboardButton("Eventbrite", callback_data='2',url=theEvent.eventbriteLink)]
+                elif theEvent.instagramLink:
+                    keyboard = [InlineKeyboardButton("Instagram Page", callback_data='3',url=theEvent.instagramLink)]
                 else: continue #skip the sending of the links
                 reply_markup = InlineKeyboardMarkup(keyboard)
                 bot.send_photo(chat_id=update.message.chat_id, parse_mode="markdown", caption="*"+theEvent.title+"*\n\n"+theEvent.description, photo=theEvent.imageLink, reply_markup=reply_markup)
-    if n == 0:
+    if n == 0:  
         bot.send_message(chat_id=update.message.chat_id, text=lang["noEvents"])
 
 @send_typing_action
 def display_newsletterSubscription(bot, update):
     lang = select_language(update.effective_user.id)
-    keyboard_confirm = [[InlineKeyboardButton(lang["newsletterConfirm"], callback_data="confirm")], [InlineKeyboardButton(lang["back"], callback_data="back")]]
+    keyboard_confirm = [[InlineKeyboardButton(lang["newsletterConfirm"], callback_data="confirm")], 
+                        [InlineKeyboardButton(lang["back"], callback_data="back")]]
     reply_markup_confirm = InlineKeyboardMarkup(keyboard_confirm)
     subscriber = {"id": update.message.chat_id} # new subscriber!
     if(os.stat("userIDs.json").st_size == 0): # if file is empty
@@ -400,7 +408,7 @@ question_conv_handler = ConversationHandler(
     states={TYPING: [MessageHandler(Filters.text, answers)]
            },
     fallbacks=[CommandHandler("cancel", cancel),
-               CallbackQueryHandler(inline_button)]
+               CallbackQueryHandler(inline_button)] #TODO: probably CallbackQueryHandler useless
 )
 
 # Adding handlers

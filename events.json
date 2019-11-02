@@ -34,5 +34,21 @@
         "Image Link": "https://hknpolito.org/wp-content/uploads/2019/05/https___cdn.evbuc_.com_images_62693969_212143499726_1_original.jpg",
         "Facebook Link": "https://www.facebook.com/events/364624001061262/",
         "Eventbrite Link": "https://www.eventbrite.it/e/biglietti-cybersecurity-day-62133215119?fbclid=IwAR3mQ1iyfcYfrL59TQPXJNQzPwYKroZf4kPybejVbvGcNu9DjZ_1tAOthFg"
+    },
+	{
+        "Title": "Dibattito con Brian Kernighan",
+        "Lang": "IT",
+        "Description": "Siamo onorati di partecipare al Festival della Tecnologia e moderare un dibattito con Brian Kernighan. Brian Kernighan ha collaborato con Dennis Ritchie alla stesura del libro 'The C programming language'. Un testo fondamentale per la vita di uno studente al Politecnico. L'accesso è libero e non richiede prenotazione, quindi segnati l'appuntamento sul calendario e vieni a sentire questo gigante dell'informatica. Appuntamento venerdì 8 novembre alle 17:00 in aula 5",
+        "Datetime": "2019 11 08",
+        "Image Link": "https://hknpolito.org/wp-content/uploads/2019/11/Screenshot_2019-11-02-HKN-PoliTo-su-Instagram-We-are-honored-to-be-part-of-the-festivaltecnologia-and-to-lead-a-debate-with...-e1572707337433.png",
+        "Instagram Link": "https://www.instagram.com/p/B4NEHvMITAC/?igshid=esmlhgr843bi"
+    },
+    {
+        "Title": "Debate with Brian Kernighan",
+        "Lang": "EN",
+        "Description": "We are honored to be part of the Festival della Tecnologia and to lead a debate with Brian Kernighan. Brian Kernighan worked alongside with Dennis Ritchie in the writing of the C manual 'The C programming Language'. A masterpiece for every computer scientist. The admission is free and you don't have to book a ticket. So save the 8th of November on your calendar! If you have any question feel free to ask directly there or visite the website in our description. Starting on Friday 8 November at 17pm in Room 5",
+        "Datetime": "2019 11 08",
+        "Image Link": "https://hknpolito.org/wp-content/uploads/2019/11/Screenshot_2019-11-02-HKN-PoliTo-su-Instagram-We-are-honored-to-be-part-of-the-festivaltecnologia-and-to-lead-a-debate-with...-e1572707337433.png",
+        "Instagram Link": "https://www.instagram.com/p/B4XSGE2InFf/?igshid=omwl3391ykz2"
     }
 ]
