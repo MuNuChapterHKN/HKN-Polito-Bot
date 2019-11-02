@@ -235,23 +235,18 @@ def display_events(bot, update):
                 #Build link buttons
                 keyboard = []
                 if  theEvent.facebookLink != "" and theEvent.eventbriteLink != "":
-                    print("entrato1")
                     keyboard = [[InlineKeyboardButton("Facebook Page", callback_data='1',url=theEvent.facebookLink),
                         InlineKeyboardButton("Eventbrite", callback_data='2',url=theEvent.eventbriteLink)]]
                 elif theEvent.facebookLink != "":
-                    print("entrato2")
                     keyboard = [[InlineKeyboardButton("Facebook Page", callback_data='1',url=theEvent.facebookLink)]]
                 elif theEvent.eventbriteLink != "":
-                    print("entrato3")
-                    keyboard = [InlineKeyboardButton("Eventbrite", callback_data='2',url=theEvent.eventbriteLink)]
+                    keyboard = [[InlineKeyboardButton("Eventbrite", callback_data='2',url=theEvent.eventbriteLink)]]
                 elif theEvent.instagramLink != "":
-                    print("entrato4")
-                    keyboard = [InlineKeyboardButton("Instagram Page", callback_data='3',url=theEvent.instagramLink)]
+                    keyboard = [[InlineKeyboardButton("Instagram Page", callback_data='3',url=theEvent.instagramLink)]]
                 else: 
-                    print("entrato5")
                     continue #skip the sending of the links
                 reply_markup = InlineKeyboardMarkup(keyboard)
-                bot.send_photo(chat_id=update.message.chat_id, parse_mode="markdown", caption="*"+theEvent.title+"*\n\n"+theEvent.description, photo="https://hknpolito.org/wp-content/uploads/2019/03/LikeAtHomeLocandina_2160x1080.png", reply_markup=reply_markup)
+                bot.send_photo(chat_id=update.message.chat_id, parse_mode="markdown", caption="*"+theEvent.title+"*\n\n"+theEvent.description, photo=theEvent.imageLink, reply_markup=reply_markup)
     if n == 0:  
         bot.send_message(chat_id=update.message.chat_id, text=lang["noEvents"])
 
