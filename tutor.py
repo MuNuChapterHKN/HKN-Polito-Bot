@@ -14,6 +14,8 @@ from datetime import datetime
 from threading import Timer
 from telegram import ChatAction
 
+emoji = ["📚", "", "⏰", "", "🏠", "", "📩", "📩", ""]
+
 def send_action(action):
     ## Sends `action` while processing func command
     def decorator(func):
@@ -38,11 +40,31 @@ def tutoringFile():
         m.pop(0)
         out_file= open("tutoring.txt", "w", encoding="utf-8")
         for el in m:
-                sub_els=el.split('\n',7)
+                sub_els=el.split('\n', 11) #2 useless + 9 useful
                 sub_els.pop()
-                sub_els=sub_els[2:]
+                sub_els=sub_els[2:] #remove first 2 useless
+                sub_els[6] = sub_els[6] + " "
+
+                ### join two tutors element into one element list ###
+                sub_els[6:8] = [''.join(map(str,sub_els[6:8]))] 
+
+                ### create list with two elements (two tutors) ###
+                tutors = sub_els[6].split('Tutor:')
+                newlist = 'Tutor:'.join(tutors[:2]), 'Tutor:'.join(tutors[2:])
+                newlist = list(newlist)
+                newlist[1] = 'Tutor:' + newlist[1]
+
+                ### insert new list in old sub_els list in the correct position ###
+                del sub_els[6]
+                for i in range(len(newlist)): 
+                        sub_els.insert(i + 6, newlist[i]) 
+
+                ### write on file ###
+                j=0 
                 for sub_el in sub_els:
-                        out_file.write(str.lstrip(sub_el, "#### ") + "\n" )
+                        out_file.write(emoji[j] + " " + str.lstrip(sub_el, "#### ") + "\n" ) #remove '#' leading chars 
+                        j=j+1
+
         out_file.close()
         x=datetime.today()
         y=x+timedelta(days=1)
@@ -56,18 +78,16 @@ def tutoringFile():
  
 from itertools import islice 
 
-
 @send_typing_action  
 def tutoring(bot, update):
         in_file=open("tutoring.txt", "r", encoding="utf-8")
         while True:
-                next_tutoring_group= list(islice(in_file, 5))
+                next_tutoring_group= list(islice(in_file, 9)) #9 = 5 rows + 4 '\n'
                 if not next_tutoring_group :
                         in_file.close()
                         break
                 t = ""
                 for i in next_tutoring_group:
-                        t= t + i
+                        t = t + i
                 bot.send_message(chat_id=update.message.chat_id, text=t)
 
-        
