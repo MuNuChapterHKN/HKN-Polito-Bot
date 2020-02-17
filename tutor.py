@@ -1,4 +1,3 @@
-
 import filters
 import time
 import telegram
@@ -13,8 +12,12 @@ from datetime import timedelta
 from datetime import datetime
 from threading import Timer
 from telegram import ChatAction
+# Lang dictionaries
+from lang import lang_en
+from lang import lang_it
 
 emoji = ["📚", "", "⏰", "", "🏠", "", "📩", "📩", ""]
+users = {} # Dictionary which stores language used by every user
 
 def send_action(action):
     ## Sends `action` while processing func command
@@ -83,7 +86,9 @@ def tutoring(bot, update):
         in_file=open("tutoring.txt", "r", encoding="utf-8")
         while True:
                 next_tutoring_group= list(islice(in_file, 9)) #9 = 5 rows + 4 '\n'
-                if not next_tutoring_group :
+                if not next_tutoring_group:
+                        lang = select_language(update.effective_user.id)
+                        bot.send_message(chat_id=update.message.chat_id, text=lang["noStudyGroups"])
                         in_file.close()
                         break
                 t = ""
@@ -91,3 +96,9 @@ def tutoring(bot, update):
                         t = t + i
                 bot.send_message(chat_id=update.message.chat_id, text=t)
 
+# Language selection
+def select_language(user_id):
+    if users.get(user_id) == None or users.get(user_id) == "EN":
+        return lang_en
+    else:
+        return lang_it

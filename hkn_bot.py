@@ -131,9 +131,11 @@ def inline_button(bot, update):
         return ConversationHandler.END
     elif query.data == "lang:it":
         users[update.effective_user.id] = "IT"
+        tutor.users[update.effective_user.id] = "IT"
         update_start_message(bot, query, lang_it)
     elif query.data == "lang:en":
         users[update.effective_user.id] = "EN"
+        tutor.users[update.effective_user.id] = "EN"
         update_start_message(bot, query, lang_en)
 
 
