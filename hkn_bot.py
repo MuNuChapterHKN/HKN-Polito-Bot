@@ -111,8 +111,11 @@ def inline_button(bot, update):
         subscriber = {"id": query.message.chat_id} # new subscriber!
         with open('userIDs.json') as f: # open file to read the list of IDs
             idList = json.load(f)
+        if re.search('"id": {}'.format(subscriber['id']), json.dumps(idList), re.M): # this ID is already subscribed
+            f.close()
+            bot.send_message(chat_id=query.message.chat_id, text=lang["alreadySubscribed"])
+            return ConversationHandler.END
         with open("userIDs.json", mode='w', encoding='utf-8') as data:
-            #TODO: check if it is already present 
             idList.append(subscriber) # add new subscriber to current list
             json.dump(idList, data)
         f.close()
@@ -313,13 +316,28 @@ def delete_question(bot, update):
 @restricted
 def save_question(bot, update):
     lang = select_language(update.effective_user.id)
+    
+    # get first question
     question_file = open("questions.txt", "r", encoding="utf-8")
     question = question_file.readline()
-    saved_file = open("savedquestions.txt", "a", encoding="utf-8")
-    saved_file.write(question)
     question_file.close
-    saved_file.close
-    bot.send_message(chat_id=update.message.chat_id, text=lang["questionSavedCorrectly"])
+
+    # write question in file 'savedquestions.txt', if question is not already present
+    savedQuestion_file = open("savedquestions.txt", "r", encoding="utf-8")
+    savedQuestions = savedQuestion_file.readlines()
+    savedQuestion_file.close()
+    found = False
+    for line in savedQuestions:
+        if str(question) in line:
+            found = True
+            bot.send_message(chat_id=update.message.chat_id, text=lang["questionAlreadySaved"])
+
+    if not found:
+        savedQuestion_file = open("savedquestions.txt", "a", encoding="utf-8")
+        savedQuestion_file.write(question)
+        savedQuestion_file.close()
+        bot.send_message(chat_id=update.message.chat_id, text=lang["questionSavedCorrectly"])
+
     return ANSWER
 
 @restricted

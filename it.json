@@ -19,6 +19,7 @@
     "hello": "Ciao",
     "yourAnswer": "ecco la risposta alla tua domanda:",
     "questionDeleted": "Domanda eliminata",
+    "questionAlreadySaved": "La domanda era già stata salvata in precedenza",
     "questionSavedCorrectly": "Domanda salvata correttamente",
     "questionNotAnswered": "Domanda non risposta",
     "conversationDeleted": "Conversazione cancellata",
