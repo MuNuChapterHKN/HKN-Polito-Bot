@@ -97,26 +97,12 @@ Problemi generali (minimali)
 Problemi riscontrati nella sezione 'Ask us something'
 -----------------------------------------------------
 
--   Dopo che un admin ha inserito */reply* per poter rispondere, compare la domanda, e se scrivo */save* (per salvarla sul file), essa viene salvata correttamente. Il problema è che se continuo ad usare l'opzione */save* tante volte, la domanda verrà salvata nello stesso file altrettante volte -\> inutile avere nello stesso file la stessa domanda più volte!\
-    **Possibile soluzione**: verificare che già la domanda non sia presente nel file, considerando sia il testo della domanda sia l'userID che l'ha posta, in quanto la vorremmo comunque lasciare qualora contenesse lo stesso testo(improbabile) ma userID diverso (cioè due persone hanno fatto la stessa domanda). Così facendo, è possibile rispondere ad entrambi.\
-    **Tempo stimato**: *fattibile entro 1/2 settimane*
-
--   Cliccando su */showsaved* per vedere le domande che sono state salvate, non compare nulla. Questo deriva dal fatto che
-    probabilmente è stato modificato il file `savedquestions.txt`, magari aggiungendo una riga vuota all'inizio. Questo non viene gestito dal rispettivo handler.\
-    **Possibili soluzioni**:
-    1.  Non toccare mai i file con estensione *.txt* (bruta, ma
-        funzionante e consigliata a prescindere)
-
-    2.  Modificare l'handler in maniera tale che si accorga della/e riga/e vuota/e ed eventualmente la/e scarti (più elegante, ma cerchiamo sempre di non toccare questi file, dal momento che possono succedere casi per cui l'handler non sa come comportarsi o, peggio ancora, si comporta come non dovrebbe)
-   
-    **Tempo stimato**: *fattibile entro 1/2 settimane*
+Nessun problema riscontrato in questa sezione.
 
 Problemi riscontrati nella newsletter
 -------------------------------------
 
--   Se clicco sul KeyboardButton "Subscribe to our newsletter" compare il messaggio "sei sicuro?", e se clicco sull'InlineKeyboardButton "yes" per più di una volta, dopo aver dato il comando */sendnewsletter* (per inviare la newsletter a tutti i subscribers), in pratica la newsletter viene mandata tante volte quante si è premuto il bottone di conferma. L'errore deriva dal fatto che nell'handler della conferma non viene gestito il caso in cui lo userID fosse già presente nell'elenco, per cui lo stesso userID viene inserito in lista tante volte quante preme il bottone.\
-    **Possibile soluzione**: controllare che lo userID sia già presente nella lista, prima di aggiungerlo. Se già esiste, non fare niente, altrimenti metterlo in coda.\
-    **Tempo stimato**: *fattibile entro 1/2 settimane*
+Nessun problema riscontrato in questa sezione. 
 
 Possibili implementazioni future 
 ================================
