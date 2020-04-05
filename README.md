@@ -15,6 +15,8 @@ All'avvio del bot, dopo un messaggio di benvenuto, compaiono due bottoni per la 
 
 -   Subscribe to our Newsletter (Iscriviti alla Newsletter)
 
+-   Drive
+
 Ognuno di questi è collegato, tramite opportuni handler (CommandHandler, per dare comandi testuali che iniziano con '/', e MessageHandler, per impartire comandi tramite i bottoni), ad una funzione che permette di gestirne il funzionamento. Vediamoli nel dettaglio.
 
 Events 
@@ -65,6 +67,12 @@ Subscribe to our newsletter
 L'handler che gestisce l'iscrizione alla newsletter è la funzione
 *display\_newsletterSubscription(bot, update)*. Essa mostra due
 InlineKeyboardButton, uno per annullare l'operazione e un altro per confermare. Se viene premuto il tasto di conferma, allora viene inserito lo userID in un file chiamato `userIDs.json`, che tiene traccia di tutti gli utenti iscritti alla newsletter. Ovviamente verrà inviato un messaggio di errore se l'utente era già iscritto alla newsletter. A questo punto gli admin, quando lo desiderano, possono inviare la newsletter a tutti gli iscritti, tramite la funzione *sendNewsletter(bot, update)*, che verrà lanciata dopo aver inserito la parola chiave */sendnewsletter*. Questa funzione invierà, ad ogni utente iscritto alla newsletter, il messaggio corrispondente, leggendolo dal file `newsletter.json`.
+
+Drive
+---------------------------
+
+L'handler che gestisce il dirve hkn è la funzione
+*display\_drive(bot, update)*. Essa stampa all'utente il link cliccabile del sito HKN nella sezione Drive (<https://hknpolito.org/drive/>), leggendolo dal file  `en.json` o  `it.json` in base alla lingua selezionata .
 
 #### 
 
