@@ -1,7 +1,7 @@
 Struttura e funzionamento del bot 
 =================================
 
-All'avvio del bot, dopo un messaggio di benvenuto, compaiono due bottoni per la scelta della lingua, consentendo l'utente di scegliere se utilizzare il bot in italiano o in inglese. Dopodiché viene costruita la tastiera, tramite la quale l'utente interagisce. In particolare, essa è composta da 6 ReplyKeyboardMarkup (bottoni della custom keyboard):
+All'avvio del bot, dopo un messaggio di benvenuto, compaiono due bottoni per la scelta della lingua, consentendo l'utente di scegliere se utilizzare il bot in italiano o in inglese. Dopodiché viene costruita la tastiera, tramite la quale l'utente interagisce. In particolare, essa è composta da 7 ReplyKeyboardMarkup (bottoni della custom keyboard):
 
 -   Events (Eventi)
 
