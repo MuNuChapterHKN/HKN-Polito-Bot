@@ -27,3 +27,7 @@ class FilterNewsletter(BaseFilter):
 class FilterQuestions(BaseFilter):
    def filter(self, message):      
       return lang_en["askus"].lower() == message.text.lower() or lang_it["askus"].lower() == message.text.lower()
+
+class FilterDrive(BaseFilter):
+	def filter(slef, message):
+	  return lang_en["drive"].lower() == message.text.lower() or lang_it["drive"].lower() == message.text.lower()
