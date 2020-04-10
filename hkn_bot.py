@@ -110,14 +110,14 @@ def start(bot, update):
                         InlineKeyboardButton(lang["lang:en"], callback_data="lang:en")]]
     inline_reply_markup = InlineKeyboardMarkup(inline_keyboard)
     bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"], reply_markup=inline_reply_markup)
-    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]], [lang["newsletter"], lang["drive"]], [lang["about"]]]
+    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]], [lang["newsletter"], lang["drive"]], [lang["about"], lang["contact"]]]
     reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
     bot.send_message(chat_id=update.message.chat_id, text=lang["ckchoose"], reply_markup=reply_markup)
 
 # Updates start message if language is changed    
 def update_start_message(bot, update, lang):
     bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"])
-    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]], [lang["newsletter"], lang["drive"]], [lang["about"]]]
+    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]], [lang["newsletter"], lang["drive"]], [lang["about"], lang["contact"]]]
     reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
     bot.send_message(chat_id=update.message.chat_id, text=lang["ckchoose"], reply_markup=reply_markup)
 
@@ -299,6 +299,13 @@ def display_newsletterSubscription(bot, update):
 def display_drive(bot, update):
     lang = select_language(update.effective_user.id)
     bot.send_message(chat_id=update.message.chat_id, parse_mode = "HTML", text=lang["drive_link"])  
+	
+#Contact handler
+@send_typing_action
+def contact(bot, update):
+    lang = select_language(update.effective_user.id)
+    bot.send_message(chat_id=update.message.chat_id, text=lang["contacttext"])
+	
 
 # Restricted commands (can be executed only by users in admins.txt)
 
@@ -509,6 +516,12 @@ about_handler = MessageHandler(filter_about, about)
 com_about_handler = CommandHandler("about", about)
 dispatcher.add_handler(about_handler)
 dispatcher.add_handler(com_about_handler)
+
+filter_contact = filters.FilterContact()
+contact_handler = MessageHandler(filter_contact, contact)
+com_contact_handler = CommandHandler("contact", contact)
+dispatcher.add_handler(contact_handler)
+dispatcher.add_handler(com_contact_handler)
 
 inline_button_handler = CallbackQueryHandler(inline_button)
 dispatcher.add_handler(inline_button_handler)
