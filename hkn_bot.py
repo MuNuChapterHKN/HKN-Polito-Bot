@@ -89,14 +89,14 @@ def start(bot, update):
                         InlineKeyboardButton(lang["lang:en"], callback_data="lang:en")]]
     inline_reply_markup = InlineKeyboardMarkup(inline_keyboard)
     bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"], reply_markup=inline_reply_markup)
-    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]],[lang["about"]], [lang["newsletter"]]]
+    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]],[lang["about"]], [lang["newsletter"]], [lang["drive"]]]
     reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
     bot.send_message(chat_id=update.message.chat_id, text=lang["ckchoose"], reply_markup=reply_markup)
 
 # Updates start message if language is changed    
 def update_start_message(bot, update, lang):
     bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"])
-    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]],[lang["about"]], [lang["newsletter"]]]
+    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]],[lang["about"]], [lang["newsletter"]], [lang["drive"]]]
     reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
     bot.send_message(chat_id=update.message.chat_id, text=lang["ckchoose"], reply_markup=reply_markup)
 
@@ -273,6 +273,11 @@ def display_newsletterSubscription(bot, update):
         f.close()
     else :
         bot.send_message(chat_id=update.message.chat_id, text=lang["newsletterAreYouSure"], reply_markup=reply_markup_confirm)
+		
+@send_typing_action
+def display_drive(bot, update):
+    lang = select_language(update.effective_user.id)
+    bot.send_message(chat_id=update.message.chat_id, parse_mode = "HTML", text=lang["drive_link"])   #, parse_mode="HTML"
 
 # Restricted commands (can be executed only by users in admins.txt)
 
@@ -465,6 +470,12 @@ newsletter_handler = MessageHandler(filter_newsletter, display_newsletterSubscri
 com_newsletter_handler = CommandHandler("newsletter", display_newsletterSubscription)
 dispatcher.add_handler(com_newsletter_handler)
 dispatcher.add_handler(newsletter_handler)
+
+filter_drive = filters.FilterDrive()
+drive_handler = MessageHandler(filter_drive, display_drive);
+com_drive_handler = CommandHandler("drive", display_drive)
+dispatcher.add_handler(com_drive_handler)
+dispatcher.add_handler(drive_handler)
 
 filter_news = filters.FilterNews()
 news_handler = MessageHandler(filter_news, fetch_news)

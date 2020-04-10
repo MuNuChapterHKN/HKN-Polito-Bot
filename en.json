@@ -5,6 +5,8 @@
     "welcome": "Welcome to the official Eta Kappa Nu Polito bot!\n\nWhich language do you speak?",
     "welcome_up":"Welcome to the official Eta Kappa Nu Polito bot",
     "events": "Events",
+	"drive": "Drive",
+	"drive_link": "https://hknpolito.org/drive/",
     "news": "News",
     "studygroups": "Study groups",
     "askus": "Ask us something",
