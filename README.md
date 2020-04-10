@@ -71,10 +71,12 @@ InlineKeyboardButton, uno per annullare l'operazione e un altro per confermare. 
 Drive
 ---------------------------
 
-L'handler che gestisce il dirve hkn è la funzione
+L'handler che gestisce il drive hkn è la funzione
 *display\_drive(bot, update)*. Essa stampa all'utente il link cliccabile del sito HKN nella sezione Drive (<https://hknpolito.org/drive/>), leggendolo dal file  `en.json` o  `it.json` in base alla lingua selezionata .
 
 #### 
+&nbsp;
+####
 
 Infine, oltre alle ReplyKeyboardMarkup (bottoni della custom keyboard), sono presenti degli "Inline button", ovvero dei bottoni non fisicamente presenti sulla tastiera del bot, ma ridisegnati al momento, sotto un testo all'interno del corpo del messaggio. Essi sono i seguenti:
 
