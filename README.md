@@ -78,7 +78,7 @@ L'handler che gestisce il drive hkn è la funzione
 
 Contact
 ---------------------------
-L'handler che gestisce la sezione 'Contatti' è la funzione *contact(bot, update)* nel file `tutor.py`. Essa mostra all'utente le informazioni relative ai contatti email, facebook e in instagram di HKN, traendole direttamente dalla key 'contacttext' nei file `it.json` o `en.json` in relazione alla lingua selezionata.
+L'handler che gestisce la sezione 'Contatti' è la funzione *contact(bot, update)*. Essa mostra all'utente le informazioni relative ai contatti email, facebook e in instagram di HKN, traendole direttamente dalla key 'contacttext' nei file `it.json` o `en.json` in relazione alla lingua selezionata.
 
 #### 
 &nbsp;
