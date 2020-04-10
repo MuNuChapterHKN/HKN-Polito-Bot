@@ -4,3 +4,4 @@ python-dateutil
 python-telegram-bot
 python-wordpress-xmlrpc
 requests
+pycryptodome
