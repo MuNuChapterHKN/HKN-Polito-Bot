@@ -89,14 +89,14 @@ def start(bot, update):
                         InlineKeyboardButton(lang["lang:en"], callback_data="lang:en")]]
     inline_reply_markup = InlineKeyboardMarkup(inline_keyboard)
     bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"], reply_markup=inline_reply_markup)
-    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]],[lang["about"]], [lang["newsletter"]], [lang["drive"]]]
+    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]], [lang["newsletter"], lang["drive"]], [lang["about"]]]
     reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
     bot.send_message(chat_id=update.message.chat_id, text=lang["ckchoose"], reply_markup=reply_markup)
 
 # Updates start message if language is changed    
 def update_start_message(bot, update, lang):
     bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"])
-    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]],[lang["about"]], [lang["newsletter"]], [lang["drive"]]]
+    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]], [lang["newsletter"], lang["drive"]], [lang["about"]]]
     reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
     bot.send_message(chat_id=update.message.chat_id, text=lang["ckchoose"], reply_markup=reply_markup)
 
@@ -277,7 +277,7 @@ def display_newsletterSubscription(bot, update):
 @send_typing_action
 def display_drive(bot, update):
     lang = select_language(update.effective_user.id)
-    bot.send_message(chat_id=update.message.chat_id, parse_mode = "HTML", text=lang["drive_link"])   #, parse_mode="HTML"
+    bot.send_message(chat_id=update.message.chat_id, parse_mode = "HTML", text=lang["drive_link"])  
 
 # Restricted commands (can be executed only by users in admins.txt)
 
