@@ -28,6 +28,10 @@ from telegram import ChatAction
 # Lang dictionaries
 from lang import lang_en
 from lang import lang_it
+import binascii
+from Crypto.Cipher import AES
+from Crypto.Hash import SHA3_512
+from Crypto.Util.Padding import pad, unpad
 
 # Dictionary which stores language used by every user
 users = {}
@@ -57,18 +61,35 @@ def select_language(user_id):
 
 from functools import wraps
 
+# Decrypt admins file and set LIST_OF_ADMINS variable
+def decrypt():
+    fr = open("admins.txt", 'r')
+    hashed_key = binascii.a2b_base64(fr.readline().encode())
+    hkn_key = os.environ['HKN_BOT_CIPHERKEY']
+    if len(hkn_key) < 16:
+        key = pad(hkn_key.encode(), 16)
+    elif len(hkn_key) > 16:
+        key = hkn_key[:16].encode()
+    else:
+        key = hkn_key.encode()
+    hk = SHA3_512.new(key).digest()
+    if hk != hashed_key:
+        print('Wrong key!')
+    aes = AES.new(key, AES.MODE_ECB)
+    for i in fr:
+        LIST_OF_ADMINS.append(int(unpad(aes.decrypt(binascii.a2b_base64(i.encode())), 16).decode().strip()))
+    fr.close()
+
 # Handling of restricted commands
 LIST_OF_ADMINS = []
-with open("admins.txt", "r") as admins_file:
-    for line in admins_file:
-        LIST_OF_ADMINS.append(int(line))
+decrypt()
 
 def restricted(func):
     @wraps(func)
     def wrapped(bot, update, *args, **kwargs):
         user_id = update.effective_user.id
         if user_id not in LIST_OF_ADMINS:
-            print("Unauthorized access denied for {}.".format(user_id))
+            print("Unauthorized access denied for {}. This action will be reported.".format(user_id))
             return
         return func(bot, update, *args, **kwargs)
     return wrapped
