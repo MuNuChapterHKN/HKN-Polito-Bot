@@ -294,13 +294,13 @@ def display_newsletterSubscription(bot, update):
         f.close()
     else :
         bot.send_message(chat_id=update.message.chat_id, text=lang["newsletterAreYouSure"], reply_markup=reply_markup_confirm)
-		
+# Drive handler		
 @send_typing_action
 def display_drive(bot, update):
     lang = select_language(update.effective_user.id)
     bot.send_message(chat_id=update.message.chat_id, parse_mode = "HTML", text=lang["drive_link"])  
 	
-#Contact handler
+# Contact handler
 @send_typing_action
 def contact(bot, update):
     lang = select_language(update.effective_user.id)
