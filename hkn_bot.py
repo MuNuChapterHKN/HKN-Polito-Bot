@@ -4,6 +4,7 @@
 
 # Imports
 import os
+import psycopg2
 import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import filters
@@ -32,9 +33,13 @@ import binascii
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA3_512
 from Crypto.Util.Padding import pad, unpad
+from psycopg2 import Error
 
 # Dictionary which stores language used by every user
 users = {}
+
+# URL of Postgres db
+DATABASE_URL = os.environ['DATABASE_URL']
 
 # Bot's typing action
 def send_action(action):
@@ -129,30 +134,49 @@ def inline_button(bot, update):
         bot.send_message(chat_id=query.message.chat_id, text=lang["questionAbort"])
         return ConversationHandler.END
     elif query.data == "confirm":
-        subscriber = {"id": query.message.chat_id} # new subscriber!
-        with open('userIDs.json') as f: # open file to read the list of IDs
-            idList = json.load(f)
-        if re.search('"id": {}'.format(subscriber['id']), json.dumps(idList), re.M): # this ID is already subscribed
-            f.close()
-            bot.send_message(chat_id=query.message.chat_id, text=lang["alreadySubscribed"])
+        try:
+            # connect to db
+            conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+            conn.autocommit = True
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM subscribed WHERE id = {};".format(str(query.message.chat_id)))
+            record = cursor.fetchone()
+            
+            # id is already a subscriber
+            while(record):
+                bot.send_message(chat_id=query.message.chat_id, text=lang["alreadySubscribed"])
+                return ConversationHandler.END
+
+            # id is a new subscriber!
+            cursor.execute("INSERT INTO subscribed(id) VALUES({})".format(query.message.chat_id))
+            bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterSubscription"])
             return ConversationHandler.END
-        with open("userIDs.json", mode='w', encoding='utf-8') as data:
-            idList.append(subscriber) # add new subscriber to current list
-            json.dump(idList, data)
-        f.close()
-        data.close()
-        bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterSubscription"])
-        return ConversationHandler.END
+        except (Exception, psycopg2.Error) as error :
+            # Postgres automatically rollback the transaction
+            print ("Error while connecting to PostgreSQL", error)
+        finally:
+            if(conn):
+                cursor.close()
+                conn.close()
+                print("PostgreSQL connection is closed")
     elif query.data == "unsubscribe":
-        subscriber = {"id": query.message.chat_id} # subscriber to remove
-        with open('userIDs.json', 'r') as data_file:
-            idList = json.load(data_file)
-        res = [i for i in idList if not (i['id'] == subscriber['id'])]  # return new dict without that subscriber
-        with open('userIDs.json', 'w') as data_file:
-            json.dump(res, data_file)
-        data_file.close()
-        bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterUnsubscription"])
-        return ConversationHandler.END
+        try:
+            # connect to db and execute query
+            conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+            conn.autocommit = True
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM subscribed WHERE id = {}".format(query.message.chat_id))
+            bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterUnsubscription"])
+            return ConversationHandler.END
+            
+        except (Exception, psycopg2.Error) as error :
+            # Postgres automatically rollback the transaction
+            print ("Error while connecting to PostgreSQL", error)
+        finally:
+            if(conn):
+                cursor.close()
+                conn.close()
+                print("PostgreSQL connection is closed")
     elif query.data == "lang:it":
         users[update.effective_user.id] = "IT"
         tutor.users[update.effective_user.id] = "IT"
@@ -161,7 +185,6 @@ def inline_button(bot, update):
         users[update.effective_user.id] = "EN"
         tutor.users[update.effective_user.id] = "EN"
         update_start_message(bot, query, lang_en)
-
 
 # About handler
 @send_typing_action
@@ -282,18 +305,35 @@ def display_newsletterSubscription(bot, update):
     keyboard_confirm = [[InlineKeyboardButton(lang["newsletterConfirm"], callback_data="confirm")], 
                         [InlineKeyboardButton(lang["back"], callback_data="back")]]
     reply_markup_confirm = InlineKeyboardMarkup(keyboard_confirm)
-    subscriber = {"id": update.message.chat_id} # new subscriber!
-    if(os.stat("userIDs.json").st_size == 0): # if file is empty
-        file = open("userIDs.json","w") 
-        file.write("[]") 
-        file.close()
-    with open('userIDs.json') as f: # open file to read the list of IDs
-        idList = json.load(f)
-    if re.search('"id": {}'.format(subscriber['id']), json.dumps(idList), re.M): # this ID is already subscribed
-        bot.send_message(chat_id=update.message.chat_id, text=lang["alreadySubscribed"])
-        f.close()
-    else :
-        bot.send_message(chat_id=update.message.chat_id, text=lang["newsletterAreYouSure"], reply_markup=reply_markup_confirm)
+
+    try:
+        # connect to db
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        conn.autocommit = True
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM subscribed WHERE id = {};".format(str(update.message.chat_id)))
+        record = cursor.fetchone()
+        isSubscribed = 0
+
+        # id is already subscribed
+        while(record):
+            isSubscribed = 1
+            bot.send_message(chat_id=update.message.chat_id, text=lang["alreadySubscribed"])
+            break;
+
+        # id wants to be unsubscribed
+        if(isSubscribed == 0):    
+            bot.send_message(chat_id=update.message.chat_id, text=lang["newsletterAreYouSure"], reply_markup=reply_markup_confirm)
+            
+    except (Exception, psycopg2.Error) as error :
+        # Postgres automatically rollback the transaction
+        print ("Error while connecting to PostgreSQL", error)
+    finally:
+        if(conn):
+            cursor.close()
+            conn.close()
+            print("PostgreSQL connection is closed")
+
 # Drive handler		
 @send_typing_action
 def display_drive(bot, update):
@@ -417,19 +457,40 @@ def sendNewsletter(bot, update):
     lang = select_language(update.effective_user.id)
     keyboard = [[InlineKeyboardButton(lang["newsletterUnsubscribe"], callback_data="unsubscribe")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    idListFile = open("userIDs.json", "r", encoding="utf-8")
-    idList = json.load(idListFile)
+
+    idList = []
+    try:
+        # connect to db
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        conn.autocommit = True
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM subscribed;")
+        rows = cursor.fetchall()
+
+        # add ids to the list 
+        for row in rows:
+            idList.append(row[0])
+
+    except (Exception, psycopg2.Error) as error :
+        # Postgres automatically rollback the transaction
+        print ("Error while connecting to PostgreSQL", error)
+    finally:
+        if(conn):
+            cursor.close()
+            conn.close()
+            print("PostgreSQL connection is closed")
+
+    # send newsletter to all the subscribed users
     with open("newsletter.json", "r", encoding="utf-8") as f:
         data = json.load(f) 
         for x in data:
             if(lang == lang_en): 
-                for userId in idList: # send newsletter to all the subscribed users
-                    bot.send_message(chat_id=userId['id'], text=x['DescriptionENG'], reply_markup=reply_markup)
+                for userId in idList: 
+                    bot.send_message(chat_id=userId, text=x['DescriptionENG'], reply_markup=reply_markup)
             else:
                 for userId in idList: 
-                    bot.send_message(chat_id=userId['id'], text=x['DescriptionITA'], reply_markup=reply_markup)
+                    bot.send_message(chat_id=userId, text=x['DescriptionITA'], reply_markup=reply_markup)
         f.close()
-    idListFile.close()
 
 @restricted 
 def showsaved(bot, update):

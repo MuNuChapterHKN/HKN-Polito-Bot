@@ -1,7 +1,7 @@
 Struttura e funzionamento del bot 
 =================================
 
-All'avvio del bot, dopo un messaggio di benvenuto, compaiono due bottoni per la scelta della lingua, consentendo l'utente di scegliere se utilizzare il bot in italiano o in inglese. Dopodiché viene costruita la tastiera, tramite la quale l'utente interagisce. In particolare, essa è composta da 8 ReplyKeyboardMarkup (bottoni della custom keyboard):
+All'avvio del bot, dopo un messaggio di benvenuto, compaiono due bottoni per la scelta della lingua, consentendo l'utente di scegliere se utilizzare il bot in italiano o in inglese. Dopodiché viene costruita la tastiera, tramite la quale l'utente interagisce. In particolare, essa è composta da 7 ReplyKeyboardMarkup (bottoni della custom keyboard):
 
 -   Events (Eventi)
 
@@ -17,7 +17,7 @@ All'avvio del bot, dopo un messaggio di benvenuto, compaiono due bottoni per la 
 
 -   Drive
 
--   Contacts
+-   Contact
 
 Ognuno di questi è collegato, tramite opportuni handler (CommandHandler, per dare comandi testuali che iniziano con '/', e MessageHandler, per impartire comandi tramite i bottoni), ad una funzione che permette di gestirne il funzionamento. Vediamoli nel dettaglio.
 
@@ -76,7 +76,7 @@ Drive
 L'handler che gestisce il drive hkn è la funzione
 *display\_drive(bot, update)*. Essa stampa all'utente il link cliccabile del sito HKN nella sezione Drive (<https://hknpolito.org/drive/>), leggendolo dal file  `en.json` o  `it.json` in base alla lingua selezionata.
 
-Contacts
+Contact
 ---------------------------
 L'handler che gestisce la sezione 'Contatti' è la funzione *contact(bot, update)*. Essa mostra all'utente le informazioni relative ai contatti email, facebook e in instagram di HKN, traendole direttamente dalla key 'contacttext' nei file `it.json` o `en.json` in relazione alla lingua selezionata.
 
