@@ -70,6 +70,11 @@ L'handler che gestisce l'iscrizione alla newsletter è la funzione
 *display\_newsletterSubscription(bot, update)*. Essa mostra due
 InlineKeyboardButton, uno per annullare l'operazione e un altro per confermare. Se viene premuto il tasto di conferma, allora viene inserito lo userID nel database, che tiene traccia di tutti gli utenti iscritti alla newsletter. Ovviamente verrà inviato un messaggio di errore se l'utente era già iscritto alla newsletter. A questo punto gli admin, quando lo desiderano, possono inviare la newsletter a tutti gli iscritti, tramite la funzione *sendNewsletter(bot, update)*, che verrà lanciata dopo aver inserito la parola chiave */sendnewsletter*. Questa funzione invierà, ad ogni utente iscritto alla newsletter, il messaggio corrispondente, leggendolo dal file `newsletter.json`.
 
+**Persistenza dei dati**
+
+Ogni volta che un utente si iscrive/disiscrive alla newsletter, viene automaticamente aggiornato il database, che garantisce la persistenza dei dati. Nello specifico, abbiamo scelto di utilizzare un PostgreSQL, un database relazionale presente tra gli add-ons di Heroku (https://elements.heroku.com/addons/heroku-postgresql). La versione attualmente utilizzata è la v12.2
+
+
 Drive
 ---------------------------
 
