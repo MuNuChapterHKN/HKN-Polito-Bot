@@ -1,7 +1,12 @@
+HKN Polito Bot
+=================================
+HKN Polito Bot è il bot telegram ufficiale del MuNuChapterHKN creato appositamente dall'associazione al fine di poter agevolare sia membr* ma soprattutto estern* nell'entrare in contatto con il mondo del nostro chapter in maniera semplice e immediata.
+Il Bot è strutturato in modo tale da porre l'utent* davanti ad una tabella di bottoni (ReplyKeyboardMarkup), i quali, oltre a facilitare l'esperienza dell'utent* stesso, sono direttamente collegati alle relative informazioni, rispondendo in maniera automatica e istantanea alle varie richieste poste. Tramite il bot, infatti, non solo è possibile ricevere le principali informazioni del MuNuChapter HKN, tra cui la nostra storia e i nostri contatti principali, ma vi è anche la possibilità di rimanere sempre aggiornati sugli eventi da noi organizzati, accedere alle informazioni relative all'organizzazione di gruppi di studio, collegarsi direttamente al drive associativo che raccoglie differente materiale relativo principalmente alle materie informatiche ed elettroniche, poter ricevere le varie news periodicamente pubblicate dai nostri membri sia saltuarimente sotto richiesta sia automaticamente appena pubblicate iscrivendosi alla nostra newsletter. Infine, è inoltre presente, anche qui tramite un semplice bottone, la possibilità di contattare direttamente l'associazione e porre domande di qualsiasi tipologia, le quali, una volta registrate e raccolte dal nostro bot, possono essere facilmente consultate dai diretti interessati e poter ricevere una risposta immediata.
+
 Struttura e funzionamento del bot 
 =================================
 
-All'avvio del bot, dopo un messaggio di benvenuto, compaiono due bottoni per la scelta della lingua, consentendo l'utente di scegliere se utilizzare il bot in italiano o in inglese. Dopodiché viene costruita la tastiera, tramite la quale l'utente interagisce. In particolare, essa è composta da 7 ReplyKeyboardMarkup (bottoni della custom keyboard):
+All'avvio del bot, dopo un messaggio di benvenuto, compaiono due bottoni per la scelta della lingua, consentendo l'utent* di scegliere se utilizzare il bot in italiano o in inglese. Dopodiché viene costruita la tastiera, tramite la quale l'utent* interagisce. In particolare, essa è composta da 7 ReplyKeyboardMarkup (bottoni della custom keyboard):
 
 -   Events (Eventi)
 
@@ -68,17 +73,17 @@ Subscribe to our newsletter
 
 L'handler che gestisce l'iscrizione alla newsletter è la funzione
 *display\_newsletterSubscription(bot, update)*. Essa mostra due
-InlineKeyboardButton, uno per annullare l'operazione e un altro per confermare. Se viene premuto il tasto di conferma, allora viene inserito lo userID in un file chiamato `userIDs.json`, che tiene traccia di tutti gli utenti iscritti alla newsletter. Ovviamente verrà inviato un messaggio di errore se l'utente era già iscritto alla newsletter. A questo punto gli admin, quando lo desiderano, possono inviare la newsletter a tutti gli iscritti, tramite la funzione *sendNewsletter(bot, update)*, che verrà lanciata dopo aver inserito la parola chiave */sendnewsletter*. Questa funzione invierà, ad ogni utente iscritto alla newsletter, il messaggio corrispondente, leggendolo dal file `newsletter.json`.
+InlineKeyboardButton, uno per annullare l'operazione e un altro per confermare. Se viene premuto il tasto di conferma, allora viene inserito lo userID in un file chiamato `userIDs.json`, che tiene traccia di tutti gli utent* iscritti alla newsletter. Ovviamente verrà inviato un messaggio di errore se l'utent* era già iscritto alla newsletter. A questo punto gli admin, quando lo desiderano, possono inviare la newsletter a tutti gli iscritt*, tramite la funzione *sendNewsletter(bot, update)*, che verrà lanciata dopo aver inserito la parola chiave */sendnewsletter*. Questa funzione invierà, ad ogni utent* iscritt* alla newsletter, il messaggio corrispondente, leggendolo dal file `newsletter.json`.
 
 Drive
 ---------------------------
 
 L'handler che gestisce il drive hkn è la funzione
-*display\_drive(bot, update)*. Essa stampa all'utente il link cliccabile del sito HKN nella sezione Drive (<https://hknpolito.org/drive/>), leggendolo dal file  `en.json` o  `it.json` in base alla lingua selezionata.
+*display\_drive(bot, update)*. Essa stampa all'utent* il link cliccabile del sito HKN nella sezione Drive (<https://hknpolito.org/drive/>), leggendolo dal file  `en.json` o  `it.json` in base alla lingua selezionata.
 
 Contact
 ---------------------------
-L'handler che gestisce la sezione 'Contatti' è la funzione *contact(bot, update)*. Essa mostra all'utente le informazioni relative ai contatti email, facebook e in instagram di HKN, traendole direttamente dalla key 'contacttext' nei file `it.json` o `en.json` in relazione alla lingua selezionata.
+L'handler che gestisce la sezione 'Contatti' è la funzione *contact(bot, update)*. Essa mostra all'utent* le informazioni relative ai contatti email, facebook e in instagram di HKN, traendole direttamente dalla key 'contacttext' nei file `it.json` o `en.json` in relazione alla lingua selezionata.
 
 #### 
 &nbsp;
