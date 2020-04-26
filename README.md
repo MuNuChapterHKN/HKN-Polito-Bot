@@ -1,3 +1,9 @@
+HKN Polito Bot
+=================================
+HKN Polito Bot è il bot telegram ufficiale del MuNuChapter-HKN creato appositamente dall'associazione al fine di poter agevolare sia membri ma soprattutto esterni nell'entrare in contatto con il mondo del nostro chapter in maniera semplice e immediata. 
+
+Il Bot è strutturato in modo tale da porre l'utente davanti ad una tabella di bottoni (ReplyKeyboardMarkup), i quali, oltre a facilitare l'esperienza dell'utente stesso, sono direttamente collegati alle relative informazioni, rispondendo in maniera automatica e istantanea alle varie richieste poste. Tramite il bot, infatti, è possibile non solo ricevere le principali informazioni del MuNuChapter-HKN, tra cui la nostra storia e i nostri contatti principali, ma vi è anche la possibilità di rimanere sempre aggiornati sugli eventi da noi organizzati, accedere alle informazioni relative all'organizzazione di gruppi di studio, collegarsi direttamente al drive associativo che raccoglie differente materiale didattico, poter ricevere le varie news pubblicate dai nostri membri iscrivendosi alla nostra newsletter. Infine, è inoltre presente, anche qui tramite un semplice bottone, la possibilità di contattare direttamente l'associazione e porre domande di qualsiasi tipologia, le quali, una volta registrate e raccolte dal nostro bot, possono essere facilmente consultate dai diretti interessati e poter ricevere una risposta immediata.
+
 Struttura e funzionamento del bot 
 =================================
 
@@ -131,3 +137,4 @@ Possibili implementazioni future
 -   Organizzazione in cartelle del bot: gestire il bot in più file, nello specifico dividere il file principale `hkn_bot.py` in 2 file, almeno per adesso: uno che gestisce i vari handler (per gli users) e uno che gestisce le varie funzioni che possono usare soltanto gli admin. Per adesso non è un grossissimo problema in quanto il file non è troppo grande (circa 500 righe di codice), ma potrebbe esserlo se si ha intenzione di inserire ulteriori funzionalità al bot. Si potrebbero inoltre creare due cartelle separate, una per i documenti *.txt* (utilities) e una per i documenti *.py* (source code).
 
 -   Tastiera differente per gli admin (es. per risposta alle domande), al posto di usare i Command Handler.
+
