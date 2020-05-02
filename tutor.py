@@ -16,7 +16,7 @@ from telegram import ChatAction
 from lang import lang_en
 from lang import lang_it
 
-emoji = ["📚", "", "⏰", "", "🏠", "", "📩", "📩", ""]
+emoji = ["📚", "", "📅", "", "⏰", "", "📩", "📩", ""]
 users = {} # Dictionary which stores language used by every user
 
 def send_action(action):
@@ -64,9 +64,25 @@ def tutoringFile():
 
                 ### write on file ###
                 j=0 
+                numTutor=0
                 for sub_el in sub_els:
-                        out_file.write(emoji[j] + " " + str.lstrip(sub_el, "#### ") + "\n" ) #remove '#' leading chars 
-                        j=j+1
+                        if("Tutor:" in sub_el):
+                                numTutor=numTutor+1
+                        else:
+                                numTutor=0
+                        if("Tutor:" in sub_el and len(sub_el) < 7):
+                                out_file.write(emoji[j] + " Tutor: -" + "\n" ) #remove '#' leading chars 
+                                j=j+1
+                                continue
+                        if("######" in sub_el):
+                                out_file.write("" + "\n" ) #remove '#' leading chars 
+                                j=j+1
+                                continue
+                        if(numTutor<2):
+                                out_file.write(emoji[j] + " " + str.lstrip(sub_el, "#### ") + "\n" ) #remove '#' leading chars         
+                        else:
+                                out_file.write("📩 " + str.lstrip(sub_el, "#### ") + "\n" ) #remove '#' leading chars         
+                        j=j+1  
 
         out_file.close()
         x=datetime.today()
@@ -84,16 +100,19 @@ from itertools import islice
 @send_typing_action  
 def tutoring(bot, update):
         in_file=open("tutoring.txt", "r", encoding="utf-8")
+        empty=True
         while True:
                 next_tutoring_group= list(islice(in_file, 9)) #9 = 5 rows + 4 '\n'
-                if not next_tutoring_group:
-                        lang = select_language(update.effective_user.id)
-                        bot.send_message(chat_id=update.message.chat_id, text=lang["noStudyGroups"])
-                        in_file.close()
-                        break
+                if(empty):
+                        if not next_tutoring_group:
+                                lang = select_language(update.effective_user.id)
+                                bot.send_message(chat_id=update.message.chat_id, text=lang["noStudyGroups"])
+                                in_file.close()
+                                break
                 t = ""
                 for i in next_tutoring_group:
                         t = t + i
+                empty = False
                 bot.send_message(chat_id=update.message.chat_id, text=t)
 
 # Language selection
