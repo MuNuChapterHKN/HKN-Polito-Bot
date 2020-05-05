@@ -18,6 +18,7 @@ from lang import lang_it
 
 emoji = ["📚", "", "📅", "", "⏰", "", "📩", "📩", ""]
 users = {} # Dictionary which stores language used by every user
+days = {'Lunedì':'Monday','Martedì':'Tuesday','Mercoledì':'Wednesday','Giovedì':'Thursday','Venerdì':'Friday','Sabato':'Saturday','Domenica':'Sunday'}
 
 def send_action(action):
     ## Sends `action` while processing func command
@@ -31,8 +32,19 @@ def send_action(action):
     
     return decorator
 
-send_typing_action = send_action(ChatAction.TYPING)
+def has_key_in(dictionary, string):
+        for k in dictionary:
+                if(k in string):
+                        return k
+        return ''
 
+def translate(string):
+        day = has_key_in(days, string)
+        if(day != ''):
+                string=string.replace(day, days[day]) 
+        return string
+
+send_typing_action = send_action(ChatAction.TYPING)
 def tutoringFile():
         fp = urlopen("http://hknpolito.org/tutoring/")
         mybytes = fp.read()
@@ -41,7 +53,7 @@ def tutoringFile():
         mystr = html2text.html2text(mystr)
         m=mystr.split("* ###")
         m.pop(0)
-        out_file= open("tutoring.txt", "w", encoding="utf-8")
+        out_file = open("tutoring.txt", "w", encoding="utf-8")
         for el in m:
                 sub_els=el.split('\n', 11) #2 useless + 9 useful
                 sub_els.pop()
@@ -100,17 +112,20 @@ from itertools import islice
 @send_typing_action  
 def tutoring(bot, update):
         in_file=open("tutoring.txt", "r", encoding="utf-8")
+        user_id = update.effective_user.id
         empty=True
         while True:
                 next_tutoring_group= list(islice(in_file, 9)) #9 = 5 rows + 4 '\n'
                 if(empty):
                         if not next_tutoring_group:
-                                lang = select_language(update.effective_user.id)
+                                lang = select_language(user_id)
                                 bot.send_message(chat_id=update.message.chat_id, text=lang["noStudyGroups"])
                                 in_file.close()
                                 break
                 t = ""
                 for i in next_tutoring_group:
+                        if(users.get(user_id) == None or users.get(user_id) == "EN"): 
+                                i = translate(i) #translate in english
                         t = t + i
                 empty = False
                 bot.send_message(chat_id=update.message.chat_id, text=t)
