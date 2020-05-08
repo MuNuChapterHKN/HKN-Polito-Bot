@@ -20,6 +20,7 @@ import html2text
 from urllib.request import urlopen
 import time
 import datetime
+from enum import Enum
 # Downloads from website every day study groups dates
 import tutor
 from wordpress_xmlrpc import Client
@@ -40,6 +41,32 @@ users = {}
 
 # URL of Postgres db
 DATABASE_URL = os.environ['DATABASE_URL']
+
+# enumeration to handle different keyboard types
+class KeyboardType(Enum):
+    DEFAULT = 1
+    LANGUAGE = 2
+    BACK = 3
+    NEWSLETTER_CONFIRM = 4
+    NEWSLETTER_UNSUB = 5
+
+# function to get different keyboard types
+def getKeyboard(type, lang):
+    if type == KeyboardType.LANGUAGE:
+        inline_keyboard = [[InlineKeyboardButton(lang["lang:it"], callback_data="lang:it"), InlineKeyboardButton(lang["lang:en"], callback_data="lang:en")]]
+        return InlineKeyboardMarkup(inline_keyboard)
+    elif type == KeyboardType.BACK:
+        inline_keyboard = [[InlineKeyboardButton(lang["back"], callback_data="back")]]
+        return InlineKeyboardMarkup(inline_keyboard)
+    elif type == KeyboardType.NEWSLETTER_CONFIRM:
+        keyboard_confirm = [[InlineKeyboardButton(lang["newsletterConfirm"], callback_data="confirm")], [InlineKeyboardButton(lang["back"], callback_data="back")]]
+        return InlineKeyboardMarkup(keyboard_confirm)
+    elif type == KeyboardType.NEWSLETTER_UNSUB:
+        keyboard_unsub = [[InlineKeyboardButton(lang["newsletterUnsubscribe"], callback_data="unsubscribe")]]
+        return InlineKeyboardMarkup(keyboard_unsub)
+    else:
+        custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]], [lang["newsletter"], lang["drive"]], [lang["about"], lang["contact"]]]
+        return telegram.ReplyKeyboardMarkup(custom_keyboard)
 
 # Bot's typing action
 def send_action(action):
@@ -111,27 +138,20 @@ tutor.tutoringFile()
 # Start command handler
 def start(bot, update):
     lang = select_language(update.effective_user.id)
-    inline_keyboard = [[InlineKeyboardButton(lang["lang:it"], callback_data="lang:it"),
-                        InlineKeyboardButton(lang["lang:en"], callback_data="lang:en")]]
-    inline_reply_markup = InlineKeyboardMarkup(inline_keyboard)
-    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"], reply_markup=inline_reply_markup)
+    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"], reply_markup=getKeyboard(KeyboardType.LANGUAGE, lang))
     custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]], [lang["newsletter"], lang["drive"]], [lang["about"], lang["contact"]]]
     reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
-    bot.send_message(chat_id=update.message.chat_id, text=lang["ckchoose"], reply_markup=reply_markup)
 
 # Updates start message if language is changed    
 def update_start_message(bot, update, lang):
-    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"])
-    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]], [lang["newsletter"], lang["drive"]], [lang["about"], lang["contact"]]]
-    reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
-    bot.send_message(chat_id=update.message.chat_id, text=lang["ckchoose"], reply_markup=reply_markup)
+    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
 
 # Inline buttons handler
 def inline_button(bot, update):
     lang = select_language(update.effective_user.id)
     query = update.callback_query
     if query.data == "back":
-        bot.send_message(chat_id=query.message.chat_id, text=lang["questionAbort"])
+        bot.send_message(chat_id=query.message.chat_id, text=lang["questionAbort"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
         return ConversationHandler.END
     elif query.data == "confirm":
         try:
@@ -144,12 +164,12 @@ def inline_button(bot, update):
             
             # id is already a subscriber
             while(record):
-                bot.send_message(chat_id=query.message.chat_id, text=lang["alreadySubscribed"])
+                bot.send_message(chat_id=query.message.chat_id, text=lang["alreadySubscribed"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
                 return ConversationHandler.END
 
             # id is a new subscriber!
             cursor.execute("INSERT INTO subscribed(id) VALUES({})".format(query.message.chat_id))
-            bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterSubscription"])
+            bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterSubscription"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
             return ConversationHandler.END
         except (Exception, psycopg2.Error) as error :
             # Postgres automatically rollback the transaction
@@ -166,7 +186,7 @@ def inline_button(bot, update):
             conn.autocommit = True
             cursor = conn.cursor()
             cursor.execute("DELETE FROM subscribed WHERE id = {}".format(query.message.chat_id))
-            bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterUnsubscription"])
+            bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterUnsubscription"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
             return ConversationHandler.END
             
         except (Exception, psycopg2.Error) as error :
@@ -190,7 +210,7 @@ def inline_button(bot, update):
 @send_typing_action
 def about(bot, update):
     lang = select_language(update.effective_user.id)
-    bot.send_message(chat_id=update.message.chat_id, text=lang["abouttext"])
+    bot.send_message(chat_id=update.message.chat_id, text=lang["abouttext"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
 
 
 # Questions handler
@@ -199,9 +219,7 @@ TYPING = 1
 @send_typing_action
 def questions(bot, update):
     lang = select_language(update.effective_user.id)
-    keyboard = [[InlineKeyboardButton(lang["back"], callback_data="back")]]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    bot.send_message(chat_id=update.message.chat_id, text=lang["askAQuestion"], reply_markup=reply_markup)
+    bot.send_message(chat_id=update.message.chat_id, text=lang["askAQuestion"], reply_markup=getKeyboard(KeyboardType.BACK, lang))
     return TYPING
 
 # Question appender to file
@@ -212,21 +230,22 @@ def answers(bot,update):
     user_id = str(update.effective_user.id)
     out_file.write((str(update.message.from_user.username)+"-"+user_id+"-"+update.message.text).strip("\n")+"\n")
     out_file.close()
-    bot.send_message(chat_id=update.message.chat_id, text=lang["questionSaved"])
+    bot.send_message(chat_id=update.message.chat_id, text=lang["questionSaved"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
     for admin in LIST_OF_ADMINS:
-        bot.send_message(chat_id=admin, text=lang["newQuestionFrom"]+str(update.message.from_user.username)+"\n-"+update.message.text+"\n")  
+        bot.send_message(chat_id=admin, text=lang["newQuestionFrom"]+str(update.message.from_user.username)+"\n-"+update.message.text+"\n", reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))  
     return ConversationHandler.END    
     
 # News handler
 # TODO language selection
 @send_typing_action
 def fetch_news(bot, update):
+    lang = select_language(update.effective_user.id)
     client = Client(url = 'https://hknpolito.org/xmlrpc', username = "HKNP0lit0", password = os.environ['HKN_WEB_PASSWORD'])
     postfilters = {"number": 3, "order": "ASC"}
     postsdict = client.call(posts.GetPosts(postfilters))
     for post in postsdict:
         content = post.title + "\n" + post.link
-        bot.send_message(chat_id=update.message.chat_id, text=content)
+        bot.send_message(chat_id=update.message.chat_id, text=content, reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
 
 
 # Event handler
@@ -279,7 +298,7 @@ def display_events(bot, update):
         if theEvent.date > todayDate: #do not print past events
             n = n + 1
             if not theEvent.imageLink: #if there isn't an image link
-                bot.send_message(chat_id=update.message.chat_id, parse_mode="markdown", text="*"+theEvent.title+"*\n\n"+theEvent.description)
+                bot.send_message(chat_id=update.message.chat_id, parse_mode="markdown", text="*"+theEvent.title+"*\n\n"+theEvent.description, reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
             else:
                 #Build link buttons
                 keyboard = []
@@ -297,14 +316,11 @@ def display_events(bot, update):
                 reply_markup = InlineKeyboardMarkup(keyboard)
                 bot.send_photo(chat_id=update.message.chat_id, parse_mode="markdown", caption="*"+theEvent.title+"*\n\n"+theEvent.description, photo=theEvent.imageLink, reply_markup=reply_markup)
     if n == 0:  
-        bot.send_message(chat_id=update.message.chat_id, text=lang["noEvents"])
+        bot.send_message(chat_id=update.message.chat_id, text=lang["noEvents"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
 
 @send_typing_action
 def display_newsletterSubscription(bot, update):
     lang = select_language(update.effective_user.id)
-    keyboard_confirm = [[InlineKeyboardButton(lang["newsletterConfirm"], callback_data="confirm")], 
-                        [InlineKeyboardButton(lang["back"], callback_data="back")]]
-    reply_markup_confirm = InlineKeyboardMarkup(keyboard_confirm)
 
     try:
         # connect to db
@@ -318,12 +334,12 @@ def display_newsletterSubscription(bot, update):
         # id is already subscribed
         while(record):
             isSubscribed = 1
-            bot.send_message(chat_id=update.message.chat_id, text=lang["alreadySubscribed"])
+            bot.send_message(chat_id=update.message.chat_id, text=lang["alreadySubscribed"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
             break;
 
-        # id wants to be unsubscribed
+        # id wants to be subscribed
         if(isSubscribed == 0):    
-            bot.send_message(chat_id=update.message.chat_id, text=lang["newsletterAreYouSure"], reply_markup=reply_markup_confirm)
+            bot.send_message(chat_id=update.message.chat_id, text=lang["newsletterAreYouSure"], reply_markup=getKeyboard(KeyboardType.NEWSLETTER_CONFIRM, lang))
             
     except (Exception, psycopg2.Error) as error :
         # Postgres automatically rollback the transaction
@@ -338,13 +354,13 @@ def display_newsletterSubscription(bot, update):
 @send_typing_action
 def display_drive(bot, update):
     lang = select_language(update.effective_user.id)
-    bot.send_message(chat_id=update.message.chat_id, parse_mode = "HTML", text=lang["drive_link"])  
+    bot.send_message(chat_id=update.message.chat_id, parse_mode = "HTML", text=lang["drive_link"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))  
 	
 # Contact handler
 @send_typing_action
 def contact(bot, update):
     lang = select_language(update.effective_user.id)
-    bot.send_message(chat_id=update.message.chat_id, text=lang["contacttext"])
+    bot.send_message(chat_id=update.message.chat_id, text=lang["contacttext"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
 	
 
 # Restricted commands (can be executed only by users in admins.txt)
@@ -373,17 +389,17 @@ def answer_question(bot, update):
     lang = select_language(update.effective_user.id)
     question = pop_question()
     if question == None:
-        bot.send_message(chat_id=update.message.chat_id, text="Formato file questions.txt non corretto")
+        bot.send_message(chat_id=update.message.chat_id, text="Formato file questions.txt non corretto", reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
         return ConversationHandler.END
     message = update.message.text 
-    bot.send_message(chat_id=question[1], text=lang["hello"] + " {} ".format(question[0]) + lang["yourAnswer"] + "\n{}".format(message))
+    bot.send_message(chat_id=question[1], text=lang["hello"] + " {} ".format(question[0]) + lang["yourAnswer"] + "\n{}".format(message), reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
     return ConversationHandler.END
 
 @restricted
 def delete_question(bot, update):
     lang = select_language(update.effective_user.id)
     pop_question()
-    bot.send_message(chat_id=update.message.chat_id, text=lang["questionDeleted"])
+    bot.send_message(chat_id=update.message.chat_id, text=lang["questionDeleted"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
     return ConversationHandler.END
 
 @restricted
@@ -403,39 +419,39 @@ def save_question(bot, update):
     for line in savedQuestions:
         if str(question) in line:
             found = True
-            bot.send_message(chat_id=update.message.chat_id, text=lang["questionAlreadySaved"])
+            bot.send_message(chat_id=update.message.chat_id, text=lang["questionAlreadySaved"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
 
     if not found:
         savedQuestion_file = open("savedquestions.txt", "a", encoding="utf-8")
         savedQuestion_file.write(question)
         savedQuestion_file.close()
-        bot.send_message(chat_id=update.message.chat_id, text=lang["questionSavedCorrectly"])
+        bot.send_message(chat_id=update.message.chat_id, text=lang["questionSavedCorrectly"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
 
     return ANSWER
 
 @restricted
 def skip(bot,update):
     lang = select_language(update.effective_user.id)
-    bot.send_message(chat_id=update.message.chat_id, text=lang["questionNotAnswered"])
+    bot.send_message(chat_id=update.message.chat_id, text=lang["questionNotAnswered"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
     pop_question(option="enqueue")
     return ConversationHandler.END
 
 @restricted
 def cancel(bot, update):
     lang = select_language(update.effective_user.id)  
-    bot.send_message(chat_id=update.message.chat_id, text=lang["conversationDeleted"])
+    bot.send_message(chat_id=update.message.chat_id, text=lang["conversationDeleted"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
     return ConversationHandler.END
 
 @restricted
 def reply(bot, update):
     lang = select_language(update.effective_user.id)
-    bot.send_message(chat_id=update.message.chat_id, text=lang["answerQuestion"] + " \n")
+    bot.send_message(chat_id=update.message.chat_id, text=lang["answerQuestion"] + " \n", reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
     question_file = open("questions.txt", "r", encoding="utf-8")
     question = question_file.readline()
     if(question == ""):
-        bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestions"])
+        bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestions"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
         return ConversationHandler.END
-    bot.send_message(chat_id=update.message.chat_id, text=question)
+    bot.send_message(chat_id=update.message.chat_id, text=question, reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
     question_file.close()
     return ANSWER
 
@@ -447,16 +463,14 @@ def showpending(bot, update):
     n = 0
     for q in questions:
         question = q.split("-")
-        bot.send_message(chat_id=update.message.chat_id, text=(question[0] + " " + question[2]))
+        bot.send_message(chat_id=update.message.chat_id, text=(question[0] + " " + question[2]), reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
         n = n + 1
     if(n == 0):
-        bot.send_message(chat_id=update.message.chat_id, text=lang["questionsAnswered"])
+        bot.send_message(chat_id=update.message.chat_id, text=lang["questionsAnswered"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
      
 @restricted
 def sendNewsletter(bot, update):
     lang = select_language(update.effective_user.id)
-    keyboard = [[InlineKeyboardButton(lang["newsletterUnsubscribe"], callback_data="unsubscribe")]]
-    reply_markup = InlineKeyboardMarkup(keyboard)
 
     idList = []
     try:
@@ -486,10 +500,10 @@ def sendNewsletter(bot, update):
         for x in data:
             if(lang == lang_en): 
                 for userId in idList: 
-                    bot.send_message(chat_id=userId, text=x['DescriptionENG'], reply_markup=reply_markup)
+                    bot.send_message(chat_id=userId, text=x['DescriptionENG'], reply_markup=getKeyboard(KeyboardType.NEWSLETTER_UNSUB, lang))
             else:
                 for userId in idList: 
-                    bot.send_message(chat_id=userId, text=x['DescriptionITA'], reply_markup=reply_markup)
+                    bot.send_message(chat_id=userId, text=x['DescriptionITA'], reply_markup=getKeyboard(KeyboardType.NEWSLETTER_UNSUB, lang))
         f.close()
 
 @restricted 
@@ -500,10 +514,10 @@ def showsaved(bot, update):
     n = 0
     for q in questions:
         question = q.split("-")
-        bot.send_message(chat_id=update.message.chat_id, text=(question[0] + " " + question[2]))
+        bot.send_message(chat_id=update.message.chat_id, text=(question[0] + " " + question[2]), reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
         n = n + 1
     if(n == 0):
-        bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestionsSaved"])
+        bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestionsSaved"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
 
 # Configurating handlers
 reply_conv_handler = ConversationHandler(
