@@ -49,14 +49,10 @@ class KeyboardType(Enum):
     BACK = 3
     NEWSLETTER_CONFIRM = 4
     NEWSLETTER_UNSUB = 5
-    START = 6
 
 # function to get different keyboard types
 def getKeyboard(type, lang):
-    if type == KeyboardType.LANGUAGE:
-        inline_keyboard = [[InlineKeyboardButton(lang["lang:it"], callback_data="lang:it"), InlineKeyboardButton(lang["lang:en"], callback_data="lang:en")]]
-        return InlineKeyboardMarkup(inline_keyboard)
-    elif type == KeyboardType.BACK:
+    if type == KeyboardType.BACK:
         inline_keyboard = [[InlineKeyboardButton(lang["back"], callback_data="back")]]
         return InlineKeyboardMarkup(inline_keyboard)
     elif type == KeyboardType.NEWSLETTER_CONFIRM:
@@ -65,7 +61,7 @@ def getKeyboard(type, lang):
     elif type == KeyboardType.NEWSLETTER_UNSUB:
         keyboard_unsub = [[InlineKeyboardButton(lang["newsletterUnsubscribe"], callback_data="unsubscribe")]]
         return InlineKeyboardMarkup(keyboard_unsub)
-    elif type == KeyboardType.START:
+    elif type == KeyboardType.LANGUAGE:
         start_keyboard = [[lang["lang_ita"],lang["lang_eng"]]]
         return telegram.ReplyKeyboardMarkup(start_keyboard, resize_keyboard=True)
     else:
@@ -142,7 +138,7 @@ tutor.tutoringFile()
 # Start command handler
 def start(bot, update):
     lang = select_language(update.effective_user.id)
-    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"], reply_markup=getKeyboard(KeyboardType.START, lang))
+    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"], reply_markup=getKeyboard(KeyboardType.LANGUAGE, lang))
 
 # Updates start message if language is changed    
 def update_start_message(bot, update, lang):
@@ -199,14 +195,6 @@ def inline_button(bot, update):
                 cursor.close()
                 conn.close()
                 print("PostgreSQL connection is closed")
-    elif query.data == "lang:it":
-        users[update.effective_user.id] = "IT"
-        tutor.users[update.effective_user.id] = "IT"
-        update_start_message(bot, query, lang_it)
-    elif query.data == "lang:en":
-        users[update.effective_user.id] = "EN"
-        tutor.users[update.effective_user.id] = "EN"
-        update_start_message(bot, query, lang_en)
 
 # About handler
 @send_typing_action
