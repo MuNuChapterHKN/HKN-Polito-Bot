@@ -49,6 +49,7 @@ class KeyboardType(Enum):
     BACK = 3
     NEWSLETTER_CONFIRM = 4
     NEWSLETTER_UNSUB = 5
+    START = 6
 
 # function to get different keyboard types
 def getKeyboard(type, lang):
@@ -64,9 +65,12 @@ def getKeyboard(type, lang):
     elif type == KeyboardType.NEWSLETTER_UNSUB:
         keyboard_unsub = [[InlineKeyboardButton(lang["newsletterUnsubscribe"], callback_data="unsubscribe")]]
         return InlineKeyboardMarkup(keyboard_unsub)
+    elif type == KeyboardType.START:
+        start_keyboard = [[lang["lang_ita"],lang["lang_eng"]]]
+        return telegram.ReplyKeyboardMarkup(start_keyboard, resize_keyboard=True)
     else:
         custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]], [lang["newsletter"], lang["drive"]], [lang["about"], lang["contact"]]]
-        return telegram.ReplyKeyboardMarkup(custom_keyboard)
+        return telegram.ReplyKeyboardMarkup(custom_keyboard, resize_keyboard=True)
 
 # Bot's typing action
 def send_action(action):
@@ -138,9 +142,7 @@ tutor.tutoringFile()
 # Start command handler
 def start(bot, update):
     lang = select_language(update.effective_user.id)
-    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"], reply_markup=getKeyboard(KeyboardType.LANGUAGE, lang))
-    custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]], [lang["newsletter"], lang["drive"]], [lang["about"], lang["contact"]]]
-    reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
+    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"], reply_markup=getKeyboard(KeyboardType.START, lang))
 
 # Updates start message if language is changed    
 def update_start_message(bot, update, lang):
@@ -212,6 +214,17 @@ def about(bot, update):
     lang = select_language(update.effective_user.id)
     bot.send_message(chat_id=update.message.chat_id, text=lang["abouttext"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
 
+# Selection of the language it
+def sel_language_ita(bot, update):
+    users[update.effective_user.id] = "IT"
+    tutor.users[update.effective_user.id] = "IT"
+    update_start_message(bot, update, lang_it)
+
+# Selection of the language en
+def sel_language_eng(bot, update):
+    users[update.effective_user.id] = "EN"
+    tutor.users[update.effective_user.id] = "EN"
+    update_start_message(bot, update, lang_en)
 
 # Questions handler
 # TODO language selection
@@ -597,6 +610,18 @@ contact_handler = MessageHandler(filter_contact, contact)
 com_contact_handler = CommandHandler("contact", contact)
 dispatcher.add_handler(contact_handler)
 dispatcher.add_handler(com_contact_handler)
+
+filter_it = filters.FilterIt()
+it_handler = MessageHandler(filter_it, sel_language_ita);
+com_it_handler = CommandHandler("lang_ita", sel_language_ita)
+dispatcher.add_handler(com_it_handler)
+dispatcher.add_handler(it_handler)
+
+filter_en = filters.FilterEn()
+en_handler = MessageHandler(filter_en, sel_language_eng);
+com_en_handler = CommandHandler("lang_eng", sel_language_eng)
+dispatcher.add_handler(com_en_handler)
+dispatcher.add_handler(en_handler)
 
 inline_button_handler = CallbackQueryHandler(inline_button)
 dispatcher.add_handler(inline_button_handler)
