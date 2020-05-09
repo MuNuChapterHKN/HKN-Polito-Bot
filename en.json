@@ -1,7 +1,7 @@
 {
   "Lang": "EN",
-  "lang:it": "Italian 🇮🇹",
-  "lang:en": "English 🇬🇧",
+  "lang_ita": "Italian 🇮🇹",
+  "lang_eng": "English 🇬🇧",
   "welcome": "Welcome to the official Eta Kappa Nu Polito bot!\n\nWhich language do you speak?",
   "welcome_up": "Welcome to the official Eta Kappa Nu Polito bot",
   "events": "Events",
