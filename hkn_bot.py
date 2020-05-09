@@ -49,6 +49,7 @@ class KeyboardType(Enum):
     BACK = 3
     NEWSLETTER_CONFIRM = 4
     NEWSLETTER_UNSUB = 5
+    ABOUT = 6
 
 # function to get different keyboard types
 def getKeyboard(type, lang):
@@ -64,6 +65,9 @@ def getKeyboard(type, lang):
     elif type == KeyboardType.LANGUAGE:
         start_keyboard = [[lang["lang_ita"],lang["lang_eng"]]]
         return telegram.ReplyKeyboardMarkup(start_keyboard, resize_keyboard=True)
+    elif type == KeyboardType.ABOUT:
+        inline_keyboard = [[InlineKeyboardButton(lang["website"], url="https://hknpolito.org")], [InlineKeyboardButton(lang["facebook"], url="https://www.facebook.com/hknpolito")], [InlineKeyboardButton(lang["instagram"], url="https://www.instagram.com/hknpolito/?hl=it")]]
+        return InlineKeyboardMarkup(inline_keyboard)
     else:
         custom_keyboard = [[lang["events"], lang["news"]], [lang["studygroups"], lang["askus"]], [lang["newsletter"], lang["drive"]], [lang["about"], lang["contact"]]]
         return telegram.ReplyKeyboardMarkup(custom_keyboard, resize_keyboard=True)
@@ -200,7 +204,7 @@ def inline_button(bot, update):
 @send_typing_action
 def about(bot, update):
     lang = select_language(update.effective_user.id)
-    bot.send_message(chat_id=update.message.chat_id, text=lang["abouttext"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang))
+    bot.send_message(chat_id=update.message.chat_id, text=lang["abouttext"], reply_markup=getKeyboard(KeyboardType.ABOUT, lang))
 
 # Selection of the language it
 def sel_language_ita(bot, update):
