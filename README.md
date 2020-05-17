@@ -87,7 +87,7 @@ Inoltre, in ogni momento, **gli admin** possono conoscere quali sono le domande 
 About
 -----
 
-L'handler che gestisce la sezione 'Chi siamo' è la funzione *about(bot, update)*. Essa banalmente mostra a schermo le informazioni relative al chapter HKN (leggendole in corrispondenza alla key 'abouttext' dal file `it.json` o `en.json`, a seconda della lingua scelta).
+L'handler che gestisce la sezione 'Chi siamo' è la funzione *about(bot, update)*. Essa banalmente mostra a schermo le informazioni relative al chapter HKN (leggendole in corrispondenza alla key 'abouttext' dal file `it.json` o `en.json`, a seconda della lingua scelta) e tre differenti inline keyboard button collegati in maniera diretta rispettivamente al sito internet, al profilo facebook e al profilo instagram dell'associazione, permettendo così all'utente un'esperienza ulteriormente più intuitiva ed immediata che gli permetta di poter consultare con un solo semplice click i nostri principali contatti social.
 
 Subscribe to our newsletter
 ---------------------------
