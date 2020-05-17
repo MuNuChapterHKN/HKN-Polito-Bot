@@ -85,7 +85,8 @@ Drive
 ---------------------------
 
 L'handler che gestisce il drive hkn è la funzione
-*display\_drive(bot, update)*. Essa stampa all'utente il link cliccabile del sito HKN nella sezione Drive (<https://hknpolito.org/drive/>), leggendolo dal file  `en.json` o  `it.json` in base alla lingua selezionata.
+*display\_drive(bot, update)*.
+Essa stampa all'utente una breve descrizione del drive HKN e fornisce un inline button che reindirizza al sito HKN nella sezione Drive (<https://hknpolito.org/drive/>).
 
 Contacts
 ---------------------------
