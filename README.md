@@ -1,3 +1,21 @@
+Indice
+=================================
+- [HKN Polito Bot](#hkn-polito-bot)
+- [Struttura e funzionamento del bot](#struttura-e-funzionamento-del-bot)
+  - [Events](#events)
+  - [News](#news)
+  - [Study Groups](#study-groups)
+  - [Ask us something](#ask-us-something)
+  - [About](#about)
+  - [Subscribe to our newsletter](#subscribe-to-our-newsletter)
+  - [Drive](#drive)
+  - [Contacts](#contacts)
+- [Problemi attuali e possibili soluzioni](#problemi-attuali-e-possibili-soluzioni)
+  - [Problemi generali (minimali)](#problemi-generali-minimali)
+  - [Problemi riscontrati nella sezione 'Ask us something'](#problemi-riscontrati-nella-sezione-ask-us-something)
+  - [Problemi riscontrati nella newsletter](#problemi-riscontrati-nella-newsletter)
+- [Possibili implementazioni future](#possibili-implementazioni-future)
+
 HKN Polito Bot
 =================================
 HKN Polito Bot è il bot telegram ufficiale del MuNuChapter-HKN creato appositamente dall'associazione al fine di poter agevolare sia membri ma soprattutto esterni nell'entrare in contatto con il mondo del nostro chapter in maniera semplice e immediata. 
