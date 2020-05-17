@@ -4,6 +4,8 @@ HKN Polito Bot è il bot telegram ufficiale del MuNuChapter-HKN creato appositam
 
 Il Bot è strutturato in modo tale da porre l'utente davanti ad una tabella di bottoni (ReplyKeyboardMarkup), i quali, oltre a facilitare l'esperienza dell'utente stesso, sono direttamente collegati alle relative informazioni, rispondendo in maniera automatica e istantanea alle varie richieste poste. Tramite il bot, infatti, è possibile non solo ricevere le principali informazioni del MuNuChapter-HKN, tra cui la nostra storia e i nostri contatti principali, ma vi è anche la possibilità di rimanere sempre aggiornati sugli eventi da noi organizzati, accedere alle informazioni relative all'organizzazione di gruppi di studio, collegarsi direttamente al drive associativo che raccoglie differente materiale didattico, poter ricevere le varie news pubblicate dai nostri membri iscrivendosi alla nostra newsletter. Infine, è inoltre presente, anche qui tramite un semplice bottone, la possibilità di contattare direttamente l'associazione e porre domande di qualsiasi tipologia, le quali, una volta registrate e raccolte dal nostro bot, possono essere facilmente consultate dai diretti interessati e poter ricevere una risposta immediata.
 
+Il Bot è interamente scritto in Python (Python3) e la principale libreria utilizzata per interfacciarsi con [Telegram Bot API](https://core.telegram.org/bots/api) è [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot).
+
 Struttura e funzionamento del bot 
 =================================
 
