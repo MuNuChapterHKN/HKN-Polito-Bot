@@ -112,7 +112,7 @@ from itertools import islice
 @send_typing_action  
 def tutoring(bot, update):
         in_file=open("tutoring.txt", "r", encoding="utf-8")
-        user_id = update.effective_user.id
+        user_id = str(update.effective_user.id)
         empty=True
         while True:
                 next_tutoring_group= list(islice(in_file, 9)) #9 = 5 rows + 4 '\n'
