@@ -36,11 +36,37 @@ from Crypto.Hash import SHA3_512
 from Crypto.Util.Padding import pad, unpad
 from psycopg2 import Error
 
-# Dictionary which stores language used by every user
-users = {}
-
 # URL of Postgres db
 DATABASE_URL = os.environ['DATABASE_URL']
+
+# get users dictionary from db 
+def getUsersLanguage():
+    users_dict = {}
+    try:
+        # connect to db
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        conn.autocommit = True
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users;")
+        record = cursor.fetchone()
+
+        # for each row, add entry in dictionary 
+        while record is not None:
+            users_dict[str(record[0])] = str(record[1])
+            record = cursor.fetchone()
+
+    except (Exception, psycopg2.Error) as error :
+        # Postgres automatically rollback the transaction
+        print ("Error while connecting to PostgreSQL", error)
+    finally:
+        if(conn):
+            cursor.close()
+            conn.close()
+            print("PostgreSQL connection is closed")
+            return users_dict
+
+# Dictionary which stores language used by every user
+users = getUsersLanguage()
 
 # enumeration to handle different keyboard types
 class KeyboardType(Enum):
@@ -94,7 +120,7 @@ send_typing_action = send_action(ChatAction.TYPING)
 
 # Language selection
 def select_language(user_id):
-    if users.get(user_id) == None or users.get(user_id) == "EN":
+    if users.get(str(user_id)) == None or users.get(str(user_id)) == "EN":
         return lang_en
     else:
         return lang_it
@@ -141,6 +167,7 @@ dispatcher = updater.dispatcher
 
 
 # Save tutoring groups in file
+tutor.users = users
 tutor.tutoringFile()
 
 # Start command handler
@@ -212,15 +239,49 @@ def about(bot, update):
 
 # Selection of the language it
 def sel_language_ita(bot, update):
-    users[update.effective_user.id] = "IT"
-    tutor.users[update.effective_user.id] = "IT"
+    lang = "IT"
+    updateUserLanguage(str(update.effective_user.id), lang)
+    users[str(update.effective_user.id)] = lang
+    tutor.users[str(update.effective_user.id)] = lang
     update_start_message(bot, update, lang_it)
 
 # Selection of the language en
 def sel_language_eng(bot, update):
-    users[update.effective_user.id] = "EN"
-    tutor.users[update.effective_user.id] = "EN"
+    lang = "EN"
+    updateUserLanguage(str(update.effective_user.id), lang)
+    users[str(update.effective_user.id)] = lang
+    tutor.users[str(update.effective_user.id)] = lang
     update_start_message(bot, update, lang_en)
+
+# Insert or update user language in db
+def updateUserLanguage(user_id, language):
+    try:
+        # connect to db
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        conn.autocommit = True
+        cursor = conn.cursor()
+        cursor.execute("SELECT lang FROM users WHERE id = '{}';".format(user_id))
+        record = cursor.fetchone()
+        updated = False
+
+        # user exists, update its language 
+        while record:
+            if language not in record:
+                cursor.execute("UPDATE users SET lang = '{}' WHERE id = '{}';".format(language, user_id))
+            updated = True
+            break
+
+        # user not exists, insert it with selected language
+        if not updated:
+            cursor.execute("INSERT INTO users(id, lang) VALUES('{}', '{}')".format(user_id, language))
+    except (Exception, psycopg2.Error) as error :
+        # Postgres automatically rollback the transaction
+        print ("Error while connecting to PostgreSQL", error)
+    finally:
+        if(conn):
+            cursor.close()
+            conn.close()
+            print("PostgreSQL connection is closed")
 
 # Questions handler
 # TODO language selection
