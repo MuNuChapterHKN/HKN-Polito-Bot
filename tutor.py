@@ -18,7 +18,7 @@ from lang import lang_it
 
 emoji = ["📚", "", "📅", "", "⏰", "", "📩", "📩", ""]
 users = {} # Dictionary which stores language used by every user
-days = {'Lunedì':'Monday','Martedì':'Tuesday','Mercoledì':'Wednesday','Giovedì':'Thursday','Venerdì':'Friday','Sabato':'Saturday','Domenica':'Sunday'}
+days = {'Monday':'Lunedì','Tuesday':'Martedì','Wednesday':'Mercoledì','Thursday':'Giovedì','Friday':'Venerdì','Saturday':'Sabato','Sunday':'Domenica'}
 
 def send_action(action):
     ## Sends `action` while processing func command
@@ -124,8 +124,8 @@ def tutoring(bot, update):
                                 break
                 t = ""
                 for i in next_tutoring_group:
-                        if(users.get(user_id) == None or users.get(user_id) == "EN"): 
-                                i = translate(i) #translate in english
+                        if(users.get(user_id) == "IT"): 
+                                i = translate(i) #translate in italian
                         t = t + i
                 empty = False
                 bot.send_message(chat_id=update.message.chat_id, text=t)
