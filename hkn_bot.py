@@ -174,6 +174,12 @@ tutor.tutoringFile()
 def start(bot, update):
     lang = select_language(update.effective_user.id)
     bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"], reply_markup=getKeyboard(KeyboardType.LANGUAGE, lang))
+	
+# Help command handler
+def help(bot, update):
+    lang = select_language(update.effective_user.id)
+    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"])
+
 
 # Updates start message if language is changed    
 def update_start_message(bot, update, lang):
@@ -616,6 +622,9 @@ dispatcher.add_handler(question_conv_handler)
 
 start_handler = CommandHandler("start", start)
 dispatcher.add_handler(start_handler)
+
+help_handler = CommandHandler("help", help)
+dispatcher.add_handler(help_handler)
 
 pendingq_handler = CommandHandler("showpending", showpending)
 dispatcher.add_handler(pendingq_handler)
