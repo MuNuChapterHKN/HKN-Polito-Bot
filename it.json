@@ -12,6 +12,7 @@
     "website":"🌐 Sito Internet",
     "facebook": "👥 Facebook",
     "instagram": "📷 Instagram",
+	"youtube": "🖥 YouTube",
     "news": "Notizie",
     "studygroups": "Gruppi di studio",
     "askus": "Facci una domanda",
@@ -20,7 +21,7 @@
     "abouttext":"CHI SIAMO\nsiamo il primo chapter europeo di IEEE-Eta Kappa Nu (HKN), al Politecnico di Torino.\n\nCOSA FACCIAMO\nLe nostre attività variano dal tutoraggio all'organizzazione di eventi come workshop o seminari, con l'obiettivo di migliorare le nostre conoscenze e aiutare i nostri compagni.\n\nHKN\nLe lettere greche HKN sono scelte dalla prima, quarta e ultima lettera della parola greca ἤλεκτρον (élektron, “ambra”), la radice etimologica della parola “elettricità”.",
     "contacttext": "📩 Vuoi contattarci? Scrivici una e-mail all'indirizzo: info@hknpolito.org",
     "questionAbort": "La tua richiesta di domanda è stata annullata",
-    "askAQuestion": "Fai una domanda al MuNu Chapter di Eta Kappa Nu",
+    "askAQuestion": "Fai una domanda al Mu Nu Chapter di Eta Kappa Nu",
     "questionSaved": "La tua domanda è stata registrata, ti risponderemo a breve",
     "newQuestionFrom": "Nuova domanda da: ",
     "noEvents": "Non ci sono eventi in programma in questo momento. Resta sintonizzato con il mondo HKN!",
@@ -43,5 +44,10 @@
     "newsletterAreYouSure": "Sei sicur*?",
     "newsletterUnsubscribe": "❌ Annulla l'iscrizione alla Newsletter",
     "noStudyGroups": "Non ci sono gruppi di studio attivi in questo momento",
-    "back": "⬅ Indietro"
+	"members": "Membri",
+	"FI": "Formazione Interna",
+	"TelegramGroups": "Gruppi Telegram",
+	"GroupsText": "Ecco qui la raccolta dei nostri amati gruppi e canali Telegram, potete trovare il gruppo dove ci sentiamo regolarmente (EtaKazzateNu) oppure tanti altri gruppi che ci servono per condividere hobby, passioni o per scambiarci varie esperienze, entra pure tu a dirci la tua😜",
+    "memberstext": "🔓 Questa sezione è privata ai membri di HKN, seleziona il tasto Formazione interna per avere accesso ai nostri ultimi eventi privati (password : < FI PASSWORD >), invece seleziona il tasto Gruppi Telegram per avere accesso alla lista dei nostri gruppi e canali :",
+	"back": "⬅ Indietro"
 }

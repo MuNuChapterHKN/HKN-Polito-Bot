@@ -12,6 +12,7 @@
   "website":"🌐 Website",
   "facebook": "👥 Facebook",
   "instagram": "📷 Instagram",
+  "youtube": "🖥 YouTube",
   "news": "News",
   "studygroups": "Study groups",
   "askus": "Ask us something",
@@ -20,7 +21,7 @@
   "abouttext": "WHO WE ARE:\nWe are the first European chapter of IEEE-Eta Kappa Nu (HKN), at Politecnico di Torino.\n\nWHAT WE DO:\nOur activities range from educational tutoring to the organization of events such as workshops and seminars, with the aim of improving our skills and helping out our colleagues.\n\nHKN:\nThe Greek letters ΗΚΝ are chosen from the first, fourth, and last letter of the the Greek ἤλεκτρον (élektron, “amber”), the etymological root for the English word “electricity”.",
   "contacttext": "📩 Do you want to contact us? Write us an e-mail on: info@hknpolito.org",
   "questionAbort": "Your application request has been canceled",
-  "askAQuestion": "Ask a question to the MuNu Chapter of Eta Kappa Nu",
+  "askAQuestion": "Ask a question to the Mu Nu Chapter of Eta Kappa Nu",
   "questionSaved": "Your application has been registered, we will reply shortly",
   "newQuestionFrom": "New question from: ",
   "noEvents": "There aren't events in program right now. Stay tuned to HKN world!",
@@ -43,5 +44,10 @@
   "newsletterAreYouSure": "Are you sure?",
   "newsletterUnsubscribe": "❌ Unsubscribe from the Newsletter",
   "noStudyGroups": "There are no study groups active at the moment",
+  "members": "Members",
+  "FI": "Internal Training",
+  "TelegramGroups": "Telegram Groups",
+  "GroupsText": "Here is the collection of our beloved Telegram groups and channels, you can find the group where we talk regularly (EtaKazzateNu) or many other groups that we need to share hobbies, passions or to exchange various experiences, come in and tell us yours😜",
+  "memberstext": "🔓 This section is private to HKN members, select the Internal training button to access our latest private events (password : < FI PASSWORD >), instead select the Telegram Groups button to access the list of our groups and channels:",
   "back": "⬅ Back"
 }
