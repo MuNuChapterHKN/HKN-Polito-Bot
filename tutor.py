@@ -2,6 +2,7 @@ import filters
 import time
 import telegram
 from telegram.ext import Updater
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import datetime
 import re
 import html2text
@@ -119,7 +120,7 @@ def tutoring(bot, update):
                 if(empty):
                         if not next_tutoring_group:
                                 lang = select_language(user_id)
-                                bot.send_message(chat_id=update.message.chat_id, text=lang["noStudyGroups"])
+                                #bot.send_message(chat_id=update.message.chat_id, text=lang["noStudyGroups"])
                                 in_file.close()
                                 break
                 t = ""
@@ -129,6 +130,9 @@ def tutoring(bot, update):
                         t = t + i
                 empty = False
                 bot.send_message(chat_id=update.message.chat_id, text=t)
+        #inline_keyboard = [[InlineKeyboardButton("Algoritmi e programmazione", url="https://t.me/hkn_algo")]]
+        inline_keyboard = [[InlineKeyboardButton("Algoritmi e programmazione", url="https://t.me/hkn_algo")], [InlineKeyboardButton("Elettrotecnica", url="https://t.me/joinchat/AAAAAFhtPg-zhW_Wgd5tXw")], [InlineKeyboardButton("Sistemi operativi", url="https://t.me/joinchat/BDXJKB2iuB1mBZLTjh9hgQ")], [InlineKeyboardButton("Sistemi elettronici, tecnologie e misure", url="https://t.me/joinchat/BDXJKEfBdulUjK8wyvOLhQ")], [InlineKeyboardButton("Teoria dei segnali e delle comunicazioni", url="https://t.me/joinchat/BDXJKBo-X259OnONBNl8iQ")], [InlineKeyboardButton("Elettronica Applicata (Elettronica)", url="https://t.me/joinchat/AAAAAEX055_0n_PouPzjAg")], [InlineKeyboardButton("Architetture dei sistemi di elaborazione", url="https://t.me/joinchat/AAAAAElCC1jy_ue6AniDnA")], [InlineKeyboardButton("Reti di calcolatori", url="https://t.me/joinchat/BDXJKEl0zW9Zr-ka5GmxiA")], [InlineKeyboardButton("Campi Elettromagnetici (elettronica)", url="https://t.me/joinchat/BDXJKBnDkuQl00-SFa8AiQ")]]
+        bot.send_message(chat_id=update.message.chat_id, text=lang["tutorText"], reply_markup=InlineKeyboardMarkup(inline_keyboard))
 
 # Language selection
 def select_language(user_id):
