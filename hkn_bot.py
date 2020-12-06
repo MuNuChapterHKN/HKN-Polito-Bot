@@ -131,7 +131,7 @@ def getKeyboard(type, lang, user_id):
     elif type == KeyboardType.MEMBERS:
 	    #if the user is one of the members show the special buttons
         if user_id in members_list:
-            inline_keyboard = [[InlineKeyboardButton(lang["FI"], url="< FI LINK >")],[InlineKeyboardButton(lang["TelegramGroups"], callback_data="TelegramGroups")]]	
+            inline_keyboard = [[InlineKeyboardButton(lang["FI"], url="< FI LINK >")],[InlineKeyboardButton(lang["TelegramGroups"], callback_data="TelegramGroups")], [InlineKeyboardButton(lang["HRGame"], callback_data="HRGame")]]	
             return InlineKeyboardMarkup(inline_keyboard)	
     elif type == KeyboardType.GROUPS:
         inline_keyboard = [[InlineKeyboardButton("EtaKazzateNu", url="< ETAKAZZATENU LINK >")], [InlineKeyboardButton("HKN Drive", url="< DRIVE LINK >")], [InlineKeyboardButton("HKN-Polito Discord Server", url="< DISCORD SERVER LINK >")], [InlineKeyboardButton("HKGirls", url="< HKGIRLS LINK >")], [InlineKeyboardButton("Eta PN junction NU", url="< ETA PN JUNCTION NU LINK >")], [InlineKeyboardButton("Eta Kappa PhD", url="< ETA KAPPA PHD LINK >")], [InlineKeyboardButton("hknMUsicNUChapter", url="< HKN MUSIC LINK >")],  [InlineKeyboardButton("BiblioteKappaNu", url="< BIBLIOTAKAPPANU LINK >")], [InlineKeyboardButton("EtaKappaNerds", url="< ETAKAPPANERDS LINK >")], [InlineKeyboardButton("HKRocket League", url="< HKROCKET LEAGUE LINK >")], [InlineKeyboardButton("EtaKappaMovies", url="< ETAKAPPAMOVIES LINK >")], [InlineKeyboardButton("EtaKappaSports", url="< ETAKAPPASPORTS LINK >")], [InlineKeyboardButton("EtaKoseaMuzzo", url="< ETAKOSEAMUZZO LINK >")], [InlineKeyboardButton("EtanoloKappaNu", url="< ETANOLOKAPPANU LINK >")], [InlineKeyboardButton("Eta Kidding Nu", url="< ETAMEMENU LINK >")], [InlineKeyboardButton("HKN x gif", url="< HKN x GIF LINK >")]]
@@ -236,6 +236,10 @@ def inline_button(bot, update):
     user_id = update.effective_user.id
     if query.data == "back":
         bot.send_message(chat_id=query.message.chat_id, text=lang["questionAbort"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id))
+        return ConversationHandler.END
+    elif query.data == "HRGame":
+        inline_keyboard = [[InlineKeyboardButton(lang["Classifica"], url="<RANKING LINK>")]]
+        bot.send_message(chat_id=query.message.chat_id, text=lang["HRRes"], reply_markup=InlineKeyboardMarkup(inline_keyboard))
         return ConversationHandler.END
     elif query.data == "TelegramGroups":
         bot.send_message(chat_id=query.message.chat_id, text=lang["GroupsText"], reply_markup=getKeyboard(KeyboardType.GROUPS, lang, user_id))
