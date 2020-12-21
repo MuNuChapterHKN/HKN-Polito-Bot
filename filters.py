@@ -39,6 +39,11 @@ class FilterContact(BaseFilter):
 class FilterMembers(BaseFilter):
         def filter(self, message):
          return lang_en["members"].lower() == message.text.lower() or lang_it["members"].lower() == message.text.lower()
+
+class Filterelectronicengineeringgroups(BaseFilter):
+        def filter(slef, message):
+         return lang_en["electronicengineeringgroups"].lower()==message.text.lower() or lang_it["electronicengineeringgroups"].lower() == message.text.lower()
+ 
 		 
 class FilterIt(BaseFilter):
     def filter(self, message):
