@@ -32,6 +32,10 @@ class FilterDrive(BaseFilter):
 	def filter(slef, message):
 	  return lang_en["drive"].lower() == message.text.lower() or lang_it["drive"].lower() == message.text.lower()
 
+class FilterBack(BaseFilter):
+	def filter(slef, message):
+	  return lang_en["back"].lower() == message.text.lower() or lang_it["back"].lower() == message.text.lower()
+
 class FilterContact(BaseFilter):
         def filter(self, message):
          return lang_en["contact"].lower() == message.text.lower() or lang_it["contact"].lower() == message.text.lower()

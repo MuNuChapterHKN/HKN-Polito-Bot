@@ -108,12 +108,16 @@ class KeyboardType(Enum):
     MEMBERS = 8
     GROUPS = 9
     ELECTRONICENGINEERINGGROUPS = 10
+    UNDO = 11
 
 # function to get different keyboard types
 def getKeyboard(type, lang, user_id):
     if type == KeyboardType.BACK:
         inline_keyboard = [[InlineKeyboardButton(lang["back"], callback_data="back")]]
         return InlineKeyboardMarkup(inline_keyboard)
+    elif type == KeyboardType.UNDO:
+        custom_keyboard = [[lang["back"]]]
+        return telegram.ReplyKeyboardMarkup(custom_keyboard, resize_keyboard=True)
     elif type == KeyboardType.NEWSLETTER_CONFIRM:
         keyboard_confirm = [[InlineKeyboardButton(lang["newsletterConfirm"], callback_data="confirm")], [InlineKeyboardButton(lang["back"], callback_data="back")]]
         return InlineKeyboardMarkup(keyboard_confirm)
@@ -128,6 +132,9 @@ def getKeyboard(type, lang, user_id):
         return InlineKeyboardMarkup(inline_keyboard)
     elif type == KeyboardType.DRIVE:
         inline_keyboard = [[InlineKeyboardButton(lang["driveButton"], url="< LINK >")]]
+        return InlineKeyboardMarkup(inline_keyboard)
+    elif type == KeyboardType.ELECTRONICENGINEERINGGROUPS:
+        inline_keyboard = [[InlineKeyboardButton(lang["Triennale"], callback_data="Triennale")],[InlineKeyboardButton(lang["Magistrale"], callback_data="Magistrale")]]	
         return InlineKeyboardMarkup(inline_keyboard)
     elif type == KeyboardType.MEMBERS:
 	    #if the user is one of the members show the special buttons
@@ -239,10 +246,10 @@ def inline_button(bot, update):
         bot.send_message(chat_id=query.message.chat_id, text=lang["questionAbort"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id))
         return ConversationHandler.END
     elif query.data =="Triennale":
-        bot.send_message(chat_id=query.message.chat_id, parse_mode='HTML', text='ðŸŽ“ English Course:  \n - <a href="< LINK >">Communication networks</a> \n - <a href="< LINK >">Electronic devices</a> \n - <a href="< LINK >">Automatic control</a> \n - <a href="< LINK >">Electronic Circuits</a> \n - <a href="< LINK >">Applied electronics</a> \n - <a href="< LINK >">Digital transmission</a> \n - <a href="< LINK >">Electromagnetic waves and antennas</a> \n - <a href="< LINK >">Applied signal processing laboratory</a> \n - <a href="< LINK >">Digital systems electronics</a> \n - <a href="< LINK >">Electronic measurements</a> \n \n \n ðŸŽ“ Corso Italiano:  \n - <a href="< LINK >">Economia urbana</a> \n - <a href="< LINK >">Misure</a> \n - <a href="< LINK >">Fibre: preparazione, proprietÃ  e tecnologie di trasformazione</a> \n - <a href="< LINK >">Ingegneria delle cellule e dei tessuti</a> \n - <a href="< LINK >">Ingegneria nelle terapie medico-chirurgiche</a> \n - <a href="< LINK >">RSelezione e progettazione dei materiali per applicazioni ingegneristiche (SPMAI)</a> \n - <a href="< LINK >">Architettura tecnica e cultura del costruito</a> \n - <a href="< LINK >">Strumenti e metodi per la sostenibilitÃ  dei sistemi edilizi e territoriali</a> \n - <a href="< LINK >">Electromagnetic fields</a> \n - <a href="< LINK >">Processi dell industria alimentare</a>\n - <a href="< LINK >">Valutazioni di impatto ambientale</a> \n - <a href="< LINK >">Electronic measurements</a> \n - <a href="< LINK >">Teoria dei segnali e delle comunicazioni</a> \n - <a href="< LINK >">Electronic Circuits</a> \n - <a href="< LINK >">Digital systems electronics</a> \n - <a href="< LINK >">Campi elettromagnetici</a> \n - <a href="< LINK >">Electronic devices</a> \n - <a href="< LINK >">Elettronica dei sistemi digitali</a> \n - <a href="< LINK >">Dispositivi elettronici</a> \n - <a href="< LINK >">Circuiti elettronici</a> \n - <a href="< LINK >">Analisi matematica II</a> \n - <a href="< LINK >">Fisica II</a> \n - <a href="< LINK >">Metodi matematici per l ingegneria</a> \n - <a href="< LINK >">Elettrotecnica</a>')
+        bot.send_message(chat_id=query.message.chat_id, parse_mode='HTML', text='🎓 English Course:  \n - <a href="< LINK >">Communication networks</a> \n - <a href="< LINK >">Electronic devices</a> \n - <a href="< LINK >">Automatic control</a> \n - <a href="< LINK >">Electronic Circuits</a> \n - <a href="< LINK >">Applied electronics</a> \n - <a href="< LINK >">Digital transmission</a> \n - <a href="< LINK >">Electromagnetic waves and antennas</a> \n - <a href="< LINK >">Applied signal processing laboratory</a> \n - <a href="< LINK >">Digital systems electronics</a> \n - <a href="< LINK >">Electronic measurements</a> \n \n \n 🎓 Corso Italiano:  \n - <a href="< LINK >">Economia urbana</a> \n - <a href="< LINK >">Misure</a> \n - <a href="< LINK >">Fibre: preparazione, proprietà e tecnologie di trasformazione</a> \n - <a href="< LINK >">Ingegneria delle cellule e dei tessuti</a> \n - <a href="< LINK >">Ingegneria nelle terapie medico-chirurgiche</a> \n - <a href="< LINK >">RSelezione e progettazione dei materiali per applicazioni ingegneristiche (SPMAI)</a> \n - <a href="< LINK >">Architettura tecnica e cultura del costruito</a> \n - <a href="< LINK >">Strumenti e metodi per la sostenibilità dei sistemi edilizi e territoriali</a> \n - <a href="< LINK >">Electromagnetic fields</a> \n - <a href="< LINK >">Processi dell industria alimentare</a>\n - <a href="< LINK >">Valutazioni di impatto ambientale</a> \n - <a href="< LINK >">Electronic measurements</a> \n - <a href="< LINK >">Teoria dei segnali e delle comunicazioni</a> \n - <a href="< LINK >">Electronic Circuits</a> \n - <a href="< LINK >">Digital systems electronics</a> \n - <a href="< LINK >">Campi elettromagnetici</a> \n - <a href="< LINK >">Electronic devices</a> \n - <a href="< LINK >">Elettronica dei sistemi digitali</a> \n - <a href="< LINK >">Dispositivi elettronici</a> \n - <a href="< LINK >">Circuiti elettronici</a> \n - <a href="< LINK >">Analisi matematica II</a> \n - <a href="< LINK >">Fisica II</a> \n - <a href="< LINK >">Metodi matematici per l ingegneria</a> \n - <a href="< LINK >">Elettrotecnica</a>')
         return ConversationHandler.END
     elif query.data =="Magistrale":
-        bot.send_message(chat_id=query.message.chat_id, parse_mode='HTML', text='ðŸŽ“ Master:  \n - <a href="< LINK >">Sistemi digitali integrati</a> \n - <a href="< LINK >">Testing and certification</a> \n - <a href="< LINK >">High speed electron devices</a> \n - <a href="< LINK >">Finite element modelling</a> \n - <a href="< LINK >">Elettronica analogica e di potenza</a> \n - <a href="< LINK >">Radar and remote sensing</a> \n - <a href="< LINK >">Microwave electronics</a> \n - <a href="< LINK >">Sistemi elettronici a basso consumo</a> \n - <a href="< LINK >">Electronic systems engineering</a> \n - <a href="< LINK >">Integrated systems technology</a>\n - <a href="< LINK >">Photonic devices</a> \n - <a href="< LINK >">Microelectronic systems</a> \n - <a href="< LINK >">Communication systems</a> \n - <a href="< LINK >">Analog and telecommunication electronics</a> \n - <a href="< LINK >">Radiating electromagnetic systems</a> \n - <a href="< LINK >">Guiding electromagnetic systems</a> \n - <a href="< LINK >">Sistemi di misura e sensori</a> \n - <a href="< LINK >">Microelettronica digitale</a> \n - <a href="< LINK >">Advanced antenna engineering</a> \n - <a href="< LINK >">Microelettronica digitale</a> \n - <a href="< LINK >">Computer aided design of communication systems</a> \n - <a href="< LINK >">Mobile and sensor networks</a> \n - <a href="< LINK >">Electronics for embedded systems</a> \n - <a href="< LINK >">Modeling and optimization of embedded systems</a> \n - <a href="< LINK >">Codesign methods and tools</a> \n - <a href="< LINK >">Convex optimization and engineering applications</a> \n - <a href="< LINK >">Electromagnetic fields and biological tissues: effects and medical applications</a>\n- <a href="< LINK >">Innovative wireless platforms for the internet of things</a> \n - <a href="< LINK >">Bioinformatics</a> \n - <a href="< LINK >">Automation and planning of production systems</a> \n - <a href="< LINK >">Advanced electronic drives</a> \n - <a href="< LINK >">Radio frequency integrated circuits</a> \n - <a href="< LINK >">Analog integrated circuits</a> \n - <a href="< LINK >">Projects and laboratory on communication systems</a> \n - <a href="< LINK >">Big data: architectures and data analytics</a> \n - <a href="< LINK >">Testing and fault tolerance</a>\n - <a href="< LINK >">Nanomaterials and nanotechnologies for energy applications</a> \n - <a href="< LINK >">Integrazione di sistemi embedded</a> \n - <a href="< LINK >">Industrial Photonics</a> \n - <a href="< LINK >">Open Optical Networks</a> \n - <a href="< LINK >">Signal Processing and Wireless Transmission Lab</a> \n - <a href="< LINK >">Signal Processing and Optical Transmission Lab</a> \n - <a href="< LINK >">Engineering Empathy</a>\n - <a href="< LINK >">Micro and Nanoelectronic Devices</a> \n - <a href="< LINK >">CAD of semiconductor devices</a> \n - <a href="< LINK >">Electronic transport in crystalline and organic semiconductors</a> \n - <a href="< LINK >">Nanoelectronic systems</a> \n - <a href="< LINK >">Microelectronics and Micro/Nanosystems Technologies</a> \n - <a href="< LINK >">Introduction to MEMS and Bio-MEMS</a> \n - <a href="< LINK >">Design of microsystems</a> \n - <a href="< LINK >">Wireless Integrated Circuits and Systems</a> \n - <a href="< LINK >">Integrated systems architecture</a> \n - <a href="< LINK >">Power electronics</a> \n - <a href="< LINK >">Computer architectures</a> \n - <a href="< LINK >">Synthesis and optimization of digital systems</a> \n - <a href="< LINK >">Digital Electronics</a> \n - <a href="< LINK >">Passive Optical Components</a> \n - <a href="< LINK >">Advanced design for signal integrity and compliance</a> \n - <a href="< LINK >">Tecnologie digitali e societÃ </a> \n - <a href="< LINK >">Sistemi robotici</a> \n - <a href="< LINK >">Digital Communications</a>\n - <a href="< LINK >">Operating systems</a> \n - <a href="< LINK >">Optoelettronica</a>')        
+        bot.send_message(chat_id=query.message.chat_id, parse_mode='HTML', text='🎓 Master:  \n - <a href="< LINK >">Sistemi digitali integrati</a> \n - <a href="< LINK >">Testing and certification</a> \n - <a href="< LINK >">High speed electron devices</a> \n - <a href="< LINK >">Finite element modelling</a> \n - <a href="< LINK >">Elettronica analogica e di potenza</a> \n - <a href="< LINK >">Radar and remote sensing</a> \n - <a href="< LINK >">Microwave electronics</a> \n - <a href="< LINK >">Sistemi elettronici a basso consumo</a> \n - <a href="< LINK >">Electronic systems engineering</a> \n - <a href="< LINK >">Integrated systems technology</a>\n - <a href="< LINK >">Photonic devices</a> \n - <a href="< LINK >">Microelectronic systems</a> \n - <a href="< LINK >">Communication systems</a> \n - <a href="< LINK >">Analog and telecommunication electronics</a> \n - <a href="< LINK >">Radiating electromagnetic systems</a> \n - <a href="< LINK >">Guiding electromagnetic systems</a> \n - <a href="< LINK >">Sistemi di misura e sensori</a> \n - <a href="< LINK >">Microelettronica digitale</a> \n - <a href="< LINK >">Advanced antenna engineering</a> \n - <a href="< LINK >">Microelettronica digitale</a> \n - <a href="< LINK >">Computer aided design of communication systems</a> \n - <a href="< LINK >">Mobile and sensor networks</a> \n - <a href="< LINK >">Electronics for embedded systems</a> \n - <a href="< LINK >">Modeling and optimization of embedded systems</a> \n - <a href="< LINK >">Codesign methods and tools</a> \n - <a href="< LINK >">Convex optimization and engineering applications</a> \n - <a href="< LINK >">Electromagnetic fields and biological tissues: effects and medical applications</a>\n- <a href="< LINK >">Innovative wireless platforms for the internet of things</a> \n - <a href="< LINK >">Bioinformatics</a> \n - <a href="< LINK >">Automation and planning of production systems</a> \n - <a href="< LINK >">Advanced electronic drives</a> \n - <a href="< LINK >">Radio frequency integrated circuits</a> \n - <a href="< LINK >">Analog integrated circuits</a> \n - <a href="< LINK >">Projects and laboratory on communication systems</a> \n - <a href="< LINK >">Big data: architectures and data analytics</a> \n - <a href="< LINK >">Testing and fault tolerance</a>\n - <a href="< LINK >">Nanomaterials and nanotechnologies for energy applications</a> \n - <a href="< LINK >">Integrazione di sistemi embedded</a> \n - <a href="< LINK >">Industrial Photonics</a> \n - <a href="< LINK >">Open Optical Networks</a> \n - <a href="< LINK >">Signal Processing and Wireless Transmission Lab</a> \n - <a href="< LINK >">Signal Processing and Optical Transmission Lab</a> \n - <a href="< LINK >">Engineering Empathy</a>\n - <a href="< LINK >">Micro and Nanoelectronic Devices</a> \n - <a href="< LINK >">CAD of semiconductor devices</a> \n - <a href="< LINK >">Electronic transport in crystalline and organic semiconductors</a> \n - <a href="< LINK >">Nanoelectronic systems</a> \n - <a href="< LINK >">Microelectronics and Micro/Nanosystems Technologies</a> \n - <a href="< LINK >">Introduction to MEMS and Bio-MEMS</a> \n - <a href="< LINK >">Design of microsystems</a> \n - <a href="< LINK >">Wireless Integrated Circuits and Systems</a> \n - <a href="< LINK >">Integrated systems architecture</a> \n - <a href="< LINK >">Power electronics</a> \n - <a href="< LINK >">Computer architectures</a> \n - <a href="< LINK >">Synthesis and optimization of digital systems</a> \n - <a href="< LINK >">Digital Electronics</a> \n - <a href="< LINK >">Passive Optical Components</a> \n - <a href="< LINK >">Advanced design for signal integrity and compliance</a> \n - <a href="< LINK >">Tecnologie digitali e società</a> \n - <a href="< LINK >">Sistemi robotici</a> \n - <a href="< LINK >">Digital Communications</a>\n - <a href="< LINK >">Operating systems</a> \n - <a href="< LINK >">Optoelettronica</a>')        
         return ConversationHandler.END
     elif query.data == "HRGame":
         inline_keyboard = [[InlineKeyboardButton(lang["Classifica"], url="<RANKING LINK>")]]
@@ -356,29 +363,32 @@ TYPING = 1
 def questions(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["askAQuestion"], reply_markup=getKeyboard(KeyboardType.BACK, lang, user_id))
+    bot.send_message(chat_id=update.message.chat_id, text=lang["askAQuestion"], reply_markup=getKeyboard(KeyboardType.UNDO, lang, user_id))
     return TYPING
 
 # Question appender to file
-# TODO language selection
+# if the question is the result of the pushing of the "<-- back" button, the question is aborted, otherwise the question is saved
 def answers(bot,update):
     lang = select_language(update.effective_user.id)
-    out_file = open("questions.txt", "a+", encoding="utf-8")
-    user_id = str(update.effective_user.id)
     user_id1 = update.effective_user.id
-    out_file.write((str(update.message.from_user.username)+"-"+user_id+"-"+update.message.text).strip("\n")+"\n")
-    out_file.close()
-    bot.send_message(chat_id=update.message.chat_id, text=lang["questionSaved"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id1))
-    for admin in LIST_OF_ADMINS:
-        bot.send_message(chat_id=admin, text=lang["newQuestionFrom"]+str(update.message.from_user.username)+"\n-"+update.message.text+"\n", reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id))  
-    return ConversationHandler.END    
-    
+    if update.message.text != lang["back"]:
+        out_file = open("questions.txt", "a+", encoding="utf-8")
+        user_id = str(update.effective_user.id)
+        out_file.write((str(update.message.from_user.username)+"-"+user_id+"-"+update.message.text).strip("\n")+"\n")
+        out_file.close()   
+        bot.send_message(chat_id=update.message.chat_id, text=lang["questionSaved"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id1))
+       	for admin in LIST_OF_ADMINS:
+            bot.send_message(chat_id=admin, text=lang["newQuestionFrom"]+str(update.message.from_user.username)+"\n-"+update.message.text+"\n", reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id))  
+    else:
+        bot.send_message(chat_id=update.message.chat_id, text=lang["questionAbort"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id1))  
+    return ConversationHandler.END     
+	
 # News handler
 # TODO language selection
 @send_typing_action
 def fetch_news(bot, update):
     lang = select_language(update.effective_user.id)
-    client = Client(url = 'https://hknpolito.org/xmlrpc', username = "< HKN USERNAME >", password = os.environ['HKN_WEB_PASSWORD'])
+    client = Client(url = '< LINK >', username = "< HKN USERNAME >", password = os.environ['HKN_WEB_PASSWORD'])
     postfilters = {"number": 3, "order": "ASC"}
     postsdict = client.call(posts.GetPosts(postfilters))
     user_id = update.effective_user.id
@@ -497,6 +507,12 @@ def display_drive(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
     bot.send_message(chat_id=update.message.chat_id, text=lang["drivetext"], reply_markup=getKeyboard(KeyboardType.DRIVE, lang, user_id))   
+	
+def go_back(bot, update):
+    lang = select_language(update.effective_user.id)
+    user_id = update.effective_user.id
+    bot.send_message(chat_id=query.message.chat_id, text=lang["questionAbort"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id))
+    return ConversationHandler.END
 	
 # Contact handler
 @send_typing_action
@@ -677,6 +693,13 @@ def showsaved(bot, update):
     if(n == 0):
         bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestionsSaved"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id))
 
+# EIG handler
+@send_typing_action
+def electronicengineeringgroups(bot, update):
+    lang = select_language(update.effective_user.id)
+    user_id = update.effective_user.id
+    bot.send_message(chat_id=update.message.chat_id, text=lang["electronicengineeringgroupstext"], reply_markup=getKeyboard(KeyboardType.ELECTRONICENGINEERINGGROUPS, lang, user_id))	
+  
 # Configurating handlers
 reply_conv_handler = ConversationHandler(
     entry_points=[CommandHandler("reply", reply)],
@@ -698,6 +721,7 @@ question_conv_handler = ConversationHandler(
                CallbackQueryHandler(inline_button)] #TODO: probably CallbackQueryHandler useless
 )
 
+
 # Adding handlers
 dispatcher.add_handler(reply_conv_handler)
 dispatcher.add_handler(question_conv_handler)
@@ -716,6 +740,12 @@ dispatcher.add_handler(savedq_handler)
 
 newsletter_handler = CommandHandler("sendnewsletter", sendNewsletter)
 dispatcher.add_handler(newsletter_handler)
+
+filter_electronicengineeringgroups = filters.Filterelectronicengineeringgroups()
+electronicengineeringgroups_handler = MessageHandler(filter_electronicengineeringgroups,electronicengineeringgroups)
+com_electronicengineeringgroups_handler = CommandHandler("electronicengineeringgroups", electronicengineeringgroups)
+dispatcher.add_handler(com_electronicengineeringgroups_handler)
+dispatcher.add_handler(electronicengineeringgroups_handler)
 
 filter_tutoring = filters.FilterTutoring()
 tutoring_handler = MessageHandler(filter_tutoring, tutor.tutoring)
@@ -740,6 +770,13 @@ drive_handler = MessageHandler(filter_drive, display_drive);
 com_drive_handler = CommandHandler("drive", display_drive)
 dispatcher.add_handler(com_drive_handler)
 dispatcher.add_handler(drive_handler)
+
+#function used in the section askus associated to the behavior of the "<-- back" keyboard
+filter_back = filters.FilterBack()
+back_handler = MessageHandler(filter_back, go_back);
+com_back_handler = CommandHandler("back", go_back)
+dispatcher.add_handler(com_back_handler)
+dispatcher.add_handler(back_handler)
 
 filter_news = filters.FilterNews()
 news_handler = MessageHandler(filter_news, fetch_news)
