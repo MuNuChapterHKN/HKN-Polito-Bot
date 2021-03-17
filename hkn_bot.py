@@ -597,6 +597,13 @@ def save_question(bot, update):
     return ANSWER
 
 @restricted
+def help_admin(bot,update):
+    lang = select_language(update.effective_user.id)
+    user_id = update.effective_user.id
+    bot.send_message(chat_id=update.message.chat_id, text=lang["help_admin_text"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id))
+    return ConversationHandler.END	
+
+@restricted
 def skip(bot,update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
@@ -734,6 +741,9 @@ dispatcher.add_handler(help_handler)
 
 pendingq_handler = CommandHandler("showpending", showpending)
 dispatcher.add_handler(pendingq_handler)
+
+help_admin_handler = CommandHandler("help_admin", help_admin)
+dispatcher.add_handler(help_admin_handler)
 
 savedq_handler = CommandHandler("showsaved", showsaved)
 dispatcher.add_handler(savedq_handler)

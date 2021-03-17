@@ -40,6 +40,7 @@
   "noQuestions": "There aren't any questions to answer",
   "questionsAnswered": "All questions were answered",
   "noQuestionsSaved": "No questions saved",
+  "help_admin_text": "🔧Here is the list of commands for handling questions:\n - /reply: used to answer the question, write the answer directly and press enter, the answer will be sent only to the user who asked the question.\n - /skip: will allow you to skip the question, in so that you can answer it later.\n - /delete: will remove the question from the file of saved questions not yet answered.\n - /save: allows you to save the question in a specific file.\n - /cancel: use it to leave the conversation.\n - /showpending: show questions that have not yet been answered.\n - /showsaved: show questions saved with the command /save.\n ",
   "newsletter": "Subscribe to our Newsletter",
   "newsletterSubscription": "Thank you for subscribing to our Newsletter 😁",
   "newsletterUnsubscription": "We are sorry that you're not interested in our Newsletter anymore 🙁",
