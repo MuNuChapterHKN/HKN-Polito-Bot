@@ -52,11 +52,13 @@
 	"members": "Membri",
 	"FI": "Formazione Interna",
 	"TelegramGroups": "Gruppi Telegram",
+	"usefulLinks": "Link Utili",
+	"LinkDescription": "📲 Qui di sotto la lista di alcuni link utili esclusivi per noi membri!",
     "Classifica": "Classifica completa",
 	"HRGame": "Risultati degli indovinelli",
-	"HRRes": "Ecco la classifica degli indovinelli, vediamo un po' chi sono i più cervelloni tra di noi 🤪 \n🥇 Marco Pappalardo 7 Punti \n🥈 Alessio Caviglia 4 Punti \n🥉 Andrea Giorgi 4 Punti \n(A parità di punteggio si segue l'ordine alfaberico sui cognomi)",
+	"HRRes": "Ecco la classifica degli indovinelli, vediamo un po' chi sono i più cervelloni tra di noi 🤪 \n🥇 Marco Pappalardo 8 Punti \n🥈 Lorenzo Gramigni 6.5 Punti \n🥉 Matteo Latino 6.5 Punti \n(A parità di punteggio si segue l'ordine alfaberico sui cognomi)",
 	"tutorText": "Ecco la lista dei gruppi di studio:",
-	"GroupsText": "Ecco qui la raccolta dei nostri amati gruppi e canali Telegram, potete trovare il gruppo dove ci sentiamo regolarmente (EtaKazzateNu) oppure tanti altri gruppi che ci servono per condividere hobby, passioni o per scambiarci varie esperienze, entra pure tu a dirci la tua😜",
+	"GroupsText": "Ecco qui la raccolta dei nostri amati gruppi Telegram, potete trovare il gruppo dove ci sentiamo regolarmente (EtaKazzateNu) oppure tanti altri gruppi che ci servono per condividere hobby, passioni o per scambiarci varie esperienze, entra pure tu a dirci la tua😜",
     "memberstext": "🔓 Questa sezione è privata ai membri di HKN, seleziona il tasto Formazione interna per avere accesso ai nostri ultimi eventi privati (password : hknFI), invece seleziona il tasto Gruppi Telegram per avere accesso alla lista dei nostri gruppi e canali:",
 	"back": "⬅ Indietro"
 }
