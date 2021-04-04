@@ -10,7 +10,6 @@ Indice
   - [Subscribe to our newsletter](#subscribe-to-our-newsletter)
   - [Drive](#drive)
   - [Contacts](#contacts)
-  - [Members](#members)
 - [Problemi attuali e possibili soluzioni](#problemi-attuali-e-possibili-soluzioni)
   - [Problemi generali (minimali)](#problemi-generali-minimali)
   - [Problemi riscontrati nella sezione 'Ask us something'](#problemi-riscontrati-nella-sezione-ask-us-something)
@@ -21,10 +20,9 @@ HKN Polito Bot
 =================================
 HKN Polito Bot è il bot telegram ufficiale del [Mu Nu Chapter of IEEE-HKN](https://hknpolito.org/) creato appositamente dall'associazione al fine di poter agevolare sia membri ma soprattutto esterni nell'entrare in contatto con il mondo del nostro chapter in maniera semplice e immediata. 
 
-Il Bot è strutturato in modo tale da porre l'utente davanti ad una tabella di bottoni (ReplyKeyboardMarkup), i quali, oltre a facilitare l'esperienza dell'utente stesso, sono direttamente collegati alle relative informazioni, rispondendo in maniera automatica e istantanea alle varie richieste poste. Tramite il bot, infatti, è possibile non solo ricevere le principali informazioni del Mu Nu Chapter, tra cui la nostra storia e i nostri contatti principali, ma vi è anche la possibilità di rimanere sempre aggiornati sugli eventi da noi organizzati, accedere alle informazioni relative all'organizzazione di gruppi di studio, collegarsi direttamente al drive associativo che raccoglie svariato materiale didattico e poter ricevere le news pubblicate dai nostri membri iscrivendosi alla nostra newsletter, è inoltre presente, anche qui tramite un semplice bottone, la possibilità di contattare direttamente l'associazione e porre domande di qualsiasi tipologia, le quali, una volta registrate e raccolte dal nostro bot, possono essere facilmente consultate dai diretti interessati che risponderanno quanto prima.
-Una ulteriore funzione è quella relativa ai membri interni a HKN, infatti essi dispongono di un ulteriore bottone nella tastiera principale che permette loro di vedere la totalità dei link ai gruppi e canali dell'associazione e un link ai video degli eventi di formazione  interna dal sito.
+Il Bot è strutturato in modo tale da porre l'utente davanti ad una tabella di bottoni (ReplyKeyboardMarkup), i quali, oltre a facilitare l'esperienza dell'utente stesso, sono direttamente collegati alle relative informazioni, rispondendo in maniera automatica e istantanea alle varie richieste poste. Tramite il bot, infatti, è possibile non solo ricevere le principali informazioni del Mu Nu Chapter, tra cui la nostra storia e i nostri contatti principali, ma vi è anche la possibilità di rimanere sempre aggiornati sugli eventi da noi organizzati, accedere alle informazioni relative all'organizzazione di gruppi di studio, collegarsi direttamente al drive associativo che raccoglie svariato materiale didattico e poter ricevere le news pubblicate dai nostri membri iscrivendosi alla nostra newsletter. Infine è inoltre presente, anche qui tramite un semplice bottone, la possibilità di contattare direttamente l'associazione e porre domande di qualsiasi tipologia, le quali, una volta registrate e raccolte dal nostro bot, possono essere facilmente consultate dai diretti interessati che risponderanno quanto prima.
 
-Il Bot è interamente scritto in Python (Python3) e la principale libreria utilizzata per interfacciarsi con [Telegram Bot API](https://core.telegram.org/bots/api) è [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot) (versione 12.6.1).
+Il Bot è interamente scritto in Python (Python3) e la principale libreria utilizzata per interfacciarsi con [Telegram Bot API](https://core.telegram.org/bots/api) è [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot).
 
 Struttura e funzionamento del bot 
 =================================
@@ -38,7 +36,6 @@ All'avvio del bot, dopo un messaggio di benvenuto, compaiono due bottoni per la 
 - Subscribe to our Newsletter (Iscriviti alla Newsletter)
 - Drive
 - Contacts
-- Members
 
 Ognuno di questi è collegato, tramite opportuni handler (CommandHandler, per dare comandi testuali che iniziano con '/', e MessageHandler, per impartire comandi tramite i bottoni), ad una funzione che permette di gestirne il funzionamento. Vediamoli nel dettaglio.
 
@@ -69,6 +66,7 @@ L'handler che gestisce la sezione 'Facci una domanda' è differente rispetto a t
 - Utilizzare la parola chiave */cancel*, per stoppare il ConversationalHandler, e quindi abbandonare la conversazione.
 
 Inoltre, in ogni momento, **gli admin** possono conoscere quali sono le domande salvate e quelle a cui si deve ancora rispondere, tramite due parole chiave che scateneranno i rispettivi Command Handler: */showsaved* e */showpending*, rispettivamente. Il primo mostrerà a schermo tutte le domande che sono state salvate in precedenza (leggendole dal file `savedquestions.txt`), mentre il secondo mostrerà tutte le domande a cui non si è ancora risposto (leggendole dal file `questions.txt`).
+Per avere la lista completa dei comandi solo **gli admin** possono usare il comando */help_admin* in qualsiasi momento che stamperà la lista di quelli appena citati.
 
 About
 -----
@@ -95,10 +93,6 @@ Contacts
 ---------------------------
 L'handler che gestisce la sezione 'Contatti' è la funzione *contact(bot, update)*. Essa mostra all'utente le informazioni relative ai contatti email, facebook e in instagram di HKN, traendole direttamente dalla key 'contacttext' nei file `it.json` o `en.json` in relazione alla lingua selezionata.
 
-Members
----------------------------
-L'handler che gestisce la sezione 'Members' è la funzione *members(bot, update)*, essa semplicemente permette di gestire la funzione del tasto Members che appare solo a chi fa parte dell'associazione (questo ultimo fatto è verificato controllando che lo user ID sia nella lista dei membri presa dal Database). La funzione di questo tasto è quella di mostrare tramite degli  InlineKeyboardButton il set di gruppi Telegram e canali dell'associazione oppure il link cliccabile agli eventi di formazione interna.
-
 #### 
 &nbsp;
 ####
@@ -109,8 +103,6 @@ Infine, oltre alle ReplyKeyboardMarkup (bottoni della custom keyboard), sono pre
 - <ins>Unsubscribe</ins>: per annullare l'iscrizione alla newsletter
 - <ins>Lang:it</ins> : per scegliere la lingua italiana, all'avvio del bot
 - <ins>Lang:en</ins> : per scegliere la lingua inglese, all'avvio del bot
-- <ins>Internal Training</ins>: per accedere alla sezione del sito privata agli eventi di formazione interna.
-- <ins>Telegram groups</ins>: per avere la lista dei gruppi Telegram e canali dell'associazione.
 
 Problemi attuali e possibili soluzioni 
 ======================================
