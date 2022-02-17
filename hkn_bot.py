@@ -19,10 +19,13 @@ import re
 import html2text
 from urllib.request import urlopen
 import time
-import datetime
+
 from enum import Enum
 # Downloads from website every day study groups dates
 import tutor
+
+from event import *
+
 from wordpress_xmlrpc import Client
 from wordpress_xmlrpc.methods import posts
 from functools import wraps
@@ -111,6 +114,7 @@ class KeyboardType(Enum):
     UNDO = 11
 
 # function to get different keyboard types
+
 def getKeyboard(type, lang, user_id):
     if type == KeyboardType.BACK:
         inline_keyboard = [[InlineKeyboardButton(lang["back"], callback_data="back")]]
@@ -400,53 +404,16 @@ def fetch_news(bot, update):
         content = post.title + "\n" + post.link
         bot.send_message(chat_id=update.message.chat_id, text=content, reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id))
 
-
-# Event handler
-class Event:
-    title = 'A title'
-    description = 'Text'
-    date = datetime.datetime(1943,3, 13) #year, month, day
-    imageLink = str() #optional
-    facebookLink = str() #optional
-    eventbriteLink = str() #optional
-    instagramLink = str() #optional
-
-    def __init__(self, title, description, date, imageLink=None, facebookLink=None, eventbriteLink=None, instagramLink=None):
-        self.title = title
-        self.description = description
-        self.date = date
-        self.imageLink = imageLink
-        self.facebookLink = facebookLink
-        self.eventbriteLink = eventbriteLink
-        self.instagramLink = instagramLink
-
-# Loads events from json file
-def load_events(update):
-    lang = select_language(update.effective_user.id)
-    eventList = []
-    with open("events.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
-        for x in data:
-            e = Event(
-                title = x["Title"],
-                date = datetime.datetime.strptime(x["Datetime"], "%Y %m %d"),
-                description = x["Description"],
-                imageLink = x["Image Link"],
-                eventbriteLink = x["Eventbrite Link"],
-                facebookLink = x["Facebook Link"],
-                instagramLink = x["Instagram Link"]
-            )
-            if x["Lang"] == lang["Lang"]:
-                eventList.append(e)
-    return eventList
-
 # Displays scheduled events
 @send_typing_action
 def display_events(bot, update):
-    lang = select_language(update.effective_user.id)
-    n = 0
-    eventList = load_events(update)
+    # Retrieving the language
     user_id = update.effective_user.id
+    lang = select_language(user_id)
+    langString = lang["Lang"]
+   
+    n = 0
+    eventList = load_events(langString)
     for theEvent in eventList:
         todayDate = datetime.datetime.now()
         if theEvent.date > todayDate: #do not print past events
@@ -710,7 +677,7 @@ def electronicengineeringgroups(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
     bot.send_message(chat_id=update.message.chat_id, text=lang["electronicengineeringgroupstext"], reply_markup=getKeyboard(KeyboardType.ELECTRONICENGINEERINGGROUPS, lang, user_id))	
-  
+
 # Configurating handlers
 reply_conv_handler = ConversationHandler(
     entry_points=[CommandHandler("reply", reply)],
