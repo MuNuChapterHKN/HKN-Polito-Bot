@@ -1,10 +1,10 @@
 #########################################################################################################
-### HKN Telegram Bot. This is the code for the official bot of the Mu Nu Chapter of IEEE Eta Kappa Nu ###
+### HKN Telegram Bot. Main program for the official bot of the Mu Nu Chapter of IEEE Eta Kappa Nu ###
 #########################################################################################################
 
 # Imports
 import os
-import psycopg2
+import psycopg2 
 import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import filters
@@ -60,7 +60,7 @@ def getUsersLanguage():
 
     except (Exception, psycopg2.Error) as error :
         # Postgres automatically rollback the transaction
-        print ("Error while connecting to PostgreSQL", error)
+        print ("Error while connecting to PostgreSQL", str(error))
     finally:
         if(conn):
             cursor.close()
@@ -96,7 +96,8 @@ def getMembersID():
 
 # Dictionary which stores language used by every user
 users = getUsersLanguage()
-# List containing all the ID's of all members
+
+# List containing ids of all members
 members_list = getMembersID()
 
 # enumeration to handle different keyboard types
@@ -363,7 +364,7 @@ def updateUserLanguage(user_id, language):
             cursor.close()
             conn.close()
             print("PostgreSQL connection is closed")
-
+    
 # Questions handler
 # TODO language selection
 TYPING = 1
