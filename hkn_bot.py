@@ -39,15 +39,25 @@ from Crypto.Hash import SHA3_512
 from Crypto.Util.Padding import pad, unpad
 from psycopg2 import Error
 
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # URL of Postgres db
 DATABASE_URL = os.environ['DATABASE_URL']
+
+
+def get_db_conn():
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    return conn
 
 # get users dictionary from db 
 def getUsersLanguage():
     users_dict = {}
     try:
         # connect to db
-        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        conn = get_db_conn()
         conn.autocommit = True
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users;")
@@ -67,13 +77,13 @@ def getUsersLanguage():
             conn.close()
             print("PostgreSQL connection is closed")
             return users_dict
-			
+
 # get members list from db 
 def getMembersID():
     memb = []
     try:
         # connect to db
-        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        conn = get_db_conn()
         conn.autocommit = True
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM members;")
@@ -210,7 +220,7 @@ def restricted(func):
     def wrapped(bot, update, *args, **kwargs):
         user_id = update.effective_user.id
         if user_id not in LIST_OF_ADMINS:
-            print("Unauthorized access denied for {}. This action will be reported.".format(user_id))
+            print("Unauthorized access denied for {}. This action will be reported.".format(user_id)) # TODO: Ok but say it to the user
             return
         return func(bot, update, *args, **kwargs)
     return wrapped
@@ -270,7 +280,7 @@ def inline_button(bot, update):
     elif query.data == "confirm":
         try:
             # connect to db
-            conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+            conn = get_db_conn()
             conn.autocommit = True
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM subscribed WHERE id = {};".format(str(query.message.chat_id)))
@@ -296,7 +306,7 @@ def inline_button(bot, update):
     elif query.data == "unsubscribe":
         try:
             # connect to db and execute query
-            conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+            conn = get_db_conn()
             conn.autocommit = True
             cursor = conn.cursor()
             cursor.execute("DELETE FROM subscribed WHERE id = {}".format(query.message.chat_id))
@@ -339,7 +349,7 @@ def sel_language_eng(bot, update):
 def updateUserLanguage(user_id, language):
     try:
         # connect to db
-        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        conn = get_db_conn()
         conn.autocommit = True
         cursor = conn.cursor()
         cursor.execute("SELECT lang FROM users WHERE id = '{}';".format(user_id))
@@ -447,7 +457,7 @@ def display_newsletterSubscription(bot, update):
 
     try:
         # connect to db
-        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        conn = get_db_conn()
         conn.autocommit = True
         cursor = conn.cursor()
         cursor.execute("SELECT id FROM subscribed WHERE id = {};".format(str(update.message.chat_id)))
@@ -626,7 +636,7 @@ def sendNewsletter(bot, update):
     idList = []
     try:
         # connect to db
-        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        conn = get_db_conn()
         conn.autocommit = True
         cursor = conn.cursor()
         cursor.execute("SELECT id FROM subscribed;")
