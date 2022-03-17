@@ -8,27 +8,23 @@ import psycopg2
 import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import filters
-import json
 from telegram.ext import Updater
 from telegram.ext import CommandHandler
 from telegram.ext import ConversationHandler
 from telegram.ext import MessageHandler
 from telegram.ext import CallbackQueryHandler
 from telegram.ext import Filters
-import re
-import html2text
-from urllib.request import urlopen
-import time
 
 from enum import Enum
 # Downloads from website every day study groups dates
 import tutor
+from db import _get_db_conn, get_users_lang, get_members, is_subscriber
+from common import DATABASE_URL, CYPHERKEY, BOT_TOKEN, WEB_PASSWORD
 
 from event import *
 
 from wordpress_xmlrpc import Client
 from wordpress_xmlrpc.methods import posts
-from functools import wraps
 from telegram import ChatAction
 # Lang dictionaries
 from lang import lang_en
@@ -37,82 +33,17 @@ import binascii
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA3_512
 from Crypto.Util.Padding import pad, unpad
-from psycopg2 import Error
 
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
-
-# utils
-from utils.keyboard import getKeyboard
-
-# URL of Postgres db
-DATABASE_URL = os.environ['DATABASE_URL']
-
-
-def get_db_conn():
-    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-    return conn
-
-# get users dictionary from db 
-def getUsersLanguage():
-    users_dict = {}
-    try:
-        # connect to db
-        conn = get_db_conn()
-        conn.autocommit = True
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users;")
-        record = cursor.fetchone()
-
-        # for each row, add entry in dictionary 
-        while record is not None:
-            users_dict[str(record[0])] = str(record[1])
-            record = cursor.fetchone()
-
-    except (Exception, psycopg2.Error) as error :
-        # Postgres automatically rollback the transaction
-        print ("Error while connecting to PostgreSQL", str(error))
-    finally:
-        if(conn):
-            cursor.close()
-            conn.close()
-            print("PostgreSQL connection is closed")
-            return users_dict
-
-# get members list from db 
-def getMembersID():
-    memb = []
-    try:
-        # connect to db
-        conn = get_db_conn()
-        conn.autocommit = True
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM members;")
-        record = cursor.fetchone()
-
-        # for each row, add entry in the list 
-        while record is not None:
-            memb.append(record[0])
-            record = cursor.fetchone()
-
-    except (Exception, psycopg2.Error) as error :
-        # Postgres automatically rollback the transaction
-        print ("Error while connecting to PostgreSQL", error)
-    finally:
-        if(conn):
-            cursor.close()
-            conn.close()
-            print("PostgreSQL connection is closed")
-            return memb
-
 # Dictionary which stores language used by every user
-users = getUsersLanguage()
+users = get_users_lang()
 
 # List containing ids of all members
-members_list = getMembersID()
+members_list = get_members()
 
 # Bot's typing action
 def send_action(action):
@@ -140,10 +71,12 @@ def select_language(user_id):
 from functools import wraps
 
 # Decrypt admins file and set LIST_OF_ADMINS variable
-def decrypt():
+def decrypt() -> set[int]:
+    admins = set()
+
     fr = open("admins.txt", 'r')
     hashed_key = binascii.a2b_base64(fr.readline().encode())
-    hkn_key = os.environ['HKN_BOT_CIPHERKEY']
+    hkn_key = CYPHERKEY
     if len(hkn_key) < 16:
         key = pad(hkn_key.encode(), 16)
     elif len(hkn_key) > 16:
@@ -155,12 +88,13 @@ def decrypt():
         print('Wrong key!')
     aes = AES.new(key, AES.MODE_ECB)
     for i in fr:
-        LIST_OF_ADMINS.append(int(unpad(aes.decrypt(binascii.a2b_base64(i.encode())), 16).decode().strip()))
+        admins.add(int(unpad(aes.decrypt(binascii.a2b_base64(i.encode())), 16).decode().strip()))
     fr.close()
 
+    return admins
+
 # Handling of restricted commands
-LIST_OF_ADMINS = []
-decrypt()
+LIST_OF_ADMINS = decrypt()
 
 def restricted(func):
     @wraps(func)
@@ -172,8 +106,8 @@ def restricted(func):
         return func(bot, update, *args, **kwargs)
     return wrapped
 
-# Retrieving bot token (saved as an env variable)
-updater = Updater(token = os.environ['HKN_BOT_TOKEN']) # -> metterlo come variabile d'ambiente
+
+updater = Updater(token=BOT_TOKEN)
 # Setting handlers dispatcher
 dispatcher = updater.dispatcher
 
@@ -187,7 +121,7 @@ def start(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
     bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"], reply_markup=getKeyboard(KeyboardType.LANGUAGE, lang, user_id))
-	
+
 # Help command handler
 def help(bot, update):
     lang = select_language(update.effective_user.id)
@@ -225,35 +159,41 @@ def inline_button(bot, update):
         bot.send_message(chat_id=query.message.chat_id, text=lang["LinkDescription"], reply_markup=InlineKeyboardMarkup(inline_keyboard))
         return ConversationHandler.END
     elif query.data == "confirm":
-        try:
-            # connect to db
-            conn = get_db_conn()
-            conn.autocommit = True
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM subscribed WHERE id = {};".format(str(query.message.chat_id)))
-            record = cursor.fetchone()
-            
-            # id is already a subscriber
-            while(record):
-                bot.send_message(chat_id=query.message.chat_id, text=lang["alreadySubscribed"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id))
-                return ConversationHandler.END
+        # try:
+        #     # connect to db
+        #     conn = _get_db_conn()
+        #     conn.autocommit = True
+        #     cursor = conn.cursor()
+        #     cursor.execute("SELECT * FROM subscribed WHERE id = {};".format(str(query.message.chat_id)))
+        #     record = cursor.fetchone()
+        #
+        #     # id is already a subscriber
+        #     while(record):  # What?
+        #         bot.send_message(chat_id=query.message.chat_id, text=lang["alreadySubscribed"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id))
+        #         return ConversationHandler.END
+        #
+        #     # id is a new subscriber!
+        #     cursor.execute("INSERT INTO subscribed(id) VALUES({})".format(query.message.chat_id))
+        #     bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterSubscription"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id))
+        #     return ConversationHandler.END
+        # except (Exception, psycopg2.Error) as error :
+        #     # Postgres automatically rollback the transaction
+        #     print ("Error while connecting to PostgreSQL", error)
+        # finally:
+        #     if(conn):
+        #         cursor.close()
+        #         conn.close()
+        #         print("PostgreSQL connection is closed")
 
-            # id is a new subscriber!
-            cursor.execute("INSERT INTO subscribed(id) VALUES({})".format(query.message.chat_id))
-            bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterSubscription"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id))
+        if (is_subscriber(query.message.chat_id)):
+            bot.send_message(chat_id=query.message.chat_id, text=lang["alreadySubscribed"],
+                             reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id))
             return ConversationHandler.END
-        except (Exception, psycopg2.Error) as error :
-            # Postgres automatically rollback the transaction
-            print ("Error while connecting to PostgreSQL", error)
-        finally:
-            if(conn):
-                cursor.close()
-                conn.close()
-                print("PostgreSQL connection is closed")
+
     elif query.data == "unsubscribe":
         try:
             # connect to db and execute query
-            conn = get_db_conn()
+            conn = _get_db_conn()
             conn.autocommit = True
             cursor = conn.cursor()
             cursor.execute("DELETE FROM subscribed WHERE id = {}".format(query.message.chat_id))
@@ -296,7 +236,7 @@ def sel_language_eng(bot, update):
 def updateUserLanguage(user_id, language):
     try:
         # connect to db
-        conn = get_db_conn()
+        conn = _get_db_conn()
         conn.autocommit = True
         cursor = conn.cursor()
         cursor.execute("SELECT lang FROM users WHERE id = '{}';".format(user_id))
@@ -343,18 +283,18 @@ def answers(bot,update):
         out_file.write((str(update.message.from_user.username)+"-"+user_id+"-"+update.message.text).strip("\n")+"\n")
         out_file.close()   
         bot.send_message(chat_id=update.message.chat_id, text=lang["questionSaved"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id1))
-       	for admin in LIST_OF_ADMINS:
+        for admin in LIST_OF_ADMINS:
             bot.send_message(chat_id=admin, text=lang["newQuestionFrom"]+str(update.message.from_user.username)+"\n-"+update.message.text+"\n", reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id))  
     else:
         bot.send_message(chat_id=update.message.chat_id, text=lang["questionAbort"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id1))  
-    return ConversationHandler.END     
-	
+    return ConversationHandler.END     # TODO: Why does this get stuck?
+
 # News handler
 # TODO language selection
 @send_typing_action
 def fetch_news(bot, update):
     lang = select_language(update.effective_user.id)
-    client = Client(url = '< LINK >', username = "< HKN USERNAME >", password = os.environ['HKN_WEB_PASSWORD'])
+    client = Client(url = '< LINK >', username = "< HKN USERNAME >", password = WEB_PASSWORD)
     postfilters = {"number": 3, "order": "ASC"}
     postsdict = client.call(posts.GetPosts(postfilters))
     user_id = update.effective_user.id
@@ -404,7 +344,7 @@ def display_newsletterSubscription(bot, update):
 
     try:
         # connect to db
-        conn = get_db_conn()
+        conn = _get_db_conn()
         conn.autocommit = True
         cursor = conn.cursor()
         cursor.execute("SELECT id FROM subscribed WHERE id = {};".format(str(update.message.chat_id)))
@@ -436,20 +376,20 @@ def display_drive(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
     bot.send_message(chat_id=update.message.chat_id, text=lang["drivetext"], reply_markup=getKeyboard(KeyboardType.DRIVE, lang, user_id))   
-	
+
 def go_back(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
     bot.send_message(chat_id=query.message.chat_id, text=lang["questionAbort"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id))
     return ConversationHandler.END
-	
+
 # Contact handler
 @send_typing_action
 def contact(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
     bot.send_message(chat_id=update.message.chat_id, text=lang["contacttext"], reply_markup=getKeyboard(KeyboardType.DEFAULT, lang, user_id))
-	
+
 # Members handler
 @send_typing_action
 def members(bot, update):
@@ -583,7 +523,7 @@ def sendNewsletter(bot, update):
     idList = []
     try:
         # connect to db
-        conn = get_db_conn()
+        conn = _get_db_conn()
         conn.autocommit = True
         cursor = conn.cursor()
         cursor.execute("SELECT id FROM subscribed;")
