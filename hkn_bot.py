@@ -3,9 +3,7 @@
 #########################################################################################################
 
 # Imports
-import os
-import psycopg2 
-import telegram
+import psycopg2
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import filters
 from telegram.ext import Updater
@@ -15,11 +13,11 @@ from telegram.ext import MessageHandler
 from telegram.ext import CallbackQueryHandler
 from telegram.ext import Filters
 
-from enum import Enum
 # Downloads from website every day study groups dates
 import tutor
-from db import _get_db_conn, get_users_lang, get_members, is_subscriber
-from common import DATABASE_URL, CYPHERKEY, BOT_TOKEN, WEB_PASSWORD
+from utils.db import _get_db_conn, is_subscriber
+from utils.common import users
+from utils.env import CYPHERKEY, BOT_TOKEN, WEB_PASSWORD
 
 from event import *
 
@@ -34,16 +32,6 @@ from Crypto.Cipher import AES
 from Crypto.Hash import SHA3_512
 from Crypto.Util.Padding import pad, unpad
 
-
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# Dictionary which stores language used by every user
-users = get_users_lang()
-
-# List containing ids of all members
-members_list = get_members()
 
 # Bot's typing action
 def send_action(action):

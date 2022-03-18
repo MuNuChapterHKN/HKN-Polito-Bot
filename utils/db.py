@@ -1,5 +1,6 @@
 import psycopg2
-from common import DATABASE_URL
+from utils.env import DATABASE_URL
+
 
 def _get_db_conn():
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
