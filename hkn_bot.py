@@ -1,13 +1,8 @@
 # Imports
 import psycopg2
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, CallbackQueryHandler, Filters
 import filters
-from telegram.ext import Updater
-from telegram.ext import CommandHandler
-from telegram.ext import ConversationHandler
-from telegram.ext import MessageHandler
-from telegram.ext import CallbackQueryHandler
-from telegram.ext import Filters
 
 # Downloads from website every day study groups dates
 import tutor
