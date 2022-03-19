@@ -1,12 +1,12 @@
 # Imports
-import psycopg2
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, CallbackQueryHandler, Filters
 import filters
 
 # Downloads from website every day study groups dates
 import tutor
-from utils.db import _get_db_conn, is_subscriber
+from utils.db import is_subscriber, add_subscriber, get_subscribers, remove_subscriber, \
+    update_user_language
 from utils.common import users
 from utils.env import CYPHERKEY, BOT_TOKEN, WEB_PASSWORD
 
@@ -162,56 +162,20 @@ def inline_button(bot, update):
                          reply_markup=InlineKeyboardMarkup(inline_keyboard))
         return ConversationHandler.END
     elif query.data == "confirm":
-        # try:
-        #     # connect to db
-        #     conn = _get_db_conn()
-        #     conn.autocommit = True
-        #     cursor = conn.cursor()
-        #     cursor.execute("SELECT * FROM subscribed WHERE id = {};".format(str(query.message.chat_id)))
-        #     record = cursor.fetchone()
-        #
-        #     # id is already a subscriber
-        #     while(record):  # What?
-        #         bot.send_message(chat_id=query.message.chat_id, text=lang["alreadySubscribed"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
-        #         return ConversationHandler.END
-        #
-        #     # id is a new subscriber!
-        #     cursor.execute("INSERT INTO subscribed(id) VALUES({})".format(query.message.chat_id))
-        #     bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterSubscription"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
-        #     return ConversationHandler.END
-        # except (Exception, psycopg2.Error) as error :
-        #     # Postgres automatically rollback the transaction
-        #     print ("Error while connecting to PostgreSQL", error)
-        # finally:
-        #     if(conn):
-        #         cursor.close()
-        #         conn.close()
-        #         print("PostgreSQL connection is closed")
-
-        if (is_subscriber(query.message.chat_id)):
+        if not is_subscriber(user_id):
+            add_subscriber(user_id)
+            bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterSubscription"],
+                             reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+        else:
             bot.send_message(chat_id=query.message.chat_id, text=lang["alreadySubscribed"],
                              reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
-            return ConversationHandler.END
+        return ConversationHandler.END
 
-    elif query.data == "unsubscribe":
-        try:
-            # connect to db and execute query
-            conn = _get_db_conn()
-            conn.autocommit = True
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM subscribed WHERE id = {}".format(query.message.chat_id))
-            bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterUnsubscription"],
-                             reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
-            return ConversationHandler.END
-
-        except (Exception, psycopg2.Error) as error:
-            # Postgres automatically rollback the transaction
-            print("Error while connecting to PostgreSQL", error)
-        finally:
-            if (conn):
-                cursor.close()
-                conn.close()
-                print("PostgreSQL connection is closed")
+    elif query.data == "unsubscribe": # TODO: How can a user unsubscribe if this data is never sent from keyboards
+        remove_subscriber(user_id)
+        bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterUnsubscription"],
+                         reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+        return ConversationHandler.END
 
 
 # About handler
@@ -226,7 +190,7 @@ def about(bot, update):
 # Selection of the language it
 def sel_language_ita(bot, update):
     lang = "IT"
-    updateUserLanguage(str(update.effective_user.id), lang)
+    update_user_language(str(update.effective_user.id), lang)
     users[str(update.effective_user.id)] = lang
     tutor.users[str(update.effective_user.id)] = lang
     update_start_message(bot, update, lang_it)
@@ -235,41 +199,10 @@ def sel_language_ita(bot, update):
 # Selection of the language en
 def sel_language_eng(bot, update):
     lang = "EN"
-    updateUserLanguage(str(update.effective_user.id), lang)
+    update_user_language(str(update.effective_user.id), lang)
     users[str(update.effective_user.id)] = lang
     tutor.users[str(update.effective_user.id)] = lang
     update_start_message(bot, update, lang_en)
-
-
-# Insert or update user language in db
-def updateUserLanguage(user_id, language):
-    try:
-        # connect to db
-        conn = _get_db_conn()
-        conn.autocommit = True
-        cursor = conn.cursor()
-        cursor.execute("SELECT lang FROM users WHERE id = '{}';".format(user_id))
-        record = cursor.fetchone()
-        updated = False
-
-        # user exists, update its language 
-        while record:
-            if language not in record:
-                cursor.execute("UPDATE users SET lang = '{}' WHERE id = '{}';".format(language, user_id))
-            updated = True
-            break
-
-        # user not exists, insert it with selected language
-        if not updated:
-            cursor.execute("INSERT INTO users(id, lang) VALUES('{}', '{}')".format(user_id, language))
-    except (Exception, psycopg2.Error) as error:
-        # Postgres automatically rollback the transaction
-        print("Error while connecting to PostgreSQL", error)
-    finally:
-        if (conn):
-            cursor.close()
-            conn.close()
-            print("PostgreSQL connection is closed")
 
 
 # Questions handler
@@ -370,35 +303,11 @@ def display_newsletterSubscription(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
 
-    try:
-        # connect to db
-        conn = _get_db_conn()
-        conn.autocommit = True
-        cursor = conn.cursor()
-        cursor.execute("SELECT id FROM subscribed WHERE id = {};".format(str(update.message.chat_id)))
-        record = cursor.fetchone()
-        isSubscribed = 0
-
-        # id is already subscribed
-        while (record):
-            isSubscribed = 1
-            bot.send_message(chat_id=update.message.chat_id, text=lang["alreadySubscribed"],
-                             reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
-            break;
-
-        # id wants to be subscribed
-        if (isSubscribed == 0):
-            bot.send_message(chat_id=update.message.chat_id, text=lang["newsletterAreYouSure"],
-                             reply_markup=get_keyboard(KeyboardType.NEWSLETTER_CONFIRM, lang, user_id))
-
-    except (Exception, psycopg2.Error) as error:
-        # Postgres automatically rollback the transaction
-        print("Error while connecting to PostgreSQL", error)
-    finally:
-        if (conn):
-            cursor.close()
-            conn.close()
-            print("PostgreSQL connection is closed")
+    if not is_subscriber(user_id):
+        bot.send_message(chat_id=update.message.chat_id, text=lang["newsletterAreYouSure"],
+                         reply_markup=get_keyboard(KeyboardType.NEWSLETTER_CONFIRM, lang, user_id))
+    else:
+        bot.send_message(chat_id=update.message.chat_id, text=lang["alreadySubscribed"])
 
 
 # Drive handler
@@ -493,7 +402,7 @@ def save_question(bot, update):
     # get first question
     question_file = open("questions.txt", "r", encoding="utf-8")
     question = question_file.readline()
-    question_file.close
+    question_file.close()
 
     # write question in file 'savedquestions.txt', if question is not already present
     savedQuestion_file = open("savedquestions.txt", "r", encoding="utf-8")
@@ -584,27 +493,7 @@ def sendNewsletter(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
 
-    idList = []
-    try:
-        # connect to db
-        conn = _get_db_conn()
-        conn.autocommit = True
-        cursor = conn.cursor()
-        cursor.execute("SELECT id FROM subscribed;")
-        rows = cursor.fetchall()
-
-        # add ids to the list 
-        for row in rows:
-            idList.append(row[0])
-
-    except (Exception, psycopg2.Error) as error:
-        # Postgres automatically rollback the transaction
-        print("Error while connecting to PostgreSQL", error)
-    finally:
-        if (conn):
-            cursor.close()
-            conn.close()
-            print("PostgreSQL connection is closed")
+    idList = get_subscribers()
 
     # send newsletter to all the subscribed users
     with open("newsletter.json", "r", encoding="utf-8") as f:

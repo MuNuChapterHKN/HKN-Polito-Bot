@@ -34,7 +34,7 @@ def get_keyboard(type: KeyboardType, lang, user_id):
         keyboard_confirm = [[InlineKeyboardButton(lang["newsletterConfirm"], callback_data="confirm")],
                             [InlineKeyboardButton(lang["back"], callback_data="back")]]
         return InlineKeyboardMarkup(keyboard_confirm)
-    elif type == KeyboardType.NEWSLETTER_UNSUB:
+    elif type == KeyboardType.NEWSLETTER_UNSUB:     # TODO: This keyboard is never used
         keyboard_unsub = [[InlineKeyboardButton(lang["newsletterUnsubscribe"], callback_data="unsubscribe")]]
         return InlineKeyboardMarkup(keyboard_unsub)
     elif type == KeyboardType.LANGUAGE:
