@@ -1,7 +1,3 @@
-#########################################################################################################
-### HKN Telegram Bot. Main program for the official bot of the Mu Nu Chapter of IEEE Eta Kappa Nu ###
-#########################################################################################################
-
 # Imports
 import psycopg2
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
@@ -32,7 +28,6 @@ from Crypto.Cipher import AES
 from Crypto.Hash import SHA3_512
 from Crypto.Util.Padding import pad, unpad
 
-
 # Bot's typing action
 from utils.keyboard import get_keyboard, KeyboardType
 
@@ -45,12 +40,15 @@ def send_action(action):
             bot, update = args
             bot.send_chat_action(chat_id=update.effective_message.chat_id, action=action)
             return func(bot, update, **kwargs)
+
         return command_func
-    
+
     return decorator
+
 
 # The message "is typing" appears while the bot is processing messages
 send_typing_action = send_action(ChatAction.TYPING)
+
 
 # Language selection
 def select_language(user_id):
@@ -59,7 +57,9 @@ def select_language(user_id):
     else:
         return lang_it
 
+
 from functools import wraps
+
 
 # Decrypt admins file and set LIST_OF_ADMINS variable
 def decrypt() -> set[int]:
@@ -84,17 +84,21 @@ def decrypt() -> set[int]:
 
     return admins
 
+
 # Handling of restricted commands
 LIST_OF_ADMINS = decrypt()
+
 
 def restricted(func):
     @wraps(func)
     def wrapped(bot, update, *args, **kwargs):
         user_id = update.effective_user.id
         if user_id not in LIST_OF_ADMINS:
-            print("Unauthorized access denied for {}. This action will be reported.".format(user_id)) # TODO: Ok but say it to the user
+            print("Unauthorized access denied for {}. This action will be reported.".format(
+                user_id))  # TODO: Ok but say it to the user
             return
         return func(bot, update, *args, **kwargs)
+
     return wrapped
 
 
@@ -102,16 +106,18 @@ updater = Updater(token=BOT_TOKEN)
 # Setting handlers dispatcher
 dispatcher = updater.dispatcher
 
-
 # Save tutoring groups in file
 tutor.users = users
 tutor.tutoringFile()
+
 
 # Start command handler
 def start(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"], reply_markup=get_keyboard(KeyboardType.LANGUAGE, lang, user_id))
+    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"],
+                     reply_markup=get_keyboard(KeyboardType.LANGUAGE, lang, user_id))
+
 
 # Help command handler
 def help(bot, update):
@@ -122,7 +128,9 @@ def help(bot, update):
 # Updates start message if language is changed    
 def update_start_message(bot, update, lang):
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"],
+                     reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+
 
 # Inline buttons handler
 def inline_button(bot, update):
@@ -130,24 +138,33 @@ def inline_button(bot, update):
     query = update.callback_query
     user_id = update.effective_user.id
     if query.data == "back":
-        bot.send_message(chat_id=query.message.chat_id, text=lang["questionAbort"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+        bot.send_message(chat_id=query.message.chat_id, text=lang["questionAbort"],
+                         reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         return ConversationHandler.END
-    elif query.data =="Triennale":
-        bot.send_message(chat_id=query.message.chat_id, parse_mode='HTML', text='🎓 English Course:  \n - <a href="< LINK >">Communication networks</a> \n - <a href="< LINK >">Electronic devices</a> \n - <a href="< LINK >">Automatic control</a> \n - <a href="< LINK >">Electronic Circuits</a> \n - <a href="< LINK >">Applied electronics</a> \n - <a href="< LINK >">Digital transmission</a> \n - <a href="< LINK >">Electromagnetic waves and antennas</a> \n - <a href="< LINK >">Applied signal processing laboratory</a> \n - <a href="< LINK >">Digital systems electronics</a> \n - <a href="< LINK >">Electronic measurements</a> \n \n \n 🎓 Corso Italiano:  \n - <a href="< LINK >">Economia urbana</a> \n - <a href="< LINK >">Misure</a> \n - <a href="< LINK >">Fibre: preparazione, proprietà e tecnologie di trasformazione</a> \n - <a href="< LINK >">Ingegneria delle cellule e dei tessuti</a> \n - <a href="< LINK >">Ingegneria nelle terapie medico-chirurgiche</a> \n - <a href="< LINK >">RSelezione e progettazione dei materiali per applicazioni ingegneristiche (SPMAI)</a> \n - <a href="< LINK >">Architettura tecnica e cultura del costruito</a> \n - <a href="< LINK >">Strumenti e metodi per la sostenibilità dei sistemi edilizi e territoriali</a> \n - <a href="< LINK >">Electromagnetic fields</a> \n - <a href="< LINK >">Processi dell industria alimentare</a>\n - <a href="< LINK >">Valutazioni di impatto ambientale</a> \n - <a href="< LINK >">Electronic measurements</a> \n - <a href="< LINK >">Teoria dei segnali e delle comunicazioni</a> \n - <a href="< LINK >">Electronic Circuits</a> \n - <a href="< LINK >">Digital systems electronics</a> \n - <a href="< LINK >">Campi elettromagnetici</a> \n - <a href="< LINK >">Electronic devices</a> \n - <a href="< LINK >">Elettronica dei sistemi digitali</a> \n - <a href="< LINK >">Dispositivi elettronici</a> \n - <a href="< LINK >">Circuiti elettronici</a> \n - <a href="< LINK >">Analisi matematica II</a> \n - <a href="< LINK >">Fisica II</a> \n - <a href="< LINK >">Metodi matematici per l ingegneria</a> \n - <a href="< LINK >">Elettrotecnica</a>')
+    elif query.data == "Triennale":
+        bot.send_message(chat_id=query.message.chat_id, parse_mode='HTML',
+                         text='🎓 English Course:  \n - <a href="< LINK >">Communication networks</a> \n - <a href="< LINK >">Electronic devices</a> \n - <a href="< LINK >">Automatic control</a> \n - <a href="< LINK >">Electronic Circuits</a> \n - <a href="< LINK >">Applied electronics</a> \n - <a href="< LINK >">Digital transmission</a> \n - <a href="< LINK >">Electromagnetic waves and antennas</a> \n - <a href="< LINK >">Applied signal processing laboratory</a> \n - <a href="< LINK >">Digital systems electronics</a> \n - <a href="< LINK >">Electronic measurements</a> \n \n \n 🎓 Corso Italiano:  \n - <a href="< LINK >">Economia urbana</a> \n - <a href="< LINK >">Misure</a> \n - <a href="< LINK >">Fibre: preparazione, proprietà e tecnologie di trasformazione</a> \n - <a href="< LINK >">Ingegneria delle cellule e dei tessuti</a> \n - <a href="< LINK >">Ingegneria nelle terapie medico-chirurgiche</a> \n - <a href="< LINK >">RSelezione e progettazione dei materiali per applicazioni ingegneristiche (SPMAI)</a> \n - <a href="< LINK >">Architettura tecnica e cultura del costruito</a> \n - <a href="< LINK >">Strumenti e metodi per la sostenibilità dei sistemi edilizi e territoriali</a> \n - <a href="< LINK >">Electromagnetic fields</a> \n - <a href="< LINK >">Processi dell industria alimentare</a>\n - <a href="< LINK >">Valutazioni di impatto ambientale</a> \n - <a href="< LINK >">Electronic measurements</a> \n - <a href="< LINK >">Teoria dei segnali e delle comunicazioni</a> \n - <a href="< LINK >">Electronic Circuits</a> \n - <a href="< LINK >">Digital systems electronics</a> \n - <a href="< LINK >">Campi elettromagnetici</a> \n - <a href="< LINK >">Electronic devices</a> \n - <a href="< LINK >">Elettronica dei sistemi digitali</a> \n - <a href="< LINK >">Dispositivi elettronici</a> \n - <a href="< LINK >">Circuiti elettronici</a> \n - <a href="< LINK >">Analisi matematica II</a> \n - <a href="< LINK >">Fisica II</a> \n - <a href="< LINK >">Metodi matematici per l ingegneria</a> \n - <a href="< LINK >">Elettrotecnica</a>')
         return ConversationHandler.END
-    elif query.data =="Magistrale":
-        bot.send_message(chat_id=query.message.chat_id, parse_mode='HTML', text='🎓 Master:  \n - <a href="< LINK >">Sistemi digitali integrati</a> \n - <a href="< LINK >">Testing and certification</a> \n - <a href="< LINK >">High speed electron devices</a> \n - <a href="< LINK >">Finite element modelling</a> \n - <a href="< LINK >">Elettronica analogica e di potenza</a> \n - <a href="< LINK >">Radar and remote sensing</a> \n - <a href="< LINK >">Microwave electronics</a> \n - <a href="< LINK >">Sistemi elettronici a basso consumo</a> \n - <a href="< LINK >">Electronic systems engineering</a> \n - <a href="< LINK >">Integrated systems technology</a>\n - <a href="< LINK >">Photonic devices</a> \n - <a href="< LINK >">Microelectronic systems</a> \n - <a href="< LINK >">Communication systems</a> \n - <a href="< LINK >">Analog and telecommunication electronics</a> \n - <a href="< LINK >">Radiating electromagnetic systems</a> \n - <a href="< LINK >">Guiding electromagnetic systems</a> \n - <a href="< LINK >">Sistemi di misura e sensori</a> \n - <a href="< LINK >">Microelettronica digitale</a> \n - <a href="< LINK >">Advanced antenna engineering</a> \n - <a href="< LINK >">Microelettronica digitale</a> \n - <a href="< LINK >">Computer aided design of communication systems</a> \n - <a href="< LINK >">Mobile and sensor networks</a> \n - <a href="< LINK >">Electronics for embedded systems</a> \n - <a href="< LINK >">Modeling and optimization of embedded systems</a> \n - <a href="< LINK >">Codesign methods and tools</a> \n - <a href="< LINK >">Convex optimization and engineering applications</a> \n - <a href="< LINK >">Electromagnetic fields and biological tissues: effects and medical applications</a>\n- <a href="< LINK >">Innovative wireless platforms for the internet of things</a> \n - <a href="< LINK >">Bioinformatics</a> \n - <a href="< LINK >">Automation and planning of production systems</a> \n - <a href="< LINK >">Advanced electronic drives</a> \n - <a href="< LINK >">Radio frequency integrated circuits</a> \n - <a href="< LINK >">Analog integrated circuits</a> \n - <a href="< LINK >">Projects and laboratory on communication systems</a> \n - <a href="< LINK >">Big data: architectures and data analytics</a> \n - <a href="< LINK >">Testing and fault tolerance</a>\n - <a href="< LINK >">Nanomaterials and nanotechnologies for energy applications</a> \n - <a href="< LINK >">Integrazione di sistemi embedded</a> \n - <a href="< LINK >">Industrial Photonics</a> \n - <a href="< LINK >">Open Optical Networks</a> \n - <a href="< LINK >">Signal Processing and Wireless Transmission Lab</a> \n - <a href="< LINK >">Signal Processing and Optical Transmission Lab</a> \n - <a href="< LINK >">Engineering Empathy</a>\n - <a href="< LINK >">Micro and Nanoelectronic Devices</a> \n - <a href="< LINK >">CAD of semiconductor devices</a> \n - <a href="< LINK >">Electronic transport in crystalline and organic semiconductors</a> \n - <a href="< LINK >">Nanoelectronic systems</a> \n - <a href="< LINK >">Microelectronics and Micro/Nanosystems Technologies</a> \n - <a href="< LINK >">Introduction to MEMS and Bio-MEMS</a> \n - <a href="< LINK >">Design of microsystems</a> \n - <a href="< LINK >">Wireless Integrated Circuits and Systems</a> \n - <a href="< LINK >">Integrated systems architecture</a> \n - <a href="< LINK >">Power electronics</a> \n - <a href="< LINK >">Computer architectures</a> \n - <a href="< LINK >">Synthesis and optimization of digital systems</a> \n - <a href="< LINK >">Digital Electronics</a> \n - <a href="< LINK >">Passive Optical Components</a> \n - <a href="< LINK >">Advanced design for signal integrity and compliance</a> \n - <a href="< LINK >">Tecnologie digitali e società</a> \n - <a href="< LINK >">Sistemi robotici</a> \n - <a href="< LINK >">Digital Communications</a>\n - <a href="< LINK >">Operating systems</a> \n - <a href="< LINK >">Optoelettronica</a>')        
+    elif query.data == "Magistrale":
+        bot.send_message(chat_id=query.message.chat_id, parse_mode='HTML',
+                         text='🎓 Master:  \n - <a href="< LINK >">Sistemi digitali integrati</a> \n - <a href="< LINK >">Testing and certification</a> \n - <a href="< LINK >">High speed electron devices</a> \n - <a href="< LINK >">Finite element modelling</a> \n - <a href="< LINK >">Elettronica analogica e di potenza</a> \n - <a href="< LINK >">Radar and remote sensing</a> \n - <a href="< LINK >">Microwave electronics</a> \n - <a href="< LINK >">Sistemi elettronici a basso consumo</a> \n - <a href="< LINK >">Electronic systems engineering</a> \n - <a href="< LINK >">Integrated systems technology</a>\n - <a href="< LINK >">Photonic devices</a> \n - <a href="< LINK >">Microelectronic systems</a> \n - <a href="< LINK >">Communication systems</a> \n - <a href="< LINK >">Analog and telecommunication electronics</a> \n - <a href="< LINK >">Radiating electromagnetic systems</a> \n - <a href="< LINK >">Guiding electromagnetic systems</a> \n - <a href="< LINK >">Sistemi di misura e sensori</a> \n - <a href="< LINK >">Microelettronica digitale</a> \n - <a href="< LINK >">Advanced antenna engineering</a> \n - <a href="< LINK >">Microelettronica digitale</a> \n - <a href="< LINK >">Computer aided design of communication systems</a> \n - <a href="< LINK >">Mobile and sensor networks</a> \n - <a href="< LINK >">Electronics for embedded systems</a> \n - <a href="< LINK >">Modeling and optimization of embedded systems</a> \n - <a href="< LINK >">Codesign methods and tools</a> \n - <a href="< LINK >">Convex optimization and engineering applications</a> \n - <a href="< LINK >">Electromagnetic fields and biological tissues: effects and medical applications</a>\n- <a href="< LINK >">Innovative wireless platforms for the internet of things</a> \n - <a href="< LINK >">Bioinformatics</a> \n - <a href="< LINK >">Automation and planning of production systems</a> \n - <a href="< LINK >">Advanced electronic drives</a> \n - <a href="< LINK >">Radio frequency integrated circuits</a> \n - <a href="< LINK >">Analog integrated circuits</a> \n - <a href="< LINK >">Projects and laboratory on communication systems</a> \n - <a href="< LINK >">Big data: architectures and data analytics</a> \n - <a href="< LINK >">Testing and fault tolerance</a>\n - <a href="< LINK >">Nanomaterials and nanotechnologies for energy applications</a> \n - <a href="< LINK >">Integrazione di sistemi embedded</a> \n - <a href="< LINK >">Industrial Photonics</a> \n - <a href="< LINK >">Open Optical Networks</a> \n - <a href="< LINK >">Signal Processing and Wireless Transmission Lab</a> \n - <a href="< LINK >">Signal Processing and Optical Transmission Lab</a> \n - <a href="< LINK >">Engineering Empathy</a>\n - <a href="< LINK >">Micro and Nanoelectronic Devices</a> \n - <a href="< LINK >">CAD of semiconductor devices</a> \n - <a href="< LINK >">Electronic transport in crystalline and organic semiconductors</a> \n - <a href="< LINK >">Nanoelectronic systems</a> \n - <a href="< LINK >">Microelectronics and Micro/Nanosystems Technologies</a> \n - <a href="< LINK >">Introduction to MEMS and Bio-MEMS</a> \n - <a href="< LINK >">Design of microsystems</a> \n - <a href="< LINK >">Wireless Integrated Circuits and Systems</a> \n - <a href="< LINK >">Integrated systems architecture</a> \n - <a href="< LINK >">Power electronics</a> \n - <a href="< LINK >">Computer architectures</a> \n - <a href="< LINK >">Synthesis and optimization of digital systems</a> \n - <a href="< LINK >">Digital Electronics</a> \n - <a href="< LINK >">Passive Optical Components</a> \n - <a href="< LINK >">Advanced design for signal integrity and compliance</a> \n - <a href="< LINK >">Tecnologie digitali e società</a> \n - <a href="< LINK >">Sistemi robotici</a> \n - <a href="< LINK >">Digital Communications</a>\n - <a href="< LINK >">Operating systems</a> \n - <a href="< LINK >">Optoelettronica</a>')
         return ConversationHandler.END
     elif query.data == "HRGame":
         inline_keyboard = [[InlineKeyboardButton(lang["Classifica"], url="<RANKING LINK>")]]
-        bot.send_message(chat_id=query.message.chat_id, text=lang["HRRes"], reply_markup=InlineKeyboardMarkup(inline_keyboard))
+        bot.send_message(chat_id=query.message.chat_id, text=lang["HRRes"],
+                         reply_markup=InlineKeyboardMarkup(inline_keyboard))
         return ConversationHandler.END
     elif query.data == "TelegramGroups":
-        bot.send_message(chat_id=query.message.chat_id, text=lang["GroupsText"], reply_markup=get_keyboard(KeyboardType.GROUPS, lang, user_id))
+        bot.send_message(chat_id=query.message.chat_id, text=lang["GroupsText"],
+                         reply_markup=get_keyboard(KeyboardType.GROUPS, lang, user_id))
         return ConversationHandler.END
     elif query.data == "usefulLinks":
-        inline_keyboard = [[InlineKeyboardButton("HKN Drive", url="< LINK >")], [InlineKeyboardButton("HKN-Polito Discord Server", url="< LINK >")], [InlineKeyboardButton("hknMUsicNUChapter", url="< LINK >")], [InlineKeyboardButton("HKN x gif", url="< LINK >")]]
-        bot.send_message(chat_id=query.message.chat_id, text=lang["LinkDescription"], reply_markup=InlineKeyboardMarkup(inline_keyboard))
+        inline_keyboard = [[InlineKeyboardButton("HKN Drive", url="< LINK >")],
+                           [InlineKeyboardButton("HKN-Polito Discord Server", url="< LINK >")],
+                           [InlineKeyboardButton("hknMUsicNUChapter", url="< LINK >")],
+                           [InlineKeyboardButton("HKN x gif", url="< LINK >")]]
+        bot.send_message(chat_id=query.message.chat_id, text=lang["LinkDescription"],
+                         reply_markup=InlineKeyboardMarkup(inline_keyboard))
         return ConversationHandler.END
     elif query.data == "confirm":
         # try:
@@ -188,24 +205,28 @@ def inline_button(bot, update):
             conn.autocommit = True
             cursor = conn.cursor()
             cursor.execute("DELETE FROM subscribed WHERE id = {}".format(query.message.chat_id))
-            bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterUnsubscription"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+            bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterUnsubscription"],
+                             reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
             return ConversationHandler.END
-            
-        except (Exception, psycopg2.Error) as error :
+
+        except (Exception, psycopg2.Error) as error:
             # Postgres automatically rollback the transaction
-            print ("Error while connecting to PostgreSQL", error)
+            print("Error while connecting to PostgreSQL", error)
         finally:
-            if(conn):
+            if (conn):
                 cursor.close()
                 conn.close()
                 print("PostgreSQL connection is closed")
+
 
 # About handler
 @send_typing_action
 def about(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["abouttext"], reply_markup=get_keyboard(KeyboardType.ABOUT, lang, user_id))
+    bot.send_message(chat_id=update.message.chat_id, text=lang["abouttext"],
+                     reply_markup=get_keyboard(KeyboardType.ABOUT, lang, user_id))
+
 
 # Selection of the language it
 def sel_language_ita(bot, update):
@@ -215,6 +236,7 @@ def sel_language_ita(bot, update):
     tutor.users[str(update.effective_user.id)] = lang
     update_start_message(bot, update, lang_it)
 
+
 # Selection of the language en
 def sel_language_eng(bot, update):
     lang = "EN"
@@ -222,6 +244,7 @@ def sel_language_eng(bot, update):
     users[str(update.effective_user.id)] = lang
     tutor.users[str(update.effective_user.id)] = lang
     update_start_message(bot, update, lang_en)
+
 
 # Insert or update user language in db
 def updateUserLanguage(user_id, language):
@@ -244,54 +267,67 @@ def updateUserLanguage(user_id, language):
         # user not exists, insert it with selected language
         if not updated:
             cursor.execute("INSERT INTO users(id, lang) VALUES('{}', '{}')".format(user_id, language))
-    except (Exception, psycopg2.Error) as error :
+    except (Exception, psycopg2.Error) as error:
         # Postgres automatically rollback the transaction
-        print ("Error while connecting to PostgreSQL", error)
+        print("Error while connecting to PostgreSQL", error)
     finally:
-        if(conn):
+        if (conn):
             cursor.close()
             conn.close()
             print("PostgreSQL connection is closed")
-    
+
+
 # Questions handler
 # TODO language selection
 TYPING = 1
+
+
 @send_typing_action
 def questions(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["askAQuestion"], reply_markup=get_keyboard(KeyboardType.UNDO, lang, user_id))
+    bot.send_message(chat_id=update.message.chat_id, text=lang["askAQuestion"],
+                     reply_markup=get_keyboard(KeyboardType.UNDO, lang, user_id))
     return TYPING
+
 
 # Question appender to file
 # if the question is the result of the pushing of the "<-- back" button, the question is aborted, otherwise the question is saved
-def answers(bot,update):
+def answers(bot, update):
     lang = select_language(update.effective_user.id)
     user_id1 = update.effective_user.id
     if update.message.text != lang["back"]:
         out_file = open("questions.txt", "a+", encoding="utf-8")
         user_id = str(update.effective_user.id)
-        out_file.write((str(update.message.from_user.username)+"-"+user_id+"-"+update.message.text).strip("\n")+"\n")
-        out_file.close()   
-        bot.send_message(chat_id=update.message.chat_id, text=lang["questionSaved"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id1))
+        out_file.write(
+            (str(update.message.from_user.username) + "-" + user_id + "-" + update.message.text).strip("\n") + "\n")
+        out_file.close()
+        bot.send_message(chat_id=update.message.chat_id, text=lang["questionSaved"],
+                         reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id1))
         for admin in LIST_OF_ADMINS:
-            bot.send_message(chat_id=admin, text=lang["newQuestionFrom"]+str(update.message.from_user.username)+"\n-"+update.message.text+"\n", reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+            bot.send_message(chat_id=admin, text=lang["newQuestionFrom"] + str(
+                update.message.from_user.username) + "\n-" + update.message.text + "\n",
+                             reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     else:
-        bot.send_message(chat_id=update.message.chat_id, text=lang["questionAbort"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id1))
-    return ConversationHandler.END     # TODO: Why does this get stuck?
+        bot.send_message(chat_id=update.message.chat_id, text=lang["questionAbort"],
+                         reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id1))
+    return ConversationHandler.END  # TODO: Why does this get stuck?
+
 
 # News handler
 # TODO language selection
 @send_typing_action
 def fetch_news(bot, update):
     lang = select_language(update.effective_user.id)
-    client = Client(url = '< LINK >', username = "< HKN USERNAME >", password = WEB_PASSWORD)
+    client = Client(url='< LINK >', username="< HKN USERNAME >", password=WEB_PASSWORD)
     postfilters = {"number": 3, "order": "ASC"}
     postsdict = client.call(posts.GetPosts(postfilters))
     user_id = update.effective_user.id
     for post in postsdict:
         content = post.title + "\n" + post.link
-        bot.send_message(chat_id=update.message.chat_id, text=content, reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+        bot.send_message(chat_id=update.message.chat_id, text=content,
+                         reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+
 
 # Displays scheduled events
 @send_typing_action
@@ -300,33 +336,39 @@ def display_events(bot, update):
     user_id = update.effective_user.id
     lang = select_language(user_id)
     langString = lang["Lang"]
-   
+
     n = 0
     eventList = load_events(langString)
     for theEvent in eventList:
         todayDate = datetime.datetime.now()
-        if theEvent.date > todayDate: #do not print past events
+        if theEvent.date > todayDate:  # do not print past events
             n = n + 1
-            if not theEvent.imageLink: #if there isn't an image link
-                bot.send_message(chat_id=update.message.chat_id, parse_mode="markdown", text="*"+theEvent.title+"*\n\n"+theEvent.description, reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+            if not theEvent.imageLink:  # if there isn't an image link
+                bot.send_message(chat_id=update.message.chat_id, parse_mode="markdown",
+                                 text="*" + theEvent.title + "*\n\n" + theEvent.description,
+                                 reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
             else:
-                #Build link buttons
+                # Build link buttons
                 keyboard = []
-                if  theEvent.facebookLink != "" and theEvent.eventbriteLink != "":
-                    keyboard = [[InlineKeyboardButton("Facebook Page", callback_data='1',url=theEvent.facebookLink),
-                        InlineKeyboardButton("Eventbrite", callback_data='2',url=theEvent.eventbriteLink)]]
+                if theEvent.facebookLink != "" and theEvent.eventbriteLink != "":
+                    keyboard = [[InlineKeyboardButton("Facebook Page", callback_data='1', url=theEvent.facebookLink),
+                                 InlineKeyboardButton("Eventbrite", callback_data='2', url=theEvent.eventbriteLink)]]
                 elif theEvent.facebookLink != "":
-                    keyboard = [[InlineKeyboardButton("Facebook Page", callback_data='1',url=theEvent.facebookLink)]]
+                    keyboard = [[InlineKeyboardButton("Facebook Page", callback_data='1', url=theEvent.facebookLink)]]
                 elif theEvent.eventbriteLink != "":
-                    keyboard = [[InlineKeyboardButton("Eventbrite", callback_data='2',url=theEvent.eventbriteLink)]]
+                    keyboard = [[InlineKeyboardButton("Eventbrite", callback_data='2', url=theEvent.eventbriteLink)]]
                 elif theEvent.instagramLink != "":
-                    keyboard = [[InlineKeyboardButton("Instagram Page", callback_data='3',url=theEvent.instagramLink)]]
-                else: 
-                    continue #skip the sending of the links
+                    keyboard = [[InlineKeyboardButton("Instagram Page", callback_data='3', url=theEvent.instagramLink)]]
+                else:
+                    continue  # skip the sending of the links
                 reply_markup = InlineKeyboardMarkup(keyboard)
-                bot.send_photo(chat_id=update.message.chat_id, parse_mode="markdown", caption="*"+theEvent.title+"*\n\n"+theEvent.description, photo=theEvent.imageLink, reply_markup=reply_markup)
-    if n == 0:  
-        bot.send_message(chat_id=update.message.chat_id, text=lang["noEvents"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+                bot.send_photo(chat_id=update.message.chat_id, parse_mode="markdown",
+                               caption="*" + theEvent.title + "*\n\n" + theEvent.description, photo=theEvent.imageLink,
+                               reply_markup=reply_markup)
+    if n == 0:
+        bot.send_message(chat_id=update.message.chat_id, text=lang["noEvents"],
+                         reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+
 
 @send_typing_action
 def display_newsletterSubscription(bot, update):
@@ -343,50 +385,61 @@ def display_newsletterSubscription(bot, update):
         isSubscribed = 0
 
         # id is already subscribed
-        while(record):
+        while (record):
             isSubscribed = 1
-            bot.send_message(chat_id=update.message.chat_id, text=lang["alreadySubscribed"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+            bot.send_message(chat_id=update.message.chat_id, text=lang["alreadySubscribed"],
+                             reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
             break;
 
         # id wants to be subscribed
-        if(isSubscribed == 0):    
-            bot.send_message(chat_id=update.message.chat_id, text=lang["newsletterAreYouSure"], reply_markup=get_keyboard(KeyboardType.NEWSLETTER_CONFIRM, lang, user_id))
-            
-    except (Exception, psycopg2.Error) as error :
+        if (isSubscribed == 0):
+            bot.send_message(chat_id=update.message.chat_id, text=lang["newsletterAreYouSure"],
+                             reply_markup=get_keyboard(KeyboardType.NEWSLETTER_CONFIRM, lang, user_id))
+
+    except (Exception, psycopg2.Error) as error:
         # Postgres automatically rollback the transaction
-        print ("Error while connecting to PostgreSQL", error)
+        print("Error while connecting to PostgreSQL", error)
     finally:
-        if(conn):
+        if (conn):
             cursor.close()
             conn.close()
             print("PostgreSQL connection is closed")
 
-# Drive handler		
+
+# Drive handler
 @send_typing_action
 def display_drive(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["drivetext"], reply_markup=get_keyboard(KeyboardType.DRIVE, lang, user_id))
+    bot.send_message(chat_id=update.message.chat_id, text=lang["drivetext"],
+                     reply_markup=get_keyboard(KeyboardType.DRIVE, lang, user_id))
+
 
 def go_back(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=query.message.chat_id, text=lang["questionAbort"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+    bot.send_message(chat_id=query.message.chat_id, text=lang["questionAbort"],
+                     reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     return ConversationHandler.END
+
 
 # Contact handler
 @send_typing_action
 def contact(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["contacttext"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+    bot.send_message(chat_id=update.message.chat_id, text=lang["contacttext"],
+                     reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+
 
 # Members handler
 @send_typing_action
 def members(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["memberstext"], reply_markup=get_keyboard(KeyboardType.MEMBERS, lang, user_id))
+    bot.send_message(chat_id=update.message.chat_id, text=lang["memberstext"],
+                     reply_markup=get_keyboard(KeyboardType.MEMBERS, lang, user_id))
+
 
 # Restricted commands (can be executed only by users in admins.txt)
 
@@ -394,7 +447,9 @@ def members(bot, update):
 
 # Setting up conversation handler to wait for user message
 ANSWER = 1
-def pop_question(option = "cancel"):
+
+
+def pop_question(option="cancel"):
     question_file = open("questions.txt", "r+", encoding="utf-8")
     questions = question_file.readlines()
     if questions == []:
@@ -404,10 +459,11 @@ def pop_question(option = "cancel"):
     for q in questions[1:]:
         question_file.write(q)
     question_file.truncate()
-    if(option == "enqueue"):
+    if (option == "enqueue"):
         question_file.write(questions[0])
     question_file.close()
     return questions[0].split("-")
+
 
 @restricted
 def answer_question(bot, update):
@@ -415,19 +471,25 @@ def answer_question(bot, update):
     question = pop_question()
     user_id = update.effective_user.id
     if question == None:
-        bot.send_message(chat_id=update.message.chat_id, text="Formato file questions.txt non corretto", reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+        bot.send_message(chat_id=update.message.chat_id, text="Formato file questions.txt non corretto",
+                         reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         return ConversationHandler.END
-    message = update.message.text 
-    bot.send_message(chat_id=question[1], text=lang["hello"] + " {} ".format(question[0]) + lang["yourAnswer"] + "\n{}".format(message), reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+    message = update.message.text
+    bot.send_message(chat_id=question[1],
+                     text=lang["hello"] + " {} ".format(question[0]) + lang["yourAnswer"] + "\n{}".format(message),
+                     reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     return ConversationHandler.END
+
 
 @restricted
 def delete_question(bot, update):
     lang = select_language(update.effective_user.id)
     pop_question()
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["questionDeleted"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+    bot.send_message(chat_id=update.message.chat_id, text=lang["questionDeleted"],
+                     reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     return ConversationHandler.END
+
 
 @restricted
 def save_question(bot, update):
@@ -446,51 +508,64 @@ def save_question(bot, update):
     for line in savedQuestions:
         if str(question) in line:
             found = True
-            bot.send_message(chat_id=update.message.chat_id, text=lang["questionAlreadySaved"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+            bot.send_message(chat_id=update.message.chat_id, text=lang["questionAlreadySaved"],
+                             reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
     if not found:
         savedQuestion_file = open("savedquestions.txt", "a", encoding="utf-8")
         savedQuestion_file.write(question)
         savedQuestion_file.close()
-        bot.send_message(chat_id=update.message.chat_id, text=lang["questionSavedCorrectly"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+        bot.send_message(chat_id=update.message.chat_id, text=lang["questionSavedCorrectly"],
+                         reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
     return ANSWER
 
-@restricted
-def help_admin(bot,update):
-    lang = select_language(update.effective_user.id)
-    user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["help_admin_text"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
-    return ConversationHandler.END	
 
 @restricted
-def skip(bot,update):
+def help_admin(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["questionNotAnswered"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+    bot.send_message(chat_id=update.message.chat_id, text=lang["help_admin_text"],
+                     reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+    return ConversationHandler.END
+
+
+@restricted
+def skip(bot, update):
+    lang = select_language(update.effective_user.id)
+    user_id = update.effective_user.id
+    bot.send_message(chat_id=update.message.chat_id, text=lang["questionNotAnswered"],
+                     reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     pop_question(option="enqueue")
     return ConversationHandler.END
 
+
 @restricted
 def cancel(bot, update):
-    lang = select_language(update.effective_user.id)  
+    lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["conversationDeleted"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+    bot.send_message(chat_id=update.message.chat_id, text=lang["conversationDeleted"],
+                     reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     return ConversationHandler.END
+
 
 @restricted
 def reply(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["answerQuestion"] + " \n", reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+    bot.send_message(chat_id=update.message.chat_id, text=lang["answerQuestion"] + " \n",
+                     reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     question_file = open("questions.txt", "r", encoding="utf-8")
     question = question_file.readline()
-    if(question == ""):
-        bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestions"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+    if (question == ""):
+        bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestions"],
+                         reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         return ConversationHandler.END
-    bot.send_message(chat_id=update.message.chat_id, text=question, reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+    bot.send_message(chat_id=update.message.chat_id, text=question,
+                     reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     question_file.close()
     return ANSWER
+
 
 @restricted
 def showpending(bot, update):
@@ -501,11 +576,14 @@ def showpending(bot, update):
     n = 0
     for q in questions:
         question = q.split("-")
-        bot.send_message(chat_id=update.message.chat_id, text=(question[0] + " " + question[2]), reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+        bot.send_message(chat_id=update.message.chat_id, text=(question[0] + " " + question[2]),
+                         reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         n = n + 1
-    if(n == 0):
-        bot.send_message(chat_id=update.message.chat_id, text=lang["questionsAnswered"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
-     
+    if (n == 0):
+        bot.send_message(chat_id=update.message.chat_id, text=lang["questionsAnswered"],
+                         reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+
+
 @restricted
 def sendNewsletter(bot, update):
     lang = select_language(update.effective_user.id)
@@ -524,28 +602,31 @@ def sendNewsletter(bot, update):
         for row in rows:
             idList.append(row[0])
 
-    except (Exception, psycopg2.Error) as error :
+    except (Exception, psycopg2.Error) as error:
         # Postgres automatically rollback the transaction
-        print ("Error while connecting to PostgreSQL", error)
+        print("Error while connecting to PostgreSQL", error)
     finally:
-        if(conn):
+        if (conn):
             cursor.close()
             conn.close()
             print("PostgreSQL connection is closed")
 
     # send newsletter to all the subscribed users
     with open("newsletter.json", "r", encoding="utf-8") as f:
-        data = json.load(f) 
+        data = json.load(f)
         for x in data:
-            if(lang == lang_en): 
-                for userId in idList: 
-                    bot.send_message(chat_id=userId, text=x['DescriptionENG'], reply_markup=get_keyboard(KeyboardType.NEWSLETTER_UNSUB, lang, user_id))
+            if (lang == lang_en):
+                for userId in idList:
+                    bot.send_message(chat_id=userId, text=x['DescriptionENG'],
+                                     reply_markup=get_keyboard(KeyboardType.NEWSLETTER_UNSUB, lang, user_id))
             else:
-                for userId in idList: 
-                    bot.send_message(chat_id=userId, text=x['DescriptionITA'], reply_markup=get_keyboard(KeyboardType.NEWSLETTER_UNSUB, lang, user_id))
+                for userId in idList:
+                    bot.send_message(chat_id=userId, text=x['DescriptionITA'],
+                                     reply_markup=get_keyboard(KeyboardType.NEWSLETTER_UNSUB, lang, user_id))
         f.close()
 
-@restricted 
+
+@restricted
 def showsaved(bot, update):
     lang = select_language(update.effective_user.id)
     question_file = open("savedquestions.txt", "r", encoding="utf-8")
@@ -555,17 +636,22 @@ def showsaved(bot, update):
     n = 0
     for q in questions:
         question = q.split("-")
-        bot.send_message(chat_id=update.message.chat_id, text=(question[0] + " " + question[2]), reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+        bot.send_message(chat_id=update.message.chat_id, text=(question[0] + " " + question[2]),
+                         reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         n = n + 1
-    if(n == 0):
-        bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestionsSaved"], reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+    if (n == 0):
+        bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestionsSaved"],
+                         reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+
 
 # EIG handler
 @send_typing_action
 def electronicengineeringgroups(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["electronicengineeringgroupstext"], reply_markup=get_keyboard(KeyboardType.ELECTRONICENGINEERINGGROUPS, lang, user_id))
+    bot.send_message(chat_id=update.message.chat_id, text=lang["electronicengineeringgroupstext"],
+                     reply_markup=get_keyboard(KeyboardType.ELECTRONICENGINEERINGGROUPS, lang, user_id))
+
 
 # Configurating handlers
 reply_conv_handler = ConversationHandler(
@@ -574,7 +660,7 @@ reply_conv_handler = ConversationHandler(
                      CommandHandler("skip", skip),
                      CommandHandler("delete", delete_question),
                      CommandHandler("save", save_question)]
-           },
+            },
     fallbacks=[CommandHandler("cancel", cancel)]
 )
 
@@ -583,11 +669,10 @@ question_conv_handler = ConversationHandler(
     entry_points=[CommandHandler("questions", questions),
                   MessageHandler(filter_questions, questions)],
     states={TYPING: [MessageHandler(Filters.text, answers)]
-           },
+            },
     fallbacks=[CommandHandler("cancel", cancel),
-               CallbackQueryHandler(inline_button)] #TODO: probably CallbackQueryHandler useless
+               CallbackQueryHandler(inline_button)]  # TODO: probably CallbackQueryHandler useless
 )
-
 
 # Adding handlers
 dispatcher.add_handler(reply_conv_handler)
@@ -612,7 +697,7 @@ newsletter_handler = CommandHandler("sendnewsletter", sendNewsletter)
 dispatcher.add_handler(newsletter_handler)
 
 filter_electronicengineeringgroups = filters.Filterelectronicengineeringgroups()
-electronicengineeringgroups_handler = MessageHandler(filter_electronicengineeringgroups,electronicengineeringgroups)
+electronicengineeringgroups_handler = MessageHandler(filter_electronicengineeringgroups, electronicengineeringgroups)
 com_electronicengineeringgroups_handler = CommandHandler("electronicengineeringgroups", electronicengineeringgroups)
 dispatcher.add_handler(com_electronicengineeringgroups_handler)
 dispatcher.add_handler(electronicengineeringgroups_handler)
@@ -641,7 +726,7 @@ com_drive_handler = CommandHandler("drive", display_drive)
 dispatcher.add_handler(com_drive_handler)
 dispatcher.add_handler(drive_handler)
 
-#function used in the section askus associated to the behavior of the "<-- back" keyboard
+# function used in the section askus associated to the behavior of the "<-- back" keyboard
 filter_back = filters.FilterBack()
 back_handler = MessageHandler(filter_back, go_back);
 com_back_handler = CommandHandler("back", go_back)

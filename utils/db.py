@@ -50,9 +50,9 @@ def get_members() -> set[int]:
 
     except (Exception, psycopg2.Error) as error:
         # Postgres automatically rollback the transaction
-        print ("Error while connecting to PostgreSQL", error)
+        print("Error while connecting to PostgreSQL", error)
     finally:
-        if(conn):
+        if (conn):
             cursor.close()
             conn.close()
             print("PostgreSQL connection is closed")
