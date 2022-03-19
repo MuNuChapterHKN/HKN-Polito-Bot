@@ -23,7 +23,7 @@ class KeyboardType(Enum):
     UNDO = 11
 
 
-def getKeyboard(type, lang, user_id):
+def get_keyboard(type: KeyboardType, lang, user_id):
     if type == KeyboardType.BACK:
         inline_keyboard = [[InlineKeyboardButton(lang["back"], callback_data="back")]]
         return InlineKeyboardMarkup(inline_keyboard)
