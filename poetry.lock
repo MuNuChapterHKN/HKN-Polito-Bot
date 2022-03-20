@@ -227,8 +227,8 @@ python-versions = "*"
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.6"
-content-hash = "9726f5b31db55d937d3ca692115c39c6e42388d688829a6cf345d5fb16cc166f"
+python-versions = "^3.10"
+content-hash = "4de7b3e7a660b59e2242f8dfad989849511f006c891cf14a5790b2eaa7df4005"
 
 [metadata.files]
 certifi = [
