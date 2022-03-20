@@ -1,32 +1,34 @@
 # Imports
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, CallbackQueryHandler, Filters
-import filters
 
 # Downloads from website every day study groups dates
+from wordpress_xmlrpc import Client
+from wordpress_xmlrpc.methods import posts
+from telegram import ChatAction
+import binascii
+
+from Crypto.Cipher import AES
+from Crypto.Hash import SHA3_512
+from Crypto.Util.Padding import pad, unpad
+
+from functools import wraps
+
+from lang import lang_en
+from lang import lang_it
+from event import *
 import tutor
+import filters
+
 from utils.db import is_subscriber, add_subscriber, get_subscribers, remove_subscriber, \
     update_user_language
 from utils.common import users
 from utils.env import CYPHERKEY, BOT_TOKEN, WEB_PASSWORD
 
-from event import *
-
-from wordpress_xmlrpc import Client
-from wordpress_xmlrpc.methods import posts
-from telegram import ChatAction
-# Lang dictionaries
-from lang import lang_en
-from lang import lang_it
-import binascii
-from Crypto.Cipher import AES
-from Crypto.Hash import SHA3_512
-from Crypto.Util.Padding import pad, unpad
-
-# Bot's typing action
 from utils.keyboard import get_keyboard, KeyboardType
 
 
+# Bot typing action
 def send_action(action):
     # Sends `action` while processing func command
     def decorator(func):
@@ -47,13 +49,10 @@ send_typing_action = send_action(ChatAction.TYPING)
 
 # Language selection
 def select_language(user_id):
-    if users.get(str(user_id)) == None or users.get(str(user_id)) == "EN":
+    if users.get(str(user_id)) is None or users.get(str(user_id)) == "EN":
         return lang_en
     else:
         return lang_it
-
-
-from functools import wraps
 
 
 # Decrypt admins file and set LIST_OF_ADMINS variable
@@ -171,15 +170,13 @@ def inline_button(bot, update):
                              reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         return ConversationHandler.END
 
-    elif query.data == "unsubscribe": # TODO: How can a user unsubscribe if this data is never sent from keyboards
+    elif query.data == "unsubscribe":  # TODO: How can a user unsubscribe if this data is never sent from keyboards
         remove_subscriber(user_id)
         bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterUnsubscription"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         return ConversationHandler.END
 
 
-# About handler
-@send_typing_action
 def about(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
@@ -210,7 +207,6 @@ def sel_language_eng(bot, update):
 TYPING = 1
 
 
-@send_typing_action
 def questions(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
@@ -219,8 +215,8 @@ def questions(bot, update):
     return TYPING
 
 
-# Question appender to file
-# if the question is the result of the pushing of the "<-- back" button, the question is aborted, otherwise the question is saved
+# Question appender to file if the question is the result of the pushing of the "<-- back" button, the question is
+# aborted, otherwise the question is saved
 def answers(bot, update):
     lang = select_language(update.effective_user.id)
     user_id1 = update.effective_user.id
@@ -258,7 +254,6 @@ def fetch_news(bot, update):
 
 
 # Displays scheduled events
-@send_typing_action
 def display_events(bot, update):
     # Retrieving the language
     user_id = update.effective_user.id
@@ -298,7 +293,6 @@ def display_events(bot, update):
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
 
-@send_typing_action
 def display_newsletterSubscription(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
@@ -311,7 +305,6 @@ def display_newsletterSubscription(bot, update):
 
 
 # Drive handler
-@send_typing_action
 def display_drive(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
@@ -322,13 +315,12 @@ def display_drive(bot, update):
 def go_back(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=query.message.chat_id, text=lang["questionAbort"],
+    bot.send_message(chat_id=update.message.chat_id, text=lang["questionAbort"],
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     return ConversationHandler.END
 
 
 # Contact handler
-@send_typing_action
 def contact(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
@@ -337,7 +329,6 @@ def contact(bot, update):
 
 
 # Members handler
-@send_typing_action
 def members(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
@@ -461,7 +452,7 @@ def reply(bot, update):
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     question_file = open("questions.txt", "r", encoding="utf-8")
     question = question_file.readline()
-    if (question == ""):
+    if question == "":
         bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestions"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         return ConversationHandler.END
@@ -483,7 +474,7 @@ def showpending(bot, update):
         bot.send_message(chat_id=update.message.chat_id, text=(question[0] + " " + question[2]),
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         n = n + 1
-    if (n == 0):
+    if n == 0:
         bot.send_message(chat_id=update.message.chat_id, text=lang["questionsAnswered"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
@@ -499,7 +490,7 @@ def sendNewsletter(bot, update):
     with open("newsletter.json", "r", encoding="utf-8") as f:
         data = json.load(f)
         for x in data:
-            if (lang == lang_en):
+            if lang == lang_en:
                 for userId in idList:
                     bot.send_message(chat_id=userId, text=x['DescriptionENG'],
                                      reply_markup=get_keyboard(KeyboardType.NEWSLETTER_UNSUB, lang, user_id))
@@ -523,13 +514,12 @@ def showsaved(bot, update):
         bot.send_message(chat_id=update.message.chat_id, text=(question[0] + " " + question[2]),
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         n = n + 1
-    if (n == 0):
+    if n == 0:
         bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestionsSaved"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
 
 # EIG handler
-@send_typing_action
 def electronicengineeringgroups(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
@@ -605,14 +595,14 @@ dispatcher.add_handler(com_newsletter_handler)
 dispatcher.add_handler(newsletter_handler)
 
 filter_drive = filters.FilterDrive()
-drive_handler = MessageHandler(filter_drive, display_drive);
+drive_handler = MessageHandler(filter_drive, display_drive)
 com_drive_handler = CommandHandler("drive", display_drive)
 dispatcher.add_handler(com_drive_handler)
 dispatcher.add_handler(drive_handler)
 
 # function used in the section askus associated to the behavior of the "<-- back" keyboard
 filter_back = filters.FilterBack()
-back_handler = MessageHandler(filter_back, go_back);
+back_handler = MessageHandler(filter_back, go_back)
 com_back_handler = CommandHandler("back", go_back)
 dispatcher.add_handler(com_back_handler)
 dispatcher.add_handler(back_handler)
@@ -642,13 +632,13 @@ dispatcher.add_handler(members_handler)
 dispatcher.add_handler(com_members_handler)
 
 filter_it = filters.FilterIt()
-it_handler = MessageHandler(filter_it, sel_language_ita);
+it_handler = MessageHandler(filter_it, sel_language_ita)
 com_it_handler = CommandHandler("lang_ita", sel_language_ita)
 dispatcher.add_handler(com_it_handler)
 dispatcher.add_handler(it_handler)
 
 filter_en = filters.FilterEn()
-en_handler = MessageHandler(filter_en, sel_language_eng);
+en_handler = MessageHandler(filter_en, sel_language_eng)
 com_en_handler = CommandHandler("lang_eng", sel_language_eng)
 dispatcher.add_handler(com_en_handler)
 dispatcher.add_handler(en_handler)
