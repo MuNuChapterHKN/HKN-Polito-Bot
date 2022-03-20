@@ -6,7 +6,7 @@ authors = ["Your Name <you@example.com>"]
 license = "AGPL"
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.10"
 html2text = "^2020.1.16"
 html5lib = "^1.1"
 python-dateutil = "^2.8.2"
