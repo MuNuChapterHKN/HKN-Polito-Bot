@@ -1,4 +1,5 @@
 # Imports
+import telegram.error
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, CallbackQueryHandler, Filters
 
@@ -226,12 +227,23 @@ def answers(bot, update):
         out_file.write(
             (str(update.message.from_user.username) + "-" + user_id + "-" + update.message.text).strip("\n") + "\n")
         out_file.close()
-        bot.send_message(chat_id=update.message.chat_id, text=lang["questionSaved"],
-                         reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id1))
+
+        count_sent = 0
         for admin in LIST_OF_ADMINS:
-            bot.send_message(chat_id=admin, text=lang["newQuestionFrom"] + str(
-                update.message.from_user.username) + "\n-" + update.message.text + "\n",
-                             reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+            try:
+                bot.send_message(chat_id=admin, text=lang["newQuestionFrom"] + str(
+                    update.message.from_user.username) + "\n-" + update.message.text + "\n",
+                                 reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+                count_sent += 1
+            except telegram.error.BadRequest as e:
+                print(e)
+
+        if count_sent > 0:
+            bot.send_message(chat_id=update.message.chat_id, text=lang["questionSaved"],
+                             reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id1))
+        else:
+            bot.send_message(chat_id=update.message.chat_id, text=lang["questionAbort"],
+                             reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id1))
     else:
         bot.send_message(chat_id=update.message.chat_id, text=lang["questionAbort"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id1))
