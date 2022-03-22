@@ -77,6 +77,7 @@ def is_subscriber(user_id: int) -> bool:
         res = cursor.fetchone() is not None
     except psycopg2.Error as error:
         print("Error while connecting to PostgreSQL", error)
+        raise DatabaseFault(error)
     finally:
         if conn:
             cursor.close()

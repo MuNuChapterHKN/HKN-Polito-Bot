@@ -60,5 +60,6 @@
   "tutorText": "Here is the list of study groups:",
   "GroupsText": "Here is the collection of our beloved Telegram groups , you can find the group where we talk regularly (EtaKazzateNu) or many other groups that we need to share hobbies, passions or to exchange various experiences, come in and tell us yours😜",
   "memberstext": "🔓 This section is private to HKN members, select the Internal training button to access our latest private events (password : hknFI), instead select the Telegram Groups button to access the list of our groups and channels:",
-  "back": "⬅ Back"
+  "back": "⬅ Back",
+  "databaseError": "Database error 😟, please try again later. \nAn admin has been notified."
 }

@@ -22,7 +22,7 @@ import tutor
 import filters
 
 from utils.db import is_subscriber, add_subscriber, get_subscribers, remove_subscriber, \
-    update_user_language
+    update_user_language, DatabaseFault
 from utils.common import users
 from utils.env import CYPHERKEY, BOT_TOKEN, WEB_PASSWORD
 
@@ -162,19 +162,24 @@ def inline_button(bot, update):
                          reply_markup=InlineKeyboardMarkup(inline_keyboard))
         return ConversationHandler.END
     elif query.data == "confirm":
-        if not is_subscriber(user_id):
-            add_subscriber(user_id)
-            bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterSubscription"],
-                             reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
-        else:
-            bot.send_message(chat_id=query.message.chat_id, text=lang["alreadySubscribed"],
-                             reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+        try:
+            if not is_subscriber(user_id):
+                add_subscriber(user_id)
+                bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterSubscription"],
+                                 reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+            else:
+                bot.send_message(chat_id=query.message.chat_id, text=lang["alreadySubscribed"],
+                                 reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+        except DatabaseFault:
+            bot.send_message(chat_id=update.message.chat_id, text=lang["databaseError"])
         return ConversationHandler.END
 
     elif query.data == "unsubscribe":  # TODO: How can a user unsubscribe if this data is never sent from keyboards
-        remove_subscriber(user_id)
-        bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterUnsubscription"],
-                         reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+        try:
+            remove_subscriber(user_id)
+        except DatabaseFault:
+            bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterUnsubscription"],
+                             reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         return ConversationHandler.END
 
 
@@ -188,7 +193,11 @@ def about(bot, update):
 # Selection of the language it
 def sel_language_ita(bot, update):
     lang = "IT"
-    update_user_language(str(update.effective_user.id), lang)
+    try:
+        update_user_language(str(update.effective_user.id), lang)
+    except DatabaseFault:
+        bot.send_message(chat_id=update.message.chat_id, text=lang_it["databaseError"])
+
     users[str(update.effective_user.id)] = lang
     tutor.users[str(update.effective_user.id)] = lang
     update_start_message(bot, update, lang_it)
@@ -197,7 +206,11 @@ def sel_language_ita(bot, update):
 # Selection of the language en
 def sel_language_eng(bot, update):
     lang = "EN"
-    update_user_language(str(update.effective_user.id), lang)
+    try:
+        update_user_language(str(update.effective_user.id), lang)
+    except DatabaseFault:
+        bot.send_message(chat_id=update.message.chat_id, text=lang_en["databaseError"])
+
     users[str(update.effective_user.id)] = lang
     tutor.users[str(update.effective_user.id)] = lang
     update_start_message(bot, update, lang_en)
@@ -309,11 +322,14 @@ def display_newsletterSubscription(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
 
-    if not is_subscriber(user_id):
-        bot.send_message(chat_id=update.message.chat_id, text=lang["newsletterAreYouSure"],
-                         reply_markup=get_keyboard(KeyboardType.NEWSLETTER_CONFIRM, lang, user_id))
-    else:
-        bot.send_message(chat_id=update.message.chat_id, text=lang["alreadySubscribed"])
+    try:
+        if not is_subscriber(user_id):
+            bot.send_message(chat_id=update.message.chat_id, text=lang["newsletterAreYouSure"],
+                             reply_markup=get_keyboard(KeyboardType.NEWSLETTER_CONFIRM, lang, user_id))
+        else:
+            bot.send_message(chat_id=update.message.chat_id, text=lang["alreadySubscribed"])
+    except DatabaseFault:
+        bot.send_message(chat_id=update.message.chat_id, text=lang["databaseError"])
 
 
 # Drive handler
@@ -496,7 +512,10 @@ def sendNewsletter(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
 
-    idList = get_subscribers()
+    try:
+        idList = get_subscribers()
+    except DatabaseFault:
+        bot.send_message(chat_id=update.message.chat_id, text=lang["databaseError"])
 
     # send newsletter to all the subscribed users
     with open("newsletter.json", "r", encoding="utf-8") as f:
