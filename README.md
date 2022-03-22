@@ -147,6 +147,9 @@ Infine, oltre alle ReplyKeyboardMarkup (bottoni della custom keyboard), sono pre
 - <ins>Lang:it</ins> : per scegliere la lingua italiana, all'avvio del bot
 - <ins>Lang:en</ins> : per scegliere la lingua inglese, all'avvio del bot
 
+## Error handling
+Il bot possiede un modulo che gli permette di mandare un messagio di log in un canale telegram. La funzione publish_error prende in input l'oggetto bot e il messagio di errore e lo manda in un bot telegram di cui il bot è stato fatto amministratore.
+
 # Problemi attuali e possibili soluzioni
 
 ## Problemi generali (minimali)

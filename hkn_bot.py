@@ -23,10 +23,10 @@ import filters
 from utils.db import is_subscriber, add_subscriber, get_subscribers, remove_subscriber, \
     update_user_language
 from utils.common import users
-from utils.env import CYPHERKEY, BOT_TOKEN, WEB_PASSWORD
+from utils.env import CYPHERKEY, BOT_TOKEN, WEB_PASSWORD, ERROR_CHANNEL_ID
 
 from utils.keyboard import get_keyboard, KeyboardType
-
+from utils.errors import publish_error
 
 # Bot typing action
 def send_action(action):
@@ -111,7 +111,6 @@ def start(bot, update):
     user_id = update.effective_user.id
     bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"],
                      reply_markup=get_keyboard(KeyboardType.LANGUAGE, lang, user_id))
-
 
 # Help command handler
 def help(bot, update):
