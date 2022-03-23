@@ -61,6 +61,11 @@ CREATE TABLE members (
 CREATE TABLE subscribed (
   id integer;
 );
+
+create table links (
+    name varchar(40) primary key,
+    uri  varchar(128) not null
+);
 ```
 
 ### Variabili d'ambiente

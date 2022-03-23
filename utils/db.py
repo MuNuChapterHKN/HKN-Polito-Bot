@@ -171,3 +171,27 @@ def update_user_language(user_id, language):
         if conn:
             cursor.close()
             conn.close()
+
+
+def get_all_links() -> dict[str, str]:
+    conn = None
+    cursor = None
+    links = dict()
+    try:
+        conn = _get_db_conn()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM links;")
+        record = cursor.fetchone()
+
+        while record is not None:
+            links[record[0]] = record[1]
+            record = cursor.fetchone()
+    except psycopg2.Error as error:
+        print("Error while connecting to PostgreSQL", error)
+        raise DatabaseFault(error)
+    finally:
+        if conn:
+            cursor.close()
+            conn.close()
+
+        return links
