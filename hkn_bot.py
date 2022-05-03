@@ -254,10 +254,10 @@ def answers(bot, update):
     return ConversationHandler.END  # TODO: Why does this get stuck?
  """
 # News handler
-"""
+
 # TODO language selection
 @send_typing_action
-def fetch_news(bot, update):
+def fetch_news(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     # TODO: put this credentials somewhere
     client = Client(url='< LINK >', username="< HKN USERNAME >", password=WEB_PASSWORD)
@@ -266,10 +266,8 @@ def fetch_news(bot, update):
     user_id = update.effective_user.id
     for post in postsdict:
         content = post.title + "\n" + post.link
-        bot.send_message(chat_id=update.message.chat_id, text=content,
+        context.bot.send_message(chat_id=update.message.chat_id, text=content,
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
-"""
-
 
 # Displays scheduled events
 def display_events(update: Update, context: CallbackContext) -> None:
@@ -501,15 +499,15 @@ def showpending(bot, update):
 """
 
 
-""" @restricted
-def sendNewsletter(bot, update):
+@restricted
+def sendNewsletter(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
 
     try:
         idList = get_subscribers()
     except DatabaseFault:
-        bot.send_message(chat_id=update.message.chat_id, text=lang["databaseError"])
+        context.bot.send_message(chat_id=update.message.chat_id, text=lang["databaseError"])
 
     # send newsletter to all the subscribed users
     with open("newsletter.json", "r", encoding="utf-8") as f:
@@ -517,15 +515,12 @@ def sendNewsletter(bot, update):
         for x in data:
             if lang == lang_en:
                 for userId in idList:
-                    bot.send_message(chat_id=userId, text=x['DescriptionENG'],
+                    context.bot.send_message(chat_id=userId, text=x['DescriptionENG'],
                                      reply_markup=get_keyboard(KeyboardType.NEWSLETTER_UNSUB, lang, user_id))
             else:
                 for userId in idList:
-                    bot.send_message(chat_id=userId, text=x['DescriptionITA'],
+                    context.bot.send_message(chat_id=userId, text=x['DescriptionITA'],
                                      reply_markup=get_keyboard(KeyboardType.NEWSLETTER_UNSUB, lang, user_id))
-        f.close()
- """
-
 """ 
 @restricted
 def showsaved(bot, update):
@@ -594,9 +589,10 @@ dispatcher.add_handler(help_admin_handler)
 
 savedq_handler = CommandHandler("showsaved", showsaved)
 dispatcher.add_handler(savedq_handler)
+"""
 
 newsletter_handler = CommandHandler("sendnewsletter", sendNewsletter)
-dispatcher.add_handler(newsletter_handler) """
+dispatcher.add_handler(newsletter_handler)
 
 filter_electronicengineeringgroups = filters.Filterelectronicengineeringgroups()
 electronicengineeringgroups_handler = MessageHandler(filter_electronicengineeringgroups, electronicengineeringgroups)
@@ -604,12 +600,12 @@ com_electronicengineeringgroups_handler = CommandHandler("electronicengineeringg
 dispatcher.add_handler(com_electronicengineeringgroups_handler)
 dispatcher.add_handler(electronicengineeringgroups_handler)
 
-""" filter_tutoring = filters.FilterTutoring()
+filter_tutoring = filters.FilterTutoring()
 tutoring_handler = MessageHandler(filter_tutoring, tutor.tutoring)
 com_tutoring_handler = CommandHandler("studygroups", tutor.tutoring)
 dispatcher.add_handler(com_tutoring_handler)
 dispatcher.add_handler(tutoring_handler)
- """
+
 filter_events = filters.FilterEvents()
 events_handler = MessageHandler(filter_events, display_events)
 com_events_handler = CommandHandler("events", display_events)
@@ -635,12 +631,11 @@ com_back_handler = CommandHandler("back", go_back)
 dispatcher.add_handler(com_back_handler)
 dispatcher.add_handler(back_handler)
 
-""" filter_news = filters.FilterNews()
+filter_news = filters.FilterNews()
 news_handler = MessageHandler(filter_news, fetch_news)
 com_news_handler = CommandHandler("news", fetch_news)
 dispatcher.add_handler(com_events_handler)
 dispatcher.add_handler(news_handler)
- """
 
 filter_about = filters.FilterAbout()
 about_handler = MessageHandler(filter_about, about)

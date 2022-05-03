@@ -1,8 +1,8 @@
 import filters
 import time
 import telegram
-from telegram.ext import Updater
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, CallbackContext
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 import datetime
 import re
 import html2text
@@ -21,17 +21,6 @@ emoji = ["📚", "", "📅", "", "⏰", "", "📩", "📩", ""]
 users = {} # Dictionary which stores language used by every user
 days = {'Monday':'Lunedì','Tuesday':'Martedì','Wednesday':'Mercoledì','Thursday':'Giovedì','Friday':'Venerdì','Saturday':'Sabato','Sunday':'Domenica'}
 
-def send_action(action):
-    ## Sends `action` while processing func command
-    def decorator(func):
-        @wraps(func)
-        def command_func(*args, **kwargs):
-            bot, update = args
-            bot.send_chat_action(chat_id=update.effective_message.chat_id, action=action)
-            return func(bot, update, **kwargs)
-        return command_func
-    
-    return decorator
 
 def has_key_in(dictionary, string):
         for k in dictionary:
@@ -45,7 +34,17 @@ def translate(string):
                 string=string.replace(day, days[day]) 
         return string
 
-send_typing_action = send_action(ChatAction.TYPING)
+def send_typing_action(func):
+    """Sends typing action while processing func command."""
+
+    @wraps(func)
+    def command_func(update, context, *args, **kwargs):
+        context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action=ChatAction.TYPING)
+        return func(update, context,  *args, **kwargs)
+
+    return command_func
+
+
 def tutoringFile():
         fp = urlopen("http://hknpolito.org/tutoring/")
         mybytes = fp.read()
@@ -111,7 +110,7 @@ def tutoringFile():
 from itertools import islice 
 
 @send_typing_action  
-def tutoring(bot, update):
+def tutoring(update: Update, context: CallbackContext) -> None:
         in_file=open("tutoring.txt", "r", encoding="utf-8")
         user_id = str(update.effective_user.id)
         empty=True
@@ -129,10 +128,10 @@ def tutoring(bot, update):
                                 i = translate(i) #translate in italian
                         t = t + i
                 empty = False
-                bot.send_message(chat_id=update.message.chat_id, text=t)
+                context.bot.send_message(chat_id=update.message.chat_id, text=t)
         #inline_keyboard = [[InlineKeyboardButton("Algoritmi e programmazione", url="https://t.me/hkn_algo")]]
         inline_keyboard = [[InlineKeyboardButton("Algoritmi e programmazione", url="https://t.me/hkn_algo")], [InlineKeyboardButton("Elettrotecnica", url="https://t.me/joinchat/AAAAAFhtPg-zhW_Wgd5tXw")], [InlineKeyboardButton("Sistemi operativi", url="https://t.me/joinchat/BDXJKB2iuB1mBZLTjh9hgQ")], [InlineKeyboardButton("Sistemi elettronici, tecnologie e misure", url="https://t.me/joinchat/BDXJKEfBdulUjK8wyvOLhQ")], [InlineKeyboardButton("Teoria dei segnali e delle comunicazioni", url="https://t.me/joinchat/BDXJKBo-X259OnONBNl8iQ")], [InlineKeyboardButton("Elettronica Applicata (Elettronica)", url="https://t.me/joinchat/AAAAAEX055_0n_PouPzjAg")], [InlineKeyboardButton("Architetture dei sistemi di elaborazione", url="https://t.me/joinchat/AAAAAElCC1jy_ue6AniDnA")], [InlineKeyboardButton("Reti di calcolatori", url="https://t.me/joinchat/BDXJKEl0zW9Zr-ka5GmxiA")], [InlineKeyboardButton("Campi Elettromagnetici (elettronica)", url="https://t.me/joinchat/BDXJKBnDkuQl00-SFa8AiQ")]]
-        bot.send_message(chat_id=update.message.chat_id, text=lang["tutorText"], reply_markup=InlineKeyboardMarkup(inline_keyboard))
+        context.bot.send_message(chat_id=update.message.chat_id, text=lang["tutorText"], reply_markup=InlineKeyboardMarkup(inline_keyboard))
 
 # Language selection
 def select_language(user_id):
