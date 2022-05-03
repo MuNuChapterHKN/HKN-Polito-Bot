@@ -107,7 +107,7 @@ tutor.users = users
 tutor.tutoringFile()
 
 # Start command handler
-def start(update: Update, context: CallbackContext):
+def start(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
     context.bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"],
@@ -115,44 +115,44 @@ def start(update: Update, context: CallbackContext):
 
 
 # Help command handler
-def help(update: Update, context: CallbackContext):
+def help(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     context.bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"])
 
 
 # Updates start message if language is changed    
  
-def update_start_message(update: Update, context: CallbackContext, lang):
+def update_start_message(update: Update, context: CallbackContext, lang) -> None:
     user_id = update.effective_user.id
     context.bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"],
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
 # Inline buttons handler
-""" 
-def inline_button(bot, update):
+
+def inline_button(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     query = update.callback_query
     user_id = update.effective_user.id
     if query.data == "back":
-        bot.send_message(chat_id=query.message.chat_id, text=lang["questionAbort"],
+        context.bot.send_message(chat_id=query.message.chat_id, text=lang["questionAbort"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         return ConversationHandler.END
     # TODO: Do something with the electronics groups
     elif query.data == "Triennale":
-        bot.send_message(chat_id=query.message.chat_id, parse_mode='HTML',
+        context.bot.send_message(chat_id=query.message.chat_id, parse_mode='HTML',
                          text='🎓 English Course:  \n - <a href="< LINK >">Communication networks</a> \n - <a href="< LINK >">Electronic devices</a> \n - <a href="< LINK >">Automatic control</a> \n - <a href="< LINK >">Electronic Circuits</a> \n - <a href="< LINK >">Applied electronics</a> \n - <a href="< LINK >">Digital transmission</a> \n - <a href="< LINK >">Electromagnetic waves and antennas</a> \n - <a href="< LINK >">Applied signal processing laboratory</a> \n - <a href="< LINK >">Digital systems electronics</a> \n - <a href="< LINK >">Electronic measurements</a> \n \n \n 🎓 Corso Italiano:  \n - <a href="< LINK >">Economia urbana</a> \n - <a href="< LINK >">Misure</a> \n - <a href="< LINK >">Fibre: preparazione, proprietà e tecnologie di trasformazione</a> \n - <a href="< LINK >">Ingegneria delle cellule e dei tessuti</a> \n - <a href="< LINK >">Ingegneria nelle terapie medico-chirurgiche</a> \n - <a href="< LINK >">RSelezione e progettazione dei materiali per applicazioni ingegneristiche (SPMAI)</a> \n - <a href="< LINK >">Architettura tecnica e cultura del costruito</a> \n - <a href="< LINK >">Strumenti e metodi per la sostenibilità dei sistemi edilizi e territoriali</a> \n - <a href="< LINK >">Electromagnetic fields</a> \n - <a href="< LINK >">Processi dell industria alimentare</a>\n - <a href="< LINK >">Valutazioni di impatto ambientale</a> \n - <a href="< LINK >">Electronic measurements</a> \n - <a href="< LINK >">Teoria dei segnali e delle comunicazioni</a> \n - <a href="< LINK >">Electronic Circuits</a> \n - <a href="< LINK >">Digital systems electronics</a> \n - <a href="< LINK >">Campi elettromagnetici</a> \n - <a href="< LINK >">Electronic devices</a> \n - <a href="< LINK >">Elettronica dei sistemi digitali</a> \n - <a href="< LINK >">Dispositivi elettronici</a> \n - <a href="< LINK >">Circuiti elettronici</a> \n - <a href="< LINK >">Analisi matematica II</a> \n - <a href="< LINK >">Fisica II</a> \n - <a href="< LINK >">Metodi matematici per l ingegneria</a> \n - <a href="< LINK >">Elettrotecnica</a>')
         return ConversationHandler.END
     elif query.data == "Magistrale":
-        bot.send_message(chat_id=query.message.chat_id, parse_mode='HTML',
+        context.bot.send_message(chat_id=query.message.chat_id, parse_mode='HTML',
                          text='🎓 Master:  \n - <a href="< LINK >">Sistemi digitali integrati</a> \n - <a href="< LINK >">Testing and certification</a> \n - <a href="< LINK >">High speed electron devices</a> \n - <a href="< LINK >">Finite element modelling</a> \n - <a href="< LINK >">Elettronica analogica e di potenza</a> \n - <a href="< LINK >">Radar and remote sensing</a> \n - <a href="< LINK >">Microwave electronics</a> \n - <a href="< LINK >">Sistemi elettronici a basso consumo</a> \n - <a href="< LINK >">Electronic systems engineering</a> \n - <a href="< LINK >">Integrated systems technology</a>\n - <a href="< LINK >">Photonic devices</a> \n - <a href="< LINK >">Microelectronic systems</a> \n - <a href="< LINK >">Communication systems</a> \n - <a href="< LINK >">Analog and telecommunication electronics</a> \n - <a href="< LINK >">Radiating electromagnetic systems</a> \n - <a href="< LINK >">Guiding electromagnetic systems</a> \n - <a href="< LINK >">Sistemi di misura e sensori</a> \n - <a href="< LINK >">Microelettronica digitale</a> \n - <a href="< LINK >">Advanced antenna engineering</a> \n - <a href="< LINK >">Microelettronica digitale</a> \n - <a href="< LINK >">Computer aided design of communication systems</a> \n - <a href="< LINK >">Mobile and sensor networks</a> \n - <a href="< LINK >">Electronics for embedded systems</a> \n - <a href="< LINK >">Modeling and optimization of embedded systems</a> \n - <a href="< LINK >">Codesign methods and tools</a> \n - <a href="< LINK >">Convex optimization and engineering applications</a> \n - <a href="< LINK >">Electromagnetic fields and biological tissues: effects and medical applications</a>\n- <a href="< LINK >">Innovative wireless platforms for the internet of things</a> \n - <a href="< LINK >">Bioinformatics</a> \n - <a href="< LINK >">Automation and planning of production systems</a> \n - <a href="< LINK >">Advanced electronic drives</a> \n - <a href="< LINK >">Radio frequency integrated circuits</a> \n - <a href="< LINK >">Analog integrated circuits</a> \n - <a href="< LINK >">Projects and laboratory on communication systems</a> \n - <a href="< LINK >">Big data: architectures and data analytics</a> \n - <a href="< LINK >">Testing and fault tolerance</a>\n - <a href="< LINK >">Nanomaterials and nanotechnologies for energy applications</a> \n - <a href="< LINK >">Integrazione di sistemi embedded</a> \n - <a href="< LINK >">Industrial Photonics</a> \n - <a href="< LINK >">Open Optical Networks</a> \n - <a href="< LINK >">Signal Processing and Wireless Transmission Lab</a> \n - <a href="< LINK >">Signal Processing and Optical Transmission Lab</a> \n - <a href="< LINK >">Engineering Empathy</a>\n - <a href="< LINK >">Micro and Nanoelectronic Devices</a> \n - <a href="< LINK >">CAD of semiconductor devices</a> \n - <a href="< LINK >">Electronic transport in crystalline and organic semiconductors</a> \n - <a href="< LINK >">Nanoelectronic systems</a> \n - <a href="< LINK >">Microelectronics and Micro/Nanosystems Technologies</a> \n - <a href="< LINK >">Introduction to MEMS and Bio-MEMS</a> \n - <a href="< LINK >">Design of microsystems</a> \n - <a href="< LINK >">Wireless Integrated Circuits and Systems</a> \n - <a href="< LINK >">Integrated systems architecture</a> \n - <a href="< LINK >">Power electronics</a> \n - <a href="< LINK >">Computer architectures</a> \n - <a href="< LINK >">Synthesis and optimization of digital systems</a> \n - <a href="< LINK >">Digital Electronics</a> \n - <a href="< LINK >">Passive Optical Components</a> \n - <a href="< LINK >">Advanced design for signal integrity and compliance</a> \n - <a href="< LINK >">Tecnologie digitali e società</a> \n - <a href="< LINK >">Sistemi robotici</a> \n - <a href="< LINK >">Digital Communications</a>\n - <a href="< LINK >">Operating systems</a> \n - <a href="< LINK >">Optoelettronica</a>')
         return ConversationHandler.END
     elif query.data == "HRGame":
         inline_keyboard = [[InlineKeyboardButton(lang["Classifica"], url=links['ranking_link'])]]
-        bot.send_message(chat_id=query.message.chat_id, text=lang["HRRes"],
+        context.bot.send_message(chat_id=query.message.chat_id, text=lang["HRRes"],
                          reply_markup=InlineKeyboardMarkup(inline_keyboard))
         return ConversationHandler.END
     elif query.data == "TelegramGroups":
-        bot.send_message(chat_id=query.message.chat_id, text=lang["GroupsText"],
+        context.bot.send_message(chat_id=query.message.chat_id, text=lang["GroupsText"],
                          reply_markup=get_keyboard(KeyboardType.GROUPS, lang, user_id))
         return ConversationHandler.END
     elif query.data == "usefulLinks":
@@ -161,30 +161,30 @@ def inline_button(bot, update):
                            [InlineKeyboardButton("HKN Steam Group", url=links['hkn_steam_group'])],
                            [InlineKeyboardButton("hknMUsicNUChapter", url=links['hknmusicnuchapter'])],
                            [InlineKeyboardButton("HKN x gif", url=links['hkn_x_gif'])]]
-        bot.send_message(chat_id=query.message.chat_id, text=lang["LinkDescription"],
+        context.bot.send_message(chat_id=query.message.chat_id, text=lang["LinkDescription"],
                          reply_markup=InlineKeyboardMarkup(inline_keyboard))
         return ConversationHandler.END
     elif query.data == "confirm":
         try:
             if not is_subscriber(user_id):
                 add_subscriber(user_id)
-                bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterSubscription"],
+                context.bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterSubscription"],
                                  reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
             else:
-                bot.send_message(chat_id=query.message.chat_id, text=lang["alreadySubscribed"],
+                context.bot.send_message(chat_id=query.message.chat_id, text=lang["alreadySubscribed"],
                                  reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         except DatabaseFault:
-            bot.send_message(chat_id=update.message.chat_id, text=lang["databaseError"])
+            context.bot.send_message(chat_id=update.message.chat_id, text=lang["databaseError"])
         return ConversationHandler.END
 
     elif query.data == "unsubscribe":  # TODO: How can a user unsubscribe if this data is never sent from keyboards
         try:
             remove_subscriber(user_id)
         except DatabaseFault:
-            bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterUnsubscription"],
+           context.bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterUnsubscription"],
                              reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         return ConversationHandler.END
- """
+
 """ 
 def about(bot, update):
     lang = select_language(update.effective_user.id)
@@ -364,14 +364,13 @@ def contact(bot, update):
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
  """
-""" # Members handler
-def members(bot, update):
+# Members handler
+def members(update: Update, context: CallbackContext):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["memberstext"],
+    context.bot.send_message(chat_id=update.message.chat_id, text=lang["memberstext"],
                      reply_markup=get_keyboard(KeyboardType.MEMBERS, lang, user_id))
 
- """
 # Restricted commands (can be executed only by users in admins.txt)
 
 # Reply to answers handler
@@ -669,12 +668,13 @@ com_contact_handler = CommandHandler("contact", contact)
 dispatcher.add_handler(contact_handler)
 dispatcher.add_handler(com_contact_handler) """
 
-""" filter_members = filters.FilterMembers()
+
+filter_members = filters.FilterMembers()
 members_handler = MessageHandler(filter_members, members)
 com_members_handler = CommandHandler("members", members)
 dispatcher.add_handler(members_handler)
 dispatcher.add_handler(com_members_handler)
- """
+
 filter_it = filters.FilterIt()
 it_handler = MessageHandler(filter_it, sel_language_ita)
 com_it_handler = CommandHandler("lang_ita", sel_language_ita)
@@ -687,9 +687,9 @@ com_en_handler = CommandHandler("lang_eng", sel_language_eng)
 dispatcher.add_handler(com_en_handler)
 dispatcher.add_handler(en_handler)
 
-""" inline_button_handler = CallbackQueryHandler(inline_button)
+inline_button_handler = CallbackQueryHandler(inline_button)
 dispatcher.add_handler(inline_button_handler)
- """
+
  
 updater.start_polling()
 updater.idle()
