@@ -29,25 +29,16 @@ from utils.env import CYPHERKEY, BOT_TOKEN, WEB_PASSWORD
 
 from utils.keyboard import get_keyboard, KeyboardType
 
-
-# Bot typing action
-def send_action(action):
-    # Sends `action` while processing func command
-    def decorator(func):
-        @wraps(func)
-        def command_func(*args, **kwargs):
-            bot, update = args
-            bot.send_chat_action(chat_id=update.effective_message.chat_id, action=action)
-            return func(bot, update, **kwargs)
-
-        return command_func
-
-    return decorator
-
-
 # The message "is typing" appears while the bot is processing messages
-send_typing_action = send_action(ChatAction.TYPING)
+def send_typing_action(func):
+    """Sends typing action while processing func command."""
 
+    @wraps(func)
+    def command_func(update, context, *args, **kwargs):
+        context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action=ChatAction.TYPING)
+        return func(update, context,  *args, **kwargs)
+
+    return command_func
 
 # Language selection
 def select_language(user_id):
@@ -184,13 +175,11 @@ def inline_button(update: Update, context: CallbackContext) -> None:
                              reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         return ConversationHandler.END
 
-""" 
-def about(bot, update):
+def about(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["abouttext"],
+    context.bot.send_message(chat_id=update.message.chat_id, text=lang["abouttext"],
                      reply_markup=get_keyboard(KeyboardType.ABOUT, lang, user_id))
- """
 
 # Selection of the language it
 def sel_language_ita(update: Update, context: CallbackContext):
@@ -656,11 +645,13 @@ com_news_handler = CommandHandler("news", fetch_news)
 dispatcher.add_handler(com_events_handler)
 dispatcher.add_handler(news_handler)
  """
-""" filter_about = filters.FilterAbout()
+
+filter_about = filters.FilterAbout()
 about_handler = MessageHandler(filter_about, about)
 com_about_handler = CommandHandler("about", about)
 dispatcher.add_handler(about_handler)
-dispatcher.add_handler(com_about_handler) """
+dispatcher.add_handler(com_about_handler)
+
 
 """ filter_contact = filters.FilterContact()
 contact_handler = MessageHandler(filter_contact, contact)
