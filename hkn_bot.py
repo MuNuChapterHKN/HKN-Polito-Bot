@@ -270,7 +270,7 @@ def fetch_news(bot, update):
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 """
 
-"""
+
 # Displays scheduled events
 def display_events(update: Update, context: CallbackContext) -> None:
     # Retrieving the language
@@ -310,8 +310,7 @@ def display_events(update: Update, context: CallbackContext) -> None:
         context.bot.send_message(chat_id=update.message.chat_id, text=lang["noEvents"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
- """
-"""  
+ 
 def display_newsletterSubscription(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
@@ -324,8 +323,8 @@ def display_newsletterSubscription(update: Update, context: CallbackContext) -> 
             context.bot.send_message(chat_id=update.message.chat_id, text=lang["alreadySubscribed"])
     except DatabaseFault:
         context.bot.send_message(chat_id=update.message.chat_id, text=lang["databaseError"])
- """
-""" 
+
+
 # Drive handler
 def display_drive(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
@@ -333,9 +332,7 @@ def display_drive(update: Update, context: CallbackContext) -> None:
     context.bot.send_message(chat_id=update.message.chat_id, text=lang["drivetext"],
                      reply_markup=get_keyboard(KeyboardType.DRIVE, lang, user_id))
 
- """
- 
-""" 
+
 def go_back(update: Update, context: CallbackContext) -> int:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
@@ -343,16 +340,15 @@ def go_back(update: Update, context: CallbackContext) -> int:
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     return ConversationHandler.END
 
- """
 
-""" # Contact handler
+# Contact handler
 def contact(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
     context.bot.send_message(chat_id=update.message.chat_id, text=lang["contacttext"],
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
- """
+
 # Members handler
 def members(update: Update, context: CallbackContext):
     lang = select_language(update.effective_user.id)
@@ -549,13 +545,13 @@ def showsaved(bot, update):
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
  """
 
-""" # EIG handler
+# EIG handler
 def electronicengineeringgroups(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
     context.bot.send_message(chat_id=update.message.chat_id, text=lang["electronicengineeringgroupstext"],
                      reply_markup=get_keyboard(KeyboardType.ELECTRONICENGINEERINGGROUPS, lang, user_id))
- """
+
 
 """ # Configurating handlers
 reply_conv_handler = ConversationHandler(
@@ -602,11 +598,11 @@ dispatcher.add_handler(savedq_handler)
 newsletter_handler = CommandHandler("sendnewsletter", sendNewsletter)
 dispatcher.add_handler(newsletter_handler) """
 
-""" filter_electronicengineeringgroups = filters.Filterelectronicengineeringgroups()
+filter_electronicengineeringgroups = filters.Filterelectronicengineeringgroups()
 electronicengineeringgroups_handler = MessageHandler(filter_electronicengineeringgroups, electronicengineeringgroups)
 com_electronicengineeringgroups_handler = CommandHandler("electronicengineeringgroups", electronicengineeringgroups)
 dispatcher.add_handler(com_electronicengineeringgroups_handler)
-dispatcher.add_handler(electronicengineeringgroups_handler) """
+dispatcher.add_handler(electronicengineeringgroups_handler)
 
 """ filter_tutoring = filters.FilterTutoring()
 tutoring_handler = MessageHandler(filter_tutoring, tutor.tutoring)
@@ -614,31 +610,31 @@ com_tutoring_handler = CommandHandler("studygroups", tutor.tutoring)
 dispatcher.add_handler(com_tutoring_handler)
 dispatcher.add_handler(tutoring_handler)
  """
-""" filter_events = filters.FilterEvents()
+filter_events = filters.FilterEvents()
 events_handler = MessageHandler(filter_events, display_events)
 com_events_handler = CommandHandler("events", display_events)
 dispatcher.add_handler(events_handler)
 dispatcher.add_handler(com_events_handler)
- """
-""" filter_newsletter = filters.FilterNewsletter()
+
+filter_newsletter = filters.FilterNewsletter()
 newsletter_handler = MessageHandler(filter_newsletter, display_newsletterSubscription)
 com_newsletter_handler = CommandHandler("newsletter", display_newsletterSubscription)
 dispatcher.add_handler(com_newsletter_handler)
 dispatcher.add_handler(newsletter_handler)
- """
-""" filter_drive = filters.FilterDrive()
+
+filter_drive = filters.FilterDrive()
 drive_handler = MessageHandler(filter_drive, display_drive)
 com_drive_handler = CommandHandler("drive", display_drive)
 dispatcher.add_handler(com_drive_handler)
-dispatcher.add_handler(drive_handler) """
+dispatcher.add_handler(drive_handler)
 
 # function used in the section askus associated to the behavior of the "<-- back" keyboard
-""" filter_back = filters.FilterBack()
+filter_back = filters.FilterBack()
 back_handler = MessageHandler(filter_back, go_back)
 com_back_handler = CommandHandler("back", go_back)
 dispatcher.add_handler(com_back_handler)
 dispatcher.add_handler(back_handler)
- """
+
 """ filter_news = filters.FilterNews()
 news_handler = MessageHandler(filter_news, fetch_news)
 com_news_handler = CommandHandler("news", fetch_news)
@@ -653,11 +649,11 @@ dispatcher.add_handler(about_handler)
 dispatcher.add_handler(com_about_handler)
 
 
-""" filter_contact = filters.FilterContact()
+filter_contact = filters.FilterContact()
 contact_handler = MessageHandler(filter_contact, contact)
 com_contact_handler = CommandHandler("contact", contact)
 dispatcher.add_handler(contact_handler)
-dispatcher.add_handler(com_contact_handler) """
+dispatcher.add_handler(com_contact_handler)
 
 
 filter_members = filters.FilterMembers()
