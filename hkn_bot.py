@@ -1,7 +1,8 @@
 # Imports
 import telegram.error
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, CallbackQueryHandler, Filters
+from telegram.ext import CallbackContext
 
 # Downloads from website every day study groups dates
 from wordpress_xmlrpc import Client
@@ -97,7 +98,7 @@ def restricted(func):
     return wrapped
 
 
-updater = Updater(token=BOT_TOKEN)
+updater = Updater(token=BOT_TOKEN, use_context=True)
 # Setting handlers dispatcher
 dispatcher = updater.dispatcher
 
@@ -105,29 +106,29 @@ dispatcher = updater.dispatcher
 tutor.users = users
 tutor.tutoringFile()
 
-
 # Start command handler
-def start(bot, update):
+def start(update: Update, context: CallbackContext):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"],
+    context.bot.send_message(chat_id=update.message.chat_id, text=lang["welcome"],
                      reply_markup=get_keyboard(KeyboardType.LANGUAGE, lang, user_id))
 
 
 # Help command handler
-def help(bot, update):
+def help(update: Update, context: CallbackContext):
     lang = select_language(update.effective_user.id)
-    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"])
+    context.bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"])
 
 
 # Updates start message if language is changed    
-def update_start_message(bot, update, lang):
+ 
+def update_start_message(update: Update, context: CallbackContext, lang):
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"],
+    context.bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"],
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
-
 # Inline buttons handler
+""" 
 def inline_button(bot, update):
     lang = select_language(update.effective_user.id)
     query = update.callback_query
@@ -183,46 +184,46 @@ def inline_button(bot, update):
             bot.send_message(chat_id=query.message.chat_id, text=lang["newsletterUnsubscription"],
                              reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         return ConversationHandler.END
-
-
+ """
+""" 
 def about(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
     bot.send_message(chat_id=update.message.chat_id, text=lang["abouttext"],
                      reply_markup=get_keyboard(KeyboardType.ABOUT, lang, user_id))
-
+ """
 
 # Selection of the language it
-def sel_language_ita(bot, update):
+def sel_language_ita(update: Update, context: CallbackContext):
     lang = "IT"
     try:
         update_user_language(str(update.effective_user.id), lang)
     except DatabaseFault:
-        bot.send_message(chat_id=update.message.chat_id, text=lang_it["databaseError"])
+        context.bot.send_message(chat_id=update.message.chat_id, text=lang_it["databaseError"])
 
     users[str(update.effective_user.id)] = lang
     tutor.users[str(update.effective_user.id)] = lang
-    update_start_message(bot, update, lang_it)
+    update_start_message(update, context, lang_it)
 
 
 # Selection of the language en
-def sel_language_eng(bot, update):
+def sel_language_eng(update: Update, context: CallbackContext):
     lang = "EN"
     try:
         update_user_language(str(update.effective_user.id), lang)
     except DatabaseFault:
-        bot.send_message(chat_id=update.message.chat_id, text=lang_en["databaseError"])
+        context.bot.send_message(chat_id=update.message.chat_id, text=lang_en["databaseError"])
 
     users[str(update.effective_user.id)] = lang
     tutor.users[str(update.effective_user.id)] = lang
-    update_start_message(bot, update, lang_en)
-
+    update_start_message(update, context, lang_en)
 
 # Questions handler
 # TODO language selection
 TYPING = 1
 
 
+""" 
 def questions(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
@@ -263,9 +264,9 @@ def answers(bot, update):
         bot.send_message(chat_id=update.message.chat_id, text=lang["questionAbort"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id1))
     return ConversationHandler.END  # TODO: Why does this get stuck?
-
-
-# News handler
+ """
+""" 
+""" # News handler
 # TODO language selection
 @send_typing_action
 def fetch_news(bot, update):
@@ -280,7 +281,7 @@ def fetch_news(bot, update):
         bot.send_message(chat_id=update.message.chat_id, text=content,
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
-
+"""
 # Displays scheduled events
 def display_events(bot, update):
     # Retrieving the language
@@ -320,7 +321,8 @@ def display_events(bot, update):
         bot.send_message(chat_id=update.message.chat_id, text=lang["noEvents"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
-
+ """
+"""  
 def display_newsletterSubscription(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
@@ -333,8 +335,8 @@ def display_newsletterSubscription(bot, update):
             bot.send_message(chat_id=update.message.chat_id, text=lang["alreadySubscribed"])
     except DatabaseFault:
         bot.send_message(chat_id=update.message.chat_id, text=lang["databaseError"])
-
-
+ """
+""" 
 # Drive handler
 def display_drive(bot, update):
     lang = select_language(update.effective_user.id)
@@ -342,7 +344,9 @@ def display_drive(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text=lang["drivetext"],
                      reply_markup=get_keyboard(KeyboardType.DRIVE, lang, user_id))
 
-
+ """
+ 
+""" 
 def go_back(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
@@ -350,29 +354,30 @@ def go_back(bot, update):
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     return ConversationHandler.END
 
+ """
 
-# Contact handler
+""" # Contact handler
 def contact(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
     bot.send_message(chat_id=update.message.chat_id, text=lang["contacttext"],
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
-
-# Members handler
+ """
+""" # Members handler
 def members(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
     bot.send_message(chat_id=update.message.chat_id, text=lang["memberstext"],
                      reply_markup=get_keyboard(KeyboardType.MEMBERS, lang, user_id))
 
-
+ """
 # Restricted commands (can be executed only by users in admins.txt)
 
 # Reply to answers handler
 
 # Setting up conversation handler to wait for user message
-ANSWER = 1
+""" ANSWER = 1
 
 
 def pop_question(option="cancel"):
@@ -509,8 +514,10 @@ def showpending(bot, update):
         bot.send_message(chat_id=update.message.chat_id, text=lang["questionsAnswered"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
+"""
 
-@restricted
+
+""" @restricted
 def sendNewsletter(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
@@ -533,8 +540,9 @@ def sendNewsletter(bot, update):
                     bot.send_message(chat_id=userId, text=x['DescriptionITA'],
                                      reply_markup=get_keyboard(KeyboardType.NEWSLETTER_UNSUB, lang, user_id))
         f.close()
+ """
 
-
+""" 
 @restricted
 def showsaved(bot, update):
     lang = select_language(update.effective_user.id)
@@ -551,17 +559,17 @@ def showsaved(bot, update):
     if n == 0:
         bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestionsSaved"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+ """
 
-
-# EIG handler
+""" # EIG handler
 def electronicengineeringgroups(bot, update):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
     bot.send_message(chat_id=update.message.chat_id, text=lang["electronicengineeringgroupstext"],
                      reply_markup=get_keyboard(KeyboardType.ELECTRONICENGINEERINGGROUPS, lang, user_id))
+ """
 
-
-# Configurating handlers
+""" # Configurating handlers
 reply_conv_handler = ConversationHandler(
     entry_points=[CommandHandler("reply", reply)],
     states={ANSWER: [MessageHandler(Filters.text, answer_question),
@@ -580,19 +588,21 @@ question_conv_handler = ConversationHandler(
             },
     fallbacks=[CommandHandler("cancel", cancel),
                CallbackQueryHandler(inline_button)]  # TODO: probably CallbackQueryHandler useless
-)
+) 
 
 # Adding handlers
 dispatcher.add_handler(reply_conv_handler)
 dispatcher.add_handler(question_conv_handler)
+"""
 
 start_handler = CommandHandler("start", start)
 dispatcher.add_handler(start_handler)
 
+
 help_handler = CommandHandler("help", help)
 dispatcher.add_handler(help_handler)
 
-pendingq_handler = CommandHandler("showpending", showpending)
+""" pendingq_handler = CommandHandler("showpending", showpending)
 dispatcher.add_handler(pendingq_handler)
 
 help_admin_handler = CommandHandler("help_admin", help_admin)
@@ -602,69 +612,69 @@ savedq_handler = CommandHandler("showsaved", showsaved)
 dispatcher.add_handler(savedq_handler)
 
 newsletter_handler = CommandHandler("sendnewsletter", sendNewsletter)
-dispatcher.add_handler(newsletter_handler)
+dispatcher.add_handler(newsletter_handler) """
 
-filter_electronicengineeringgroups = filters.Filterelectronicengineeringgroups()
+""" filter_electronicengineeringgroups = filters.Filterelectronicengineeringgroups()
 electronicengineeringgroups_handler = MessageHandler(filter_electronicengineeringgroups, electronicengineeringgroups)
 com_electronicengineeringgroups_handler = CommandHandler("electronicengineeringgroups", electronicengineeringgroups)
 dispatcher.add_handler(com_electronicengineeringgroups_handler)
-dispatcher.add_handler(electronicengineeringgroups_handler)
+dispatcher.add_handler(electronicengineeringgroups_handler) """
 
-filter_tutoring = filters.FilterTutoring()
+""" filter_tutoring = filters.FilterTutoring()
 tutoring_handler = MessageHandler(filter_tutoring, tutor.tutoring)
 com_tutoring_handler = CommandHandler("studygroups", tutor.tutoring)
 dispatcher.add_handler(com_tutoring_handler)
 dispatcher.add_handler(tutoring_handler)
-
-filter_events = filters.FilterEvents()
+ """
+""" filter_events = filters.FilterEvents()
 events_handler = MessageHandler(filter_events, display_events)
 com_events_handler = CommandHandler("events", display_events)
 dispatcher.add_handler(events_handler)
 dispatcher.add_handler(com_events_handler)
-
-filter_newsletter = filters.FilterNewsletter()
+ """
+""" filter_newsletter = filters.FilterNewsletter()
 newsletter_handler = MessageHandler(filter_newsletter, display_newsletterSubscription)
 com_newsletter_handler = CommandHandler("newsletter", display_newsletterSubscription)
 dispatcher.add_handler(com_newsletter_handler)
 dispatcher.add_handler(newsletter_handler)
-
-filter_drive = filters.FilterDrive()
+ """
+""" filter_drive = filters.FilterDrive()
 drive_handler = MessageHandler(filter_drive, display_drive)
 com_drive_handler = CommandHandler("drive", display_drive)
 dispatcher.add_handler(com_drive_handler)
-dispatcher.add_handler(drive_handler)
+dispatcher.add_handler(drive_handler) """
 
 # function used in the section askus associated to the behavior of the "<-- back" keyboard
-filter_back = filters.FilterBack()
+""" filter_back = filters.FilterBack()
 back_handler = MessageHandler(filter_back, go_back)
 com_back_handler = CommandHandler("back", go_back)
 dispatcher.add_handler(com_back_handler)
 dispatcher.add_handler(back_handler)
-
-filter_news = filters.FilterNews()
+ """
+""" filter_news = filters.FilterNews()
 news_handler = MessageHandler(filter_news, fetch_news)
 com_news_handler = CommandHandler("news", fetch_news)
 dispatcher.add_handler(com_events_handler)
 dispatcher.add_handler(news_handler)
-
-filter_about = filters.FilterAbout()
+ """
+""" filter_about = filters.FilterAbout()
 about_handler = MessageHandler(filter_about, about)
 com_about_handler = CommandHandler("about", about)
 dispatcher.add_handler(about_handler)
-dispatcher.add_handler(com_about_handler)
+dispatcher.add_handler(com_about_handler) """
 
-filter_contact = filters.FilterContact()
+""" filter_contact = filters.FilterContact()
 contact_handler = MessageHandler(filter_contact, contact)
 com_contact_handler = CommandHandler("contact", contact)
 dispatcher.add_handler(contact_handler)
-dispatcher.add_handler(com_contact_handler)
+dispatcher.add_handler(com_contact_handler) """
 
-filter_members = filters.FilterMembers()
+""" filter_members = filters.FilterMembers()
 members_handler = MessageHandler(filter_members, members)
 com_members_handler = CommandHandler("members", members)
 dispatcher.add_handler(members_handler)
 dispatcher.add_handler(com_members_handler)
-
+ """
 filter_it = filters.FilterIt()
 it_handler = MessageHandler(filter_it, sel_language_ita)
 com_it_handler = CommandHandler("lang_ita", sel_language_ita)
@@ -677,8 +687,9 @@ com_en_handler = CommandHandler("lang_eng", sel_language_eng)
 dispatcher.add_handler(com_en_handler)
 dispatcher.add_handler(en_handler)
 
-inline_button_handler = CallbackQueryHandler(inline_button)
+""" inline_button_handler = CallbackQueryHandler(inline_button)
 dispatcher.add_handler(inline_button_handler)
-
+ """
+ 
 updater.start_polling()
 updater.idle()
