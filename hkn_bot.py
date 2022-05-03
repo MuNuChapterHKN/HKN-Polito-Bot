@@ -1,4 +1,5 @@
 # Imports
+from ast import Call
 import telegram.error
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, CallbackQueryHandler, Filters
@@ -207,19 +208,17 @@ def sel_language_eng(update: Update, context: CallbackContext):
 # TODO language selection
 TYPING = 1
 
-
-""" 
-def questions(bot, update):
+def questions(update: Update, context: CallbackContext):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["askAQuestion"],
+    context.bot.send_message(chat_id=update.message.chat_id, text=lang["askAQuestion"],
                      reply_markup=get_keyboard(KeyboardType.UNDO, lang, user_id))
     return TYPING
 
 
 # Question appender to file if the question is the result of the pushing of the "<-- back" button, the question is
 # aborted, otherwise the question is saved
-def answers(bot, update):
+def answers(update: Update, context: CallbackContext):
     lang = select_language(update.effective_user.id)
     user_id1 = update.effective_user.id
     if update.message.text != lang["back"]:
@@ -232,7 +231,7 @@ def answers(bot, update):
         count_sent = 0
         for admin in LIST_OF_ADMINS:
             try:
-                bot.send_message(chat_id=admin, text=lang["newQuestionFrom"] + str(
+                context.bot.send_message(chat_id=admin, text=lang["newQuestionFrom"] + str(
                     update.message.from_user.username) + "\n-" + update.message.text + "\n",
                                  reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
                 count_sent += 1
@@ -240,16 +239,16 @@ def answers(bot, update):
                 print(e)
 
         if count_sent > 0:
-            bot.send_message(chat_id=update.message.chat_id, text=lang["questionSaved"],
+            context.bot.send_message(chat_id=update.message.chat_id, text=lang["questionSaved"],
                              reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id1))
         else:
-            bot.send_message(chat_id=update.message.chat_id, text=lang["questionAbort"],
+            context.bot.send_message(chat_id=update.message.chat_id, text=lang["questionAbort"],
                              reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id1))
     else:
-        bot.send_message(chat_id=update.message.chat_id, text=lang["questionAbort"],
+        context.bot.send_message(chat_id=update.message.chat_id, text=lang["questionAbort"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id1))
     return ConversationHandler.END  # TODO: Why does this get stuck?
- """
+
 # News handler
 
 # TODO language selection
@@ -356,7 +355,7 @@ def members(update: Update, context: CallbackContext):
 # Reply to answers handler
 
 # Setting up conversation handler to wait for user message
-""" ANSWER = 1
+ANSWER = 1
 
 
 def pop_question(option="cancel"):
@@ -376,33 +375,33 @@ def pop_question(option="cancel"):
 
 
 @restricted
-def answer_question(bot, update):
+def answer_question(update: Update, context: CallbackContext):
     lang = select_language(update.effective_user.id)
     question = pop_question()
     user_id = update.effective_user.id
     if question == None:
-        bot.send_message(chat_id=update.message.chat_id, text="Formato file questions.txt non corretto",
+        context.bot.send_message(chat_id=update.message.chat_id, text="Formato file questions.txt non corretto",
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         return ConversationHandler.END
     message = update.message.text
-    bot.send_message(chat_id=question[1],
+    context.bot.send_message(chat_id=question[1],
                      text=lang["hello"] + " {} ".format(question[0]) + lang["yourAnswer"] + "\n{}".format(message),
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     return ConversationHandler.END
 
 
 @restricted
-def delete_question(bot, update):
+def delete_question(update: Update, context: CallbackContext):
     lang = select_language(update.effective_user.id)
     pop_question()
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["questionDeleted"],
+    context.bot.send_message(chat_id=update.message.chat_id, text=lang["questionDeleted"],
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     return ConversationHandler.END
 
 
 @restricted
-def save_question(bot, update):
+def save_question(update: Update, context: CallbackContext):
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
     # get first question
@@ -418,67 +417,65 @@ def save_question(bot, update):
     for line in savedQuestions:
         if str(question) in line:
             found = True
-            bot.send_message(chat_id=update.message.chat_id, text=lang["questionAlreadySaved"],
+            context.bot.send_message(chat_id=update.message.chat_id, text=lang["questionAlreadySaved"],
                              reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
     if not found:
         savedQuestion_file = open("savedquestions.txt", "a", encoding="utf-8")
         savedQuestion_file.write(question)
         savedQuestion_file.close()
-        bot.send_message(chat_id=update.message.chat_id, text=lang["questionSavedCorrectly"],
+        context.bot.send_message(chat_id=update.message.chat_id, text=lang["questionSavedCorrectly"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
     return ANSWER
 
-
 @restricted
-def help_admin(bot, update):
+def help_admin(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["help_admin_text"],
+    context.bot.send_message(chat_id=update.message.chat_id, text=lang["help_admin_text"],
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
-    return ConversationHandler.END
-
+    #return ConversationHandler.END
 
 @restricted
-def skip(bot, update):
+def skip(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["questionNotAnswered"],
+    context.bot.send_message(chat_id=update.message.chat_id, text=lang["questionNotAnswered"],
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     pop_question(option="enqueue")
     return ConversationHandler.END
 
 
 @restricted
-def cancel(bot, update):
+def cancel(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["conversationDeleted"],
+    context.bot.send_message(chat_id=update.message.chat_id, text=lang["conversationDeleted"],
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     return ConversationHandler.END
 
 
 @restricted
-def reply(bot, update):
+def reply(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["answerQuestion"] + " \n",
+    context.bot.send_message(chat_id=update.message.chat_id, text=lang["answerQuestion"] + " \n",
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     question_file = open("questions.txt", "r", encoding="utf-8")
     question = question_file.readline()
     if question == "":
-        bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestions"],
+        context.bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestions"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         return ConversationHandler.END
-    bot.send_message(chat_id=update.message.chat_id, text=question,
+    context.bot.send_message(chat_id=update.message.chat_id, text=question,
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     question_file.close()
     return ANSWER
 
 
 @restricted
-def showpending(bot, update):
+def showpending(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
     question_file = open("questions.txt", "r", encoding="utf-8")
@@ -486,14 +483,12 @@ def showpending(bot, update):
     n = 0
     for q in questions:
         question = q.split("-")
-        bot.send_message(chat_id=update.message.chat_id, text=(question[0] + " " + question[2]),
+        context.bot.send_message(chat_id=update.message.chat_id, text=(question[0] + " " + question[2]),
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         n = n + 1
     if n == 0:
-        bot.send_message(chat_id=update.message.chat_id, text=lang["questionsAnswered"],
+        context.bot.send_message(chat_id=update.message.chat_id, text=lang["questionsAnswered"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
-
-"""
 
 
 @restricted
@@ -518,9 +513,9 @@ def sendNewsletter(update: Update, context: CallbackContext) -> None:
                 for userId in idList:
                     context.bot.send_message(chat_id=userId, text=x['DescriptionITA'],
                                      reply_markup=get_keyboard(KeyboardType.NEWSLETTER_UNSUB, lang, user_id))
-""" 
+
 @restricted
-def showsaved(bot, update):
+def showsaved(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     question_file = open("savedquestions.txt", "r", encoding="utf-8")
     questions = question_file.readlines()
@@ -529,13 +524,13 @@ def showsaved(bot, update):
     n = 0
     for q in questions:
         question = q.split("-")
-        bot.send_message(chat_id=update.message.chat_id, text=(question[0] + " " + question[2]),
+        context.bot.send_message(chat_id=update.message.chat_id, text=(question[0] + " " + question[2]),
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
         n = n + 1
     if n == 0:
-        bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestionsSaved"],
+        context.bot.send_message(chat_id=update.message.chat_id, text=lang["noQuestionsSaved"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
- """
+
 
 # EIG handler
 def electronicengineeringgroups(update: Update, context: CallbackContext) -> None:
@@ -545,7 +540,7 @@ def electronicengineeringgroups(update: Update, context: CallbackContext) -> Non
                      reply_markup=get_keyboard(KeyboardType.ELECTRONICENGINEERINGGROUPS, lang, user_id))
 
 
-""" # Configurating handlers
+# Configurating handlers
 reply_conv_handler = ConversationHandler(
     entry_points=[CommandHandler("reply", reply)],
     states={ANSWER: [MessageHandler(Filters.text, answer_question),
@@ -569,7 +564,7 @@ question_conv_handler = ConversationHandler(
 # Adding handlers
 dispatcher.add_handler(reply_conv_handler)
 dispatcher.add_handler(question_conv_handler)
-"""
+
 
 start_handler = CommandHandler("start", start)
 dispatcher.add_handler(start_handler)
@@ -580,10 +575,12 @@ dispatcher.add_handler(help_handler)
 
 """ pendingq_handler = CommandHandler("showpending", showpending)
 dispatcher.add_handler(pendingq_handler)
+"""
 
 help_admin_handler = CommandHandler("help_admin", help_admin)
 dispatcher.add_handler(help_admin_handler)
 
+"""
 savedq_handler = CommandHandler("showsaved", showsaved)
 dispatcher.add_handler(savedq_handler)
 """
