@@ -272,7 +272,7 @@ def fetch_news(bot, update):
 
 """
 # Displays scheduled events
-def display_events(bot, update):
+def display_events(update: Update, context: CallbackContext) -> None:
     # Retrieving the language
     user_id = update.effective_user.id
     lang = select_language(user_id)
@@ -285,7 +285,7 @@ def display_events(bot, update):
         if theEvent.date > todayDate:  # do not print past events
             n = n + 1
             if not theEvent.imageLink:  # if there isn't an image link
-                bot.send_message(chat_id=update.message.chat_id, parse_mode="markdown",
+                context.bot.send_message(chat_id=update.message.chat_id, parse_mode="markdown",
                                  text="*" + theEvent.title + "*\n\n" + theEvent.description,
                                  reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
             else:
@@ -303,53 +303,53 @@ def display_events(bot, update):
                 else:
                     continue  # skip the sending of the links
                 reply_markup = InlineKeyboardMarkup(keyboard)
-                bot.send_photo(chat_id=update.message.chat_id, parse_mode="markdown",
+                context.bot.send_photo(chat_id=update.message.chat_id, parse_mode="markdown",
                                caption="*" + theEvent.title + "*\n\n" + theEvent.description, photo=theEvent.imageLink,
                                reply_markup=reply_markup)
     if n == 0:
-        bot.send_message(chat_id=update.message.chat_id, text=lang["noEvents"],
+        context.bot.send_message(chat_id=update.message.chat_id, text=lang["noEvents"],
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
  """
 """  
-def display_newsletterSubscription(bot, update):
+def display_newsletterSubscription(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
 
     try:
         if not is_subscriber(user_id):
-            bot.send_message(chat_id=update.message.chat_id, text=lang["newsletterAreYouSure"],
+            context.bot.send_message(chat_id=update.message.chat_id, text=lang["newsletterAreYouSure"],
                              reply_markup=get_keyboard(KeyboardType.NEWSLETTER_CONFIRM, lang, user_id))
         else:
-            bot.send_message(chat_id=update.message.chat_id, text=lang["alreadySubscribed"])
+            context.bot.send_message(chat_id=update.message.chat_id, text=lang["alreadySubscribed"])
     except DatabaseFault:
-        bot.send_message(chat_id=update.message.chat_id, text=lang["databaseError"])
+        context.bot.send_message(chat_id=update.message.chat_id, text=lang["databaseError"])
  """
 """ 
 # Drive handler
-def display_drive(bot, update):
+def display_drive(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["drivetext"],
+    context.bot.send_message(chat_id=update.message.chat_id, text=lang["drivetext"],
                      reply_markup=get_keyboard(KeyboardType.DRIVE, lang, user_id))
 
  """
  
 """ 
-def go_back(bot, update):
+def go_back(update: Update, context: CallbackContext) -> int:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["questionAbort"],
+    context.bot.send_message(chat_id=update.message.chat_id, text=lang["questionAbort"],
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
     return ConversationHandler.END
 
  """
 
 """ # Contact handler
-def contact(bot, update):
+def contact(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["contacttext"],
+    context.bot.send_message(chat_id=update.message.chat_id, text=lang["contacttext"],
                      reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
  """
@@ -550,10 +550,10 @@ def showsaved(bot, update):
  """
 
 """ # EIG handler
-def electronicengineeringgroups(bot, update):
+def electronicengineeringgroups(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     user_id = update.effective_user.id
-    bot.send_message(chat_id=update.message.chat_id, text=lang["electronicengineeringgroupstext"],
+    context.bot.send_message(chat_id=update.message.chat_id, text=lang["electronicengineeringgroupstext"],
                      reply_markup=get_keyboard(KeyboardType.ELECTRONICENGINEERINGGROUPS, lang, user_id))
  """
 
