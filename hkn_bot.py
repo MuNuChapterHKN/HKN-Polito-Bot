@@ -119,7 +119,6 @@ def help(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     context.bot.send_message(chat_id=update.message.chat_id, text=lang["welcome_up"])
 
-
 # Updates start message if language is changed    
  
 def update_start_message(update: Update, context: CallbackContext, lang) -> None:
@@ -265,8 +264,8 @@ def answers(bot, update):
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id1))
     return ConversationHandler.END  # TODO: Why does this get stuck?
  """
-""" 
-""" # News handler
+# News handler
+"""
 # TODO language selection
 @send_typing_action
 def fetch_news(bot, update):
@@ -280,6 +279,7 @@ def fetch_news(bot, update):
         content = post.title + "\n" + post.link
         bot.send_message(chat_id=update.message.chat_id, text=content,
                          reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+"""
 
 """
 # Displays scheduled events
