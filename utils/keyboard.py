@@ -63,6 +63,7 @@ def get_keyboard(type: KeyboardType, lang, user_id):
             return InlineKeyboardMarkup(inline_keyboard)
     elif type == KeyboardType.GROUPS:
         inline_keyboard = [[InlineKeyboardButton("EtaKazzateNu", url=links['etakazzatenu'])],
+                           [InlineKeyboardButton("HKcareersNu", url=links['eta_careers_nu'])],
                            [InlineKeyboardButton("Eta Kappa InvestmeNu", url=links['eta_kappa_investmenu'])],
                            [InlineKeyboardButton("Eta Krypto Nu", url=links['eta_krypto_nu'])],
                            [InlineKeyboardButton("Eta Kappa PhD", url=links['eta_kappa_phd'])],
