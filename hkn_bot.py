@@ -264,7 +264,7 @@ def fetch_news(update: Update, context: CallbackContext) -> None:
         # C:\Users\User\AppData\Local\pypoetry\Cache\virtualenvs\hkn-polito-bot-CJVeOByY-py3.10\Lib\site-packages\wordpress_xmlrpc\base.py
         # uses "collection.Iterable", but it is deprecated in python 3.10
         # The correct form in python 3.10 is "collection.abc.Iterable"
-        # Let's wait for a wordpress update, otherwise change the file on the server
+        # Let's wait for the wordpress library update
         postsdict = client.call(posts.GetPosts(postfilters))
         for post in postsdict:
             content = post.title + "\n" + post.link
