@@ -256,14 +256,24 @@ def answers(update: Update, context: CallbackContext):
 def fetch_news(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     # TODO: put this credentials somewhere
-    client = Client(url='< LINK >', username="< HKN USERNAME >", password=WEB_PASSWORD)
-    postfilters = {"number": 3, "order": "ASC"}
-    postsdict = client.call(posts.GetPosts(postfilters))
     user_id = update.effective_user.id
-    for post in postsdict:
-        content = post.title + "\n" + post.link
-        context.bot.send_message(chat_id=update.message.chat_id, text=content,
-                         reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+    try:
+        client = Client(url='< LINK >', username="< HKN USERNAME >", password=WEB_PASSWORD)
+        postfilters = {"number": 3, "order": "ASC"}
+        # The following wordpress library file 
+        # C:\Users\User\AppData\Local\pypoetry\Cache\virtualenvs\hkn-polito-bot-CJVeOByY-py3.10\Lib\site-packages\wordpress_xmlrpc\base.py
+        # uses "collection.Iterable", but it is deprecated in python 3.10
+        # The correct form in python 3.10 is "collection.abc.Iterable"
+        # Let's wait for a wordpress update, otherwise change the file on the server
+        postsdict = client.call(posts.GetPosts(postfilters))
+        for post in postsdict:
+            content = post.title + "\n" + post.link
+            context.bot.send_message(chat_id=update.message.chat_id, text=content,
+                            reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+    except OSError:
+        context.bot.send_message(chat_id=update.message.chat_id, text=lang["readnewserror"],
+                            reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
+
 
 # Displays scheduled events
 def display_events(update: Update, context: CallbackContext) -> None:
