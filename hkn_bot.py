@@ -1,5 +1,6 @@
 # Imports
 from ast import Call
+from numpy import insert
 import telegram.error
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, CallbackQueryHandler, Filters
@@ -20,8 +21,8 @@ from functools import wraps
 from lang import lang_en
 from lang import lang_it
 from event import *
-import tutor
 import filters
+import tutor
 
 from utils.db import is_subscriber, add_subscriber, get_subscribers, remove_subscriber, \
     update_user_language, DatabaseFault
@@ -256,7 +257,7 @@ def answers(update: Update, context: CallbackContext):
 def fetch_news(update: Update, context: CallbackContext) -> None:
     lang = select_language(update.effective_user.id)
     # TODO: put this credentials somewhere
-    client = Client(url='< LINK >', username="< HKN USERNAME >", password=WEB_PASSWORD)
+    client = Client(url='< LINK > ', username="< user >", password=WEB_PASSWORD)
     postfilters = {"number": 3, "order": "ASC"}
     postsdict = client.call(posts.GetPosts(postfilters))
     user_id = update.effective_user.id
@@ -539,6 +540,24 @@ def electronicengineeringgroups(update: Update, context: CallbackContext) -> Non
     context.bot.send_message(chat_id=update.message.chat_id, text=lang["electronicengineeringgroupstext"],
                      reply_markup=get_keyboard(KeyboardType.ELECTRONICENGINEERINGGROUPS, lang, user_id))
 
+INSERT_PASSWORD = 1
+
+def new_member(update: Update, context: CallbackContext) -> int:
+    lang = select_language(update.effective_user.id)
+    context.bot.send_message(chat_id=update.message.chat_id, text=lang["ask_password"])
+    return INSERT_PASSWORD
+
+def checkPassword(update:Update, context: CallbackContext) -> int:
+    inserted_password = update.message.text
+    lang = select_language(update.effective_user.id)
+    correct = False
+    # apply an hash function to the inserted_password and check in the db
+    if (correct):
+        context.bot.send_message(chat_id=update.message.chat_id, text=lang["correct_password"])
+    else:
+        context.bot.send_message(chat_id=update.message.chat_id, text=lang["wrong_password"])
+
+    return ConversationHandler.END
 
 # Configurating handlers
 reply_conv_handler = ConversationHandler(
@@ -549,6 +568,14 @@ reply_conv_handler = ConversationHandler(
                      CommandHandler("save", save_question)]
             },
     fallbacks=[CommandHandler("cancel", cancel)]
+)
+
+insert_members_handler = ConversationHandler(
+    entry_points=[CommandHandler("newMember", new_member)],
+    states={
+        INSERT_PASSWORD: [MessageHandler(Filters.text, checkPassword)]
+    },
+    fallbacks=[]
 )
 
 filter_questions = filters.FilterQuestions()
@@ -564,7 +591,7 @@ question_conv_handler = ConversationHandler(
 # Adding handlers
 dispatcher.add_handler(reply_conv_handler)
 dispatcher.add_handler(question_conv_handler)
-
+dispatcher.add_handler(insert_members_handler)
 
 start_handler = CommandHandler("start", start)
 dispatcher.add_handler(start_handler)

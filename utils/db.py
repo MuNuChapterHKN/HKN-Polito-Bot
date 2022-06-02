@@ -172,8 +172,6 @@ def update_user_language(user_id, language):
             cursor.close()
             conn.close()
 
-#TODO: ADD eta_careers_nu - https://t.me/+TV8SA8Fv5XBlMzdk
-
 def get_all_links() -> dict[str, str]:
     conn = None
     cursor = None

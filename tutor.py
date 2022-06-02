@@ -1,14 +1,9 @@
-import filters
-import time
-import telegram
-from telegram.ext import Updater, CallbackContext
+from telegram.ext import CallbackContext
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 import datetime
-import re
 import html2text
 from urllib.request import urlopen
 from functools import wraps
-from telegram.ext import MessageHandler
 from datetime import timedelta
 from datetime import datetime
 from threading import Timer
