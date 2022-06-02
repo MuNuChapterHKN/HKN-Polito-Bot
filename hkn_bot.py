@@ -1,6 +1,4 @@
 # Imports
-from ast import Call
-from numpy import insert
 import telegram.error
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, CallbackQueryHandler, Filters
@@ -271,7 +269,7 @@ def fetch_news(update: Update, context: CallbackContext) -> None:
             content = post.title + "\n" + post.link
             context.bot.send_message(chat_id=update.message.chat_id, text=content,
                             reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
-    except OSError:
+    except:
         context.bot.send_message(chat_id=update.message.chat_id, text=lang["readnewserror"],
                             reply_markup=get_keyboard(KeyboardType.DEFAULT, lang, user_id))
 
