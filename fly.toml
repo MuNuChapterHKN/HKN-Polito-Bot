@@ -1,0 +1,6 @@
+# fly.toml file generated for throbbing-dew-6773 on 2022-10-19T20:00:34+02:00
+
+app = "throbbing-dew-6773" # This is just the app name, does not leak access
+kill_signal = "SIGINT"
+kill_timeout = 5
+processes = []
